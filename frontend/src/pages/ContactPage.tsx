@@ -89,12 +89,12 @@ const ContactPage = () => {
 
             {/* Contact Form */}
             <ScrollReveal direction="up" className="max-w-2xl mx-auto">
-              <GlowingCard glowColor="blue" className="p-8" animated={false}>
-                <h2 className="text-3xl font-bold text-neutral-50 mb-8 text-center">Send Us a Message</h2>
-                <form className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
+              <GlowingCard glowColor="blue" className="p-12 md:p-16" animated={false}>
+                <h2 className="text-3xl font-bold text-neutral-50 mb-10 text-center">Send Us a Message</h2>
+                <form className="space-y-8">
+                  <div className="grid md:grid-cols-2 gap-8">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-2">
+                      <label className="block text-sm font-medium text-neutral-300 mb-3">
                         Name
                       </label>
                       <input
@@ -104,7 +104,7 @@ const ContactPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-2">
+                      <label className="block text-sm font-medium text-neutral-300 mb-3">
                         Email
                       </label>
                       <input
@@ -115,7 +115,7 @@ const ContactPage = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                    <label className="block text-sm font-medium text-neutral-300 mb-3">
                       Subject
                     </label>
                     <input
@@ -125,7 +125,7 @@ const ContactPage = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                    <label className="block text-sm font-medium text-neutral-300 mb-3">
                       Message
                     </label>
                     <textarea
