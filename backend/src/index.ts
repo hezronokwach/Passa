@@ -68,7 +68,7 @@ app.use(errorHandler);
 const PORT = config.app.port || 3001;
 
 app.listen(PORT, () => {
-  logger.info(`🚀 ConnectSphere Backend Server running on port ${PORT}`);
+  logger.info(`🚀 Passa Backend Server running on port ${PORT}`);
   logger.info(`📊 Environment: ${config.app.env}`);
   logger.info(`🌐 CORS enabled for: ${config.cors.origin}`);
 });

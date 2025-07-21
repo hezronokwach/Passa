@@ -6,7 +6,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 export const config = {
   app: {
-    name: process.env.APP_NAME || 'ConnectSphere',
+    name: process.env.APP_NAME || 'Passa',
     env: process.env.NODE_ENV || 'development',
     port: parseInt(process.env.PORT || '3001', 10),
     url: process.env.APP_URL || 'http://localhost:3000',
@@ -14,11 +14,11 @@ export const config = {
   },
   
   database: {
-    url: process.env.DATABASE_URL || 'postgresql://connectsphere:password@localhost:5432/connectsphere_dev',
+    url: process.env.DATABASE_URL || 'postgresql://passa:password@localhost:5432/passa_dev',
     host: process.env.DATABASE_HOST || 'localhost',
     port: parseInt(process.env.DATABASE_PORT || '5432', 10),
-    name: process.env.DATABASE_NAME || 'connectsphere_dev',
-    user: process.env.DATABASE_USER || 'connectsphere',
+    name: process.env.DATABASE_NAME || 'passa_dev',
+    user: process.env.DATABASE_USER || 'passa',
     password: process.env.DATABASE_PASSWORD || 'password',
   },
   
@@ -33,7 +33,7 @@ export const config = {
     url: process.env.CLICKHOUSE_URL || 'http://localhost:8123',
     host: process.env.CLICKHOUSE_HOST || 'localhost',
     port: parseInt(process.env.CLICKHOUSE_PORT || '8123', 10),
-    database: process.env.CLICKHOUSE_DATABASE || 'connectsphere_analytics',
+    database: process.env.CLICKHOUSE_DATABASE || 'passa_analytics',
     user: process.env.CLICKHOUSE_USER || 'default',
     password: process.env.CLICKHOUSE_PASSWORD || '',
   },
@@ -73,15 +73,15 @@ export const config = {
     port: parseInt(process.env.SMTP_PORT || '587', 10),
     user: process.env.SMTP_USER || '',
     password: process.env.SMTP_PASSWORD || '',
-    fromEmail: process.env.FROM_EMAIL || 'noreply@connectsphere.co.ke',
-    fromName: process.env.FROM_NAME || 'ConnectSphere',
+    fromEmail: process.env.FROM_EMAIL || 'noreply@passa.io',
+    fromName: process.env.FROM_NAME || 'Passa',
   },
   
   aws: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
     region: process.env.AWS_REGION || 'us-east-1',
-    s3Bucket: process.env.AWS_S3_BUCKET || 'connectsphere-uploads',
+    s3Bucket: process.env.AWS_S3_BUCKET || 'passa-uploads',
     cloudfrontDomain: process.env.CLOUDFRONT_DOMAIN || '',
   },
   

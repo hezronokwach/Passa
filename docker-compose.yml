@@ -4,10 +4,10 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: connectsphere-postgres
+    container_name: passa-postgres
     environment:
-      POSTGRES_DB: connectsphere_dev
-      POSTGRES_USER: connectsphere
+      POSTGRES_DB: passa_dev
+      POSTGRES_USER: passa
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
@@ -15,25 +15,25 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - connectsphere-network
+      - passa-network
 
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: connectsphere-redis
+    container_name: passa-redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - connectsphere-network
+      - passa-network
 
   # ClickHouse Analytics Database
   clickhouse:
     image: clickhouse/clickhouse-server:latest
-    container_name: connectsphere-clickhouse
+    container_name: passa-clickhouse
     environment:
-      CLICKHOUSE_DB: connectsphere_analytics
+      CLICKHOUSE_DB: passa_analytics
       CLICKHOUSE_USER: default
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     ports:
@@ -43,17 +43,17 @@ services:
       - clickhouse_data:/var/lib/clickhouse
       - ./scripts/database/clickhouse-init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - connectsphere-network
+      - passa-network
 
   # Backend API
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: connectsphere-backend
+    container_name: passa-backend
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://connectsphere:password@postgres:5432/connectsphere_dev
+      DATABASE_URL: postgresql://passa:password@postgres:5432/passa_dev
       REDIS_URL: redis://redis:6379
       CLICKHOUSE_URL: http://clickhouse:8123
     ports:
@@ -66,7 +66,7 @@ services:
       - redis
       - clickhouse
     networks:
-      - connectsphere-network
+      - passa-network
     command: npm run dev
 
   # Frontend Web App
@@ -74,7 +74,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: connectsphere-frontend
+    container_name: passa-frontend
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_API_URL: http://localhost:3001
@@ -87,25 +87,25 @@ services:
     depends_on:
       - backend
     networks:
-      - connectsphere-network
+      - passa-network
     command: npm run dev
 
   # Prometheus Monitoring
   prometheus:
     image: prom/prometheus:latest
-    container_name: connectsphere-prometheus
+    container_name: passa-prometheus
     ports:
       - "9090:9090"
     volumes:
       - ./infrastructure/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     networks:
-      - connectsphere-network
+      - passa-network
 
   # Grafana Dashboard
   grafana:
     image: grafana/grafana:latest
-    container_name: connectsphere-grafana
+    container_name: passa-grafana
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
     ports:
@@ -116,7 +116,7 @@ services:
     depends_on:
       - prometheus
     networks:
-      - connectsphere-network
+      - passa-network
 
 volumes:
   postgres_data:
@@ -126,5 +126,5 @@ volumes:
   grafana_data:
 
 networks:
-  connectsphere-network:
+  passa-network:
     driver: bridge
