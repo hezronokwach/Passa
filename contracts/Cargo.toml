@@ -1,11 +1,11 @@
 [package]
-name = "connectsphere-contracts"
+name = "passa-contracts"
 version = "1.0.0"
 edition = "2021"
-authors = ["ConnectSphere Team"]
-description = "Soroban smart contracts for ConnectSphere platform"
+authors = ["Passa Team"]
+description = "Soroban smart contracts for Passa platform"
 license = "MIT"
-repository = "https://github.com/your-org/ConnectSphere"
+repository = "https://github.com/your-org/Passa"
 
 [lib]
 crate-type = ["cdylib"]
