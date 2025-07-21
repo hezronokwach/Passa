@@ -11,61 +11,92 @@ const Logo = ({ className = '', size = 'md' }: LogoProps) => {
   }
 
   return (
-    <div className={`${sizeClasses[size]} ${className}`}>
+    <div className={`${sizeClasses[size]} ${className} relative`}>
       <svg
         viewBox="0 0 40 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full"
+        className="w-full h-full animate-pulse-glow"
       >
-        {/* Outer circle representing the sphere */}
-        <circle
-          cx="20"
-          cy="20"
-          r="18"
-          stroke="url(#gradient1)"
-          strokeWidth="2"
-          fill="none"
-        />
-        
-        {/* Inner connecting lines representing connections */}
+        {/* Outer hexagonal frame */}
         <path
-          d="M8 20 L32 20 M20 8 L20 32 M12 12 L28 28 M28 12 L12 28"
-          stroke="url(#gradient2)"
+          d="M20 2 L32 8 L32 22 L20 28 L8 22 L8 8 Z"
+          stroke="url(#neonGradient1)"
           strokeWidth="1.5"
-          strokeLinecap="round"
+          fill="none"
+          className="animate-neon-flicker"
         />
-        
-        {/* Central hub */}
+
+        {/* Inner hexagonal grid */}
+        <path
+          d="M20 6 L28 10 L28 20 L20 24 L12 20 L12 10 Z"
+          stroke="url(#neonGradient2)"
+          strokeWidth="1"
+          fill="url(#darkFill)"
+          opacity="0.8"
+        />
+
+        {/* Central blockchain node */}
         <circle
           cx="20"
           cy="20"
-          r="4"
-          fill="url(#gradient3)"
+          r="3"
+          fill="url(#centralGlow)"
+          className="animate-glow"
         />
-        
-        {/* Connection nodes */}
-        <circle cx="8" cy="20" r="2" fill="url(#gradient4)" />
-        <circle cx="32" cy="20" r="2" fill="url(#gradient4)" />
-        <circle cx="20" cy="8" r="2" fill="url(#gradient4)" />
-        <circle cx="20" cy="32" r="2" fill="url(#gradient4)" />
-        
+
+        {/* Connection lines forming network */}
+        <g stroke="url(#connectionGradient)" strokeWidth="1" opacity="0.7">
+          <line x1="20" y1="6" x2="20" y2="14" strokeLinecap="round" />
+          <line x1="20" y1="26" x2="20" y2="34" strokeLinecap="round" />
+          <line x1="12" y1="10" x2="17" y2="17" strokeLinecap="round" />
+          <line x1="23" y1="23" x2="28" y2="30" strokeLinecap="round" />
+          <line x1="28" y1="10" x2="23" y2="17" strokeLinecap="round" />
+          <line x1="17" y1="23" x2="12" y2="30" strokeLinecap="round" />
+        </g>
+
+        {/* Corner nodes */}
+        <circle cx="20" cy="6" r="1.5" fill="url(#nodeGlow)" className="animate-float" />
+        <circle cx="28" cy="10" r="1.5" fill="url(#nodeGlow)" className="animate-float" style={{animationDelay: '0.5s'}} />
+        <circle cx="28" cy="20" r="1.5" fill="url(#nodeGlow)" className="animate-float" style={{animationDelay: '1s'}} />
+        <circle cx="20" cy="24" r="1.5" fill="url(#nodeGlow)" className="animate-float" style={{animationDelay: '1.5s'}} />
+        <circle cx="12" cy="20" r="1.5" fill="url(#nodeGlow)" className="animate-float" style={{animationDelay: '2s'}} />
+        <circle cx="12" cy="10" r="1.5" fill="url(#nodeGlow)" className="animate-float" style={{animationDelay: '2.5s'}} />
+
+        {/* Particle effects */}
+        <g opacity="0.6">
+          <circle cx="15" cy="15" r="0.5" fill="#00d4ff" className="animate-pulse" />
+          <circle cx="25" cy="15" r="0.5" fill="#8b5cf6" className="animate-pulse" style={{animationDelay: '0.3s'}} />
+          <circle cx="25" cy="25" r="0.5" fill="#00ff88" className="animate-pulse" style={{animationDelay: '0.6s'}} />
+          <circle cx="15" cy="25" r="0.5" fill="#ff0080" className="animate-pulse" style={{animationDelay: '0.9s'}} />
+        </g>
+
         <defs>
-          <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#3b82f6" />
-            <stop offset="100%" stopColor="#22c55e" />
+          <linearGradient id="neonGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#00d4ff" />
+            <stop offset="50%" stopColor="#8b5cf6" />
+            <stop offset="100%" stopColor="#00ff88" />
           </linearGradient>
-          <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#3b82f6" />
-            <stop offset="100%" stopColor="#22c55e" />
+          <linearGradient id="neonGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#00d4ff" opacity="0.3" />
+            <stop offset="100%" stopColor="#8b5cf6" opacity="0.3" />
           </linearGradient>
-          <radialGradient id="gradient3" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#3b82f6" />
-            <stop offset="100%" stopColor="#1d4ed8" />
+          <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#00d4ff" />
+            <stop offset="100%" stopColor="#00ff88" />
+          </linearGradient>
+          <radialGradient id="centralGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#00d4ff" />
+            <stop offset="50%" stopColor="#8b5cf6" />
+            <stop offset="100%" stopColor="#00ff88" />
           </radialGradient>
-          <radialGradient id="gradient4" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#22c55e" />
-            <stop offset="100%" stopColor="#16a34a" />
+          <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#00d4ff" />
+            <stop offset="100%" stopColor="#8b5cf6" />
+          </radialGradient>
+          <radialGradient id="darkFill" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#1a1a2e" opacity="0.8" />
+            <stop offset="100%" stopColor="#0a0a0f" opacity="0.9" />
           </radialGradient>
         </defs>
       </svg>
