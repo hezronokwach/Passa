@@ -68,8 +68,8 @@ Passa is a comprehensive creator economy platform featuring:
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/connectsphere.git
-cd connectsphere
+git clone https://github.com/hezronokwach/Passa.git
+cd Passa
 ```
 
 2. **Install frontend dependencies:**
@@ -85,7 +85,7 @@ npm run dev
 
 4. **Open your browser:**
 ```
-http://localhost:5173
+http://localhost:3000
 ```
 
 ### Build for Production
@@ -102,7 +102,7 @@ npm run preview
 ## 📁 Project Structure
 
 ```
-connectsphere/
+Passa/
 ├── frontend/                 # React frontend application
 │   ├── src/
 │   │   ├── components/      # Reusable UI components
@@ -116,21 +116,6 @@ connectsphere/
 ├── docs/                    # Documentation
 └── README.md
 ```
-
-## 🎨 Design System
-
-### Color Palette
-- **Primary**: Blue gradient (#3B82F6 to #1E40AF)
-- **Secondary**: Purple gradient (#8B5CF6 to #6D28D9)
-- **Accent**: Green (#10B981)
-- **Dark Theme**: Multiple shades of gray/black
-- **Neon Effects**: Glowing borders and shadows
-
-### Components
-- **GlowingCard**: Interactive cards with hover effects
-- **ScrollReveal**: Smooth scroll animations
-- **Gradient Text**: Eye-catching text effects
-- **Glass Morphism**: Modern translucent elements
 
 ## 🌟 Key Features Implemented
 
@@ -245,7 +230,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## 📞 Contact & Support
 
 - **Email**: hezronokwach@gmail.com
-- **GitHub**: [ConnectSphere Repository](https://github.com/yourusername/connectsphere)
+- **GitHub**: [Passa Repository](https://github.com/hezronokwach/Passa.git)
 - **Issues**: Report bugs and request features via GitHub Issues
 
 ---
