@@ -1,0 +1,55 @@
+[package]
+name = "passa-contracts"
+version = "1.0.0"
+edition = "2021"
+authors = ["Passa Team"]
+description = "Soroban smart contracts for Passa platform"
+license = "MIT"
+repository = "https://github.com/your-org/Passa"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+soroban-sdk = "20.0.0"
+
+[dev-dependencies]
+soroban-sdk = { version = "20.0.0", features = ["testutils"] }
+
+[features]
+default = []
+testutils = ["soroban-sdk/testutils"]
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true
+
+[profile.release-with-logs]
+inherits = "release"
+debug-assertions = true
+
+[[bin]]
+name = "revenue"
+path = "src/revenue/lib.rs"
+
+[[bin]]
+name = "attribution"
+path = "src/attribution/lib.rs"
+
+[[bin]]
+name = "loyalty"
+path = "src/loyalty/lib.rs"
+
+[[bin]]
+name = "tickets"
+path = "src/tickets/lib.rs"
+
+[[bin]]
+name = "governance"
+path = "src/governance/lib.rs"

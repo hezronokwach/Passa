@@ -1,0 +1,30 @@
+{
+  "name": "@passa/contracts",
+  "version": "1.0.0",
+  "description": "Passa Soroban Smart Contracts",
+  "scripts": {
+    "build": "cargo build --target wasm32-unknown-unknown --release",
+    "test": "cargo test",
+    "dev": "cargo watch -x 'build --target wasm32-unknown-unknown --release'",
+    "deploy": "node scripts/deploy.js",
+    "deploy:testnet": "STELLAR_NETWORK=testnet node scripts/deploy.js",
+    "deploy:mainnet": "STELLAR_NETWORK=mainnet node scripts/deploy.js",
+    "optimize": "cargo build --target wasm32-unknown-unknown --release && wasm-opt -Oz target/wasm32-unknown-unknown/release/*.wasm -o optimized.wasm",
+    "lint": "cargo clippy -- -D warnings",
+    "format": "cargo fmt",
+    "docs": "cargo doc --open",
+    "clean": "cargo clean"
+  },
+  "dependencies": {
+    "stellar-sdk": "^11.2.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

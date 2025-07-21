@@ -137,3 +137,69 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Passa specific
+# Rust compiled output
+target/
+Cargo.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# AWS
+.aws/
+
+# Docker
+.dockerignore
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Kubernetes
+*.kubeconfig
+
+# Local development
+.local/
+
+# Test artifacts
+test-results/
+playwright-report/
+test-results.xml
+
+# Blockchain artifacts
+*.wasm
+*.wasm.gz
+contracts/target/
+contracts/Cargo.lock
+
+# Stellar CLI
+.soroban/
+
+# Analytics and monitoring
+.grafana/
+.prometheus/
+
+# Storybook
+.storybook-out
+storybook-static/
