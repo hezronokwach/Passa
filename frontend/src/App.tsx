@@ -10,7 +10,7 @@ import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-dark-bg">
       <Routes>
         <Route 
           path="/" 
