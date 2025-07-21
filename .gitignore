@@ -138,7 +138,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# ConnectSphere specific
+# Passa specific
 # Rust compiled output
 target/
 Cargo.lock
