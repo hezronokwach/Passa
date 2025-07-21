@@ -53,21 +53,25 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <motion.button
-              className="btn-ghost hover:shadow-neon"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Sign In
-            </motion.button>
-            <motion.button
-              className="btn-primary relative overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="relative z-10">Get Started</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyber-blue/20 to-secondary-500/20 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-            </motion.button>
+            <Link to="/signin">
+              <motion.button
+                className="btn-ghost hover:shadow-neon"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Sign In
+              </motion.button>
+            </Link>
+            <Link to="/signup">
+              <motion.button
+                className="btn-primary relative overflow-hidden"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="relative z-10">Get Started</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-cyber-blue/20 to-secondary-500/20 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+              </motion.button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -117,20 +121,24 @@ const Header = () => {
                 </motion.div>
               ))}
               <div className="flex flex-col space-y-3 pt-4 border-t border-primary-500/20">
-                <motion.button
-                  className="btn-ghost justify-start"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Sign In
-                </motion.button>
-                <motion.button
-                  className="btn-primary justify-start"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Get Started
-                </motion.button>
+                <Link to="/signin" onClick={() => setIsMenuOpen(false)}>
+                  <motion.button
+                    className="btn-ghost justify-start w-full"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Sign In
+                  </motion.button>
+                </Link>
+                <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                  <motion.button
+                    className="btn-primary justify-start w-full"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Get Started
+                  </motion.button>
+                </Link>
               </div>
             </div>
           </motion.div>
