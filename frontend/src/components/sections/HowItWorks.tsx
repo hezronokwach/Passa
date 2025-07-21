@@ -1,91 +1,86 @@
-import { motion } from 'framer-motion'
+import { ScrollReveal } from '../ui/ScrollReveal'
 
 const HowItWorks = () => {
   const steps = [
     {
       step: '01',
-      title: 'Create Event',
-      description: 'Event organizers create events with automated revenue splits and invite creators to promote.',
-      icon: '🎪'
+      title: 'Create & Connect',
+      description: 'Creators and event organizers join the platform and set up their profiles with automated revenue sharing.',
+      icon: '🚀'
     },
     {
       step: '02',
-      title: 'Creators Promote',
-      description: 'Content creators share events with unique attribution links to track their promotional impact.',
-      icon: '📱'
+      title: 'Promote & Share',
+      description: 'Content creators promote events and experiences with trackable links to measure their impact.',
+      icon: '📢'
     },
     {
       step: '03',
-      title: 'Fans Purchase',
-      description: 'Fans buy fraud-proof NFT tickets and earn SPHERE loyalty tokens for engagement.',
-      icon: '🎫'
+      title: 'Engage & Purchase',
+      description: 'Fans discover content, buy secure digital tickets, and earn rewards for their engagement.',
+      icon: '🎯'
     },
     {
       step: '04',
-      title: 'Instant Payouts',
-      description: 'Smart contracts automatically distribute revenue to all stakeholders within seconds.',
-      icon: '⚡'
+      title: 'Earn Instantly',
+      description: 'Everyone gets paid automatically and instantly when transactions happen - no delays, no hassle.',
+      icon: '💰'
     }
   ]
 
   return (
-    <section className="py-16 lg:py-24 bg-gradient-to-br from-neutral-50 to-primary-50">
+    <section className="py-20 lg:py-32 bg-gradient-to-br from-dark-surface to-dark-bg">
       <div className="container-max section-padding">
         {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-neutral-900 mb-4">
-            How It Works
+        <ScrollReveal direction="up" className="text-center mb-20">
+          <div className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-secondary-500/20 to-accent-500/20 border border-secondary-500/30 mb-6">
+            <span className="text-secondary-400 font-medium">Simple Process</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-neutral-50 mb-6">
+            How Passa Works
           </h2>
-          <p className="text-lg text-neutral-600 max-w-3xl mx-auto">
-            Simple, transparent, and automated - connecting all stakeholders in Kenya's entertainment ecosystem
+          <p className="text-xl text-neutral-300 max-w-4xl mx-auto leading-relaxed">
+            Four simple steps to revolutionize how creators connect with their audiences and monetize their content
           </p>
-        </motion.div>
+        </ScrollReveal>
 
         {/* Steps */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <motion.div
+            <ScrollReveal
               key={step.step}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              viewport={{ once: true }}
-              className="text-center relative"
+              direction="up"
+              delay={index * 0.1}
+              className="text-center relative group"
             >
               {/* Connection line */}
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-primary-300 to-secondary-300 transform -translate-x-1/2 z-0" />
+                <div className="hidden lg:block absolute top-20 left-full w-full h-0.5 bg-gradient-to-r from-secondary-500/50 to-accent-500/50 transform -translate-x-1/2 z-0" />
               )}
-              
+
               {/* Step content */}
-              <div className="relative z-10">
+              <div className="relative z-10 p-6 rounded-xl bg-dark-surface/30 border border-secondary-500/20 hover:border-secondary-500/40 transition-all duration-300 hover:bg-dark-surface/50">
                 {/* Step number */}
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-bold text-lg mb-4">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-secondary-500 to-accent-500 text-white font-bold text-xl mb-4 group-hover:scale-110 transition-transform duration-300">
                   {step.step}
                 </div>
-                
+
                 {/* Icon */}
-                <div className="text-4xl mb-4">
+                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
                   {step.icon}
                 </div>
-                
+
                 {/* Title */}
-                <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+                <h3 className="text-2xl font-bold text-neutral-50 mb-4 group-hover:text-secondary-400 transition-colors duration-300">
                   {step.title}
                 </h3>
-                
+
                 {/* Description */}
-                <p className="text-neutral-600">
+                <p className="text-neutral-300 leading-relaxed">
                   {step.description}
                 </p>
               </div>
-            </motion.div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

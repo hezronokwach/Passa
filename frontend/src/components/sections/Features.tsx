@@ -1,93 +1,126 @@
 import { motion } from 'framer-motion'
-import { 
-  ShieldCheckIcon, 
-  BoltIcon, 
-  ChartBarIcon, 
+import {
+  ShieldCheckIcon,
+  BoltIcon,
+  ChartBarIcon,
   GiftIcon,
   CurrencyDollarIcon,
   UserGroupIcon
 } from '@heroicons/react/24/outline'
+import GlowingCard from '../ui/GlowingCard'
+import { ScrollReveal } from '../ui/ScrollReveal'
+import BlockchainGrid from '../ui/BlockchainGrid'
 
 const Features = () => {
   const features = [
     {
       icon: ShieldCheckIcon,
-      title: 'Fraud-Proof Ticketing',
-      description: 'NFT-based tickets on Stellar blockchain eliminate counterfeiting and ensure authentic event access.',
-      color: 'text-primary-600'
+      title: 'Secure Digital Tickets',
+      description: 'Your tickets are protected by advanced security technology. No more fake tickets or fraud - every purchase is guaranteed authentic and safe.',
+      color: 'blue',
+      gradient: 'from-cyber-blue to-primary-500'
     },
     {
       icon: BoltIcon,
       title: 'Instant Payments',
-      description: 'Automated revenue distribution via smart contracts with 5-second settlement times.',
-      color: 'text-secondary-600'
+      description: 'Get paid immediately when someone buys your content or tickets. No waiting weeks for payments - money reaches you in seconds.',
+      color: 'purple',
+      gradient: 'from-secondary-500 to-secondary-600'
     },
     {
       icon: ChartBarIcon,
-      title: 'Transparent Analytics',
-      description: 'Real-time ROI tracking and attribution for creators and brand campaigns.',
-      color: 'text-accent-600'
+      title: 'Smart Analytics',
+      description: 'See exactly how your content performs with easy-to-understand reports. Track your earnings, audience growth, and engagement in real-time.',
+      color: 'green',
+      gradient: 'from-accent-500 to-accent-600'
     },
     {
       icon: GiftIcon,
-      title: 'Loyalty Rewards',
-      description: 'SPHERE tokens reward fan engagement and event attendance across the platform.',
-      color: 'text-primary-600'
+      title: 'Reward System',
+      description: 'Earn rewards for being active on the platform. The more you create and engage, the more benefits you unlock for yourself and your fans.',
+      color: 'blue',
+      gradient: 'from-primary-500 to-cyber-blue'
     },
     {
       icon: CurrencyDollarIcon,
-      title: 'Multi-Revenue Streams',
-      description: 'Creators earn from ticket sales, brand partnerships, and fan engagement.',
-      color: 'text-secondary-600'
+      title: 'Multiple Income Streams',
+      description: 'Make money in different ways - sell tickets, create subscriptions, partner with brands, and offer exclusive content all in one place.',
+      color: 'purple',
+      gradient: 'from-secondary-600 to-secondary-500'
     },
     {
       icon: UserGroupIcon,
-      title: 'Community Driven',
-      description: 'Connect artists, creators, brands, and fans in one unified ecosystem.',
-      color: 'text-accent-600'
+      title: 'Global Community',
+      description: 'Connect with creators, fans, and brands from around the world. Build your network and grow your audience on a truly global platform.',
+      color: 'green',
+      gradient: 'from-accent-600 to-accent-500'
     }
   ]
 
   return (
-    <section className="py-16 lg:py-24 bg-white">
-      <div className="container-max section-padding">
+    <section className="relative py-20 lg:py-32 bg-dark-bg overflow-hidden">
+      {/* Background elements */}
+      <BlockchainGrid className="opacity-10" animated={true} />
+      <div className="absolute inset-0 bg-gradient-to-b from-dark-bg via-dark-surface/50 to-dark-bg" />
+
+      <div className="relative container-max section-padding">
         {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-neutral-900 mb-4">
-            Why Choose ConnectSphere?
-          </h2>
-          <p className="text-lg text-neutral-600 max-w-3xl mx-auto">
-            Built on Stellar blockchain with cutting-edge features designed for Kenya's entertainment ecosystem
-          </p>
-        </motion.div>
+        <ScrollReveal direction="up" className="text-center mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <div className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border border-primary-500/30 mb-6">
+              <span className="text-cyber-blue font-medium">Next-Gen Features</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-neutral-50 mb-6">
+              Why Choose{' '}
+              <span className="gradient-text">Passa</span>?
+            </h2>
+            <p className="text-xl text-neutral-300 max-w-4xl mx-auto leading-relaxed">
+              Experience the future of creator economy with cutting-edge blockchain technology,
+              AI-powered insights, and seamless global connectivity.
+            </p>
+          </motion.div>
+        </ScrollReveal>
 
         {/* Features grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <motion.div
+            <ScrollReveal
               key={feature.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="card p-6 hover:shadow-lg transition-shadow group"
+              direction="up"
+              delay={index * 0.1}
+              className="h-full"
             >
-              <div className={`inline-flex p-3 rounded-lg bg-neutral-100 ${feature.color} mb-4 group-hover:scale-110 transition-transform`}>
-                <feature.icon className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-neutral-600">
-                {feature.description}
-              </p>
-            </motion.div>
+              <GlowingCard
+                glowColor={feature.color as 'blue' | 'purple' | 'green'}
+                className="h-full group cursor-pointer"
+                animated={false}
+              >
+                <div className="p-8 h-full flex flex-col">
+                  {/* Icon */}
+                  <div className={`inline-flex p-4 rounded-xl bg-gradient-to-r ${feature.gradient} mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300 self-start`}>
+                    <feature.icon className="h-8 w-8 text-white" />
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold text-neutral-50 mb-4 group-hover:text-cyber-blue transition-colors">
+                    {feature.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-neutral-300 leading-relaxed group-hover:text-neutral-200 transition-colors flex-grow">
+                    {feature.description}
+                  </p>
+
+                  {/* Hover effect line */}
+                  <div className={`h-1 bg-gradient-to-r ${feature.gradient} rounded-full mt-6 w-0 group-hover:w-full opacity-0 group-hover:opacity-100 transition-all duration-300`} />
+                </div>
+              </GlowingCard>
+            </ScrollReveal>
           ))}
         </div>
       </div>
