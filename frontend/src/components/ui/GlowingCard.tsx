@@ -49,7 +49,7 @@ const GlowingCard = ({
       />
       
       {/* Card content */}
-      <div className="relative bg-dark-surface/80 backdrop-blur-sm rounded-xl border border-dark-border hover:border-primary-500/50 transition-all duration-300 overflow-hidden">
+      <div className="relative bg-surface/80 backdrop-blur-sm rounded-xl border border-border hover:border-primary-500/50 transition-all duration-300 overflow-hidden h-full">
         {/* Inner glow */}
         <div 
           className="absolute inset-0 opacity-10"
@@ -59,7 +59,7 @@ const GlowingCard = ({
         />
         
         {/* Content */}
-        <div className="relative z-10">
+        <div className="relative z-10 h-full">
           {children}
         </div>
       </div>
