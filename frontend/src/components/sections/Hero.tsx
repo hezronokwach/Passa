@@ -65,13 +65,13 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-lg md:text-xl text-neutral-300 mb-10 max-w-2xl text-balance leading-relaxed"
+              className="text-lg md:text-xl text-text-secondary mb-10 max-w-2xl text-balance leading-relaxed"
             >
-              Passa revolutionizes the global creator economy with{' '}
-              <span className="text-cyber-blue font-semibold">blockchain-powered transparency</span>,{' '}
+              ConnectSphere changes how creators make money with{' '}
+              <span className="text-cyber-blue font-semibold">secure technology</span>,{' '}
               <span className="text-accent-500 font-semibold">instant payments</span>, and{' '}
-              <span className="text-secondary-500 font-semibold">fraud-proof systems</span>.
-              Experience the future of digital creativity and monetization.
+              <span className="text-secondary-500 font-semibold">safe ticket systems</span>.
+              Experience the future of digital creativity and earning money.
             </motion.p>
 
             {/* CTA buttons */}

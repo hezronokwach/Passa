@@ -1,13 +1,14 @@
 import { ScrollReveal } from '../ui/ScrollReveal'
 import GlowingCard from '../ui/GlowingCard'
+import SectionHeader from '../ui/SectionHeader'
 
 const Testimonials = () => {
   const testimonials = [
     {
       name: 'Alex Chen',
-      role: 'Event Producer',
+      role: 'Event Organizer',
       company: 'Global Events Co.',
-      content: 'Passa eliminated our fraud issues completely. The instant payments and transparent tracking have revolutionized our operations.',
+      content: 'ConnectSphere solved our fake ticket problem completely. Getting paid instantly and seeing clear reports has changed how we run events.',
       avatar: '👨‍💼',
       color: 'blue'
     },
@@ -15,34 +16,30 @@ const Testimonials = () => {
       name: 'Maya Rodriguez',
       role: 'Content Creator',
       company: '@MayaCreates',
-      content: 'Finally, a platform that pays creators instantly! I can see exactly how my content drives engagement and sales.',
+      content: 'Finally, a platform that pays me right away! I can see exactly how my posts help sell tickets and make money from my content.',
       avatar: '👩‍🎨',
       color: 'purple'
     },
     {
       name: 'Jordan Kim',
-      role: 'Brand Director',
+      role: 'Marketing Manager',
       company: 'TechCorp',
-      content: 'The real-time analytics and ROI transparency are game-changing. We can optimize campaigns as they run.',
+      content: 'The live reports and clear profit tracking are amazing. We can see what works and change our campaigns while they are running.',
       avatar: '👨‍💻',
       color: 'green'
     }
   ]
 
   return (
-    <section className="py-20 lg:py-32 bg-dark-bg">
+    <section className="py-20 lg:py-32 bg-background">
       <div className="container-max section-padding">
-        <ScrollReveal direction="up" className="text-center mb-20">
-          <div className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-accent-500/20 to-primary-500/20 border border-accent-500/30 mb-6">
-            <span className="text-accent-400 font-medium">Success Stories</span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-neutral-50 mb-6">
-            Trusted by Creators Worldwide
-          </h2>
-          <p className="text-xl text-neutral-300 max-w-4xl mx-auto leading-relaxed">
-            See what event organizers, creators, and brands are saying about their Passa experience
-          </p>
-        </ScrollReveal>
+        <SectionHeader
+          badge="Success Stories"
+          badgeColor="accent"
+          title="Loved by Creators"
+          subtitle="Worldwide"
+          description="See what event organizers, content creators, and brands are saying about their ConnectSphere experience"
+        />
 
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
@@ -50,27 +47,29 @@ const Testimonials = () => {
               key={testimonial.name}
               direction="up"
               delay={index * 0.1}
+              className="h-full"
             >
               <GlowingCard
                 glowColor={testimonial.color as 'blue' | 'purple' | 'green'}
                 className="h-full group"
                 animated={false}
               >
-                <div className="p-8 h-full flex flex-col">
+                <div className="p-8 h-full flex flex-col min-h-[320px]">
                   <div className="flex items-center mb-6">
                     <div className="text-4xl mr-4 group-hover:scale-110 transition-transform duration-300">
                       {testimonial.avatar}
                     </div>
                     <div>
-                      <div className="font-bold text-neutral-50 text-lg">
+                      <div className="font-bold text-text text-lg">
                         {testimonial.name}
                       </div>
-                      <div className="text-neutral-400">
+                      <div className="text-text-muted">
                         {testimonial.role} • {testimonial.company}
                       </div>
                     </div>
                   </div>
-                  <p className="text-neutral-300 italic leading-relaxed text-lg flex-grow">
+                  
+                  <p className="text-text-secondary italic leading-relaxed text-lg flex-grow">
                     "{testimonial.content}"
                   </p>
 
