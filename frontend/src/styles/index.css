@@ -3,6 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Cyber colors as CSS custom properties */
+    --color-cyber-blue: 0 212 255;
+    --color-cyber-purple: 139 92 246;
+    --color-cyber-green: 0 255 136;
+    --color-cyber-pink: 255 0 128;
+    --color-cyber-orange: 255 140 0;
+    
+    /* Dark theme colors */
+    --color-dark-bg: 10 10 15;
+    --color-dark-surface: 26 26 46;
+    --color-dark-elevated: 22 33 62;
+    --color-dark-border: 42 42 62;
+  }
+
   html {
     font-family: 'Inter', system-ui, sans-serif;
   }
@@ -10,8 +25,8 @@
   body {
     @apply bg-dark-bg text-neutral-100 antialiased;
     background-image:
-      radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+      radial-gradient(circle at 25% 25%, rgb(var(--color-cyber-blue) / 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgb(var(--color-cyber-purple) / 0.05) 0%, transparent 50%);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -83,7 +98,8 @@
   }
 
   .neon-text {
-    @apply text-cyber-blue drop-shadow-[0_0_10px_rgba(0,212,255,0.8)];
+    @apply text-cyber-blue;
+    filter: drop-shadow(0 0 10px rgb(var(--color-cyber-blue) / 0.8));
   }
 
   .cyber-border {
@@ -100,8 +116,8 @@
 
   .blockchain-grid {
     background-image:
-      linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+      linear-gradient(rgb(var(--color-cyber-blue) / 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--color-cyber-blue) / 0.1) 1px, transparent 1px);
     background-size: 40px 40px;
     animation: cyberGrid 4s linear infinite;
   }
