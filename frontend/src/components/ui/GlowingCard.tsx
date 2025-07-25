@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
+import { COLORS } from '../../utils/colors'
 
 interface GlowingCardProps {
   children: ReactNode
@@ -17,10 +18,10 @@ const GlowingCard = ({
   animated = true
 }: GlowingCardProps) => {
   const glowColors = {
-    blue: '#00d4ff',
-    purple: '#8b5cf6',
-    green: '#00ff88',
-    pink: '#ff0080',
+    blue: COLORS.CYBER_BLUE_HEX,
+    purple: COLORS.CYBER_PURPLE_HEX,
+    green: COLORS.CYBER_GREEN_HEX,
+    pink: COLORS.CYBER_PINK_HEX,
   }
 
   const intensityValues = {

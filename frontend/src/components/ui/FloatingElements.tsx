@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
+import { COLORS } from '../../utils/colors'
 
 interface FloatingElementProps {
   children: ReactNode
@@ -129,7 +130,7 @@ interface GlowingElementProps {
 const GlowingElement = ({
   children,
   className = '',
-  glowColor = '#00d4ff',
+  glowColor = COLORS.CYBER_BLUE_HEX,
   intensity = 'medium',
   duration = 2,
 }: GlowingElementProps) => {

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { ReactNode, useState } from 'react'
+import { getCyberBlue } from '../../utils/colors'
 
 interface InteractiveButtonProps {
   children: ReactNode
@@ -71,9 +72,9 @@ const InteractiveButton = ({
       whileTap={disabled ? {} : { scale: 0.95 }}
       animate={glowEffect && !disabled ? {
         boxShadow: [
-          '0 0 5px rgba(0, 212, 255, 0.3)',
-          '0 0 20px rgba(0, 212, 255, 0.5)',
-          '0 0 5px rgba(0, 212, 255, 0.3)',
+          `0 0 5px ${getCyberBlue(0.3)}`,
+          `0 0 20px ${getCyberBlue(0.5)}`,
+          `0 0 5px ${getCyberBlue(0.3)}`,
         ]
       } : {}}
       transition={{ duration: 2, repeat: Infinity }}
