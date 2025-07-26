@@ -3,43 +3,175 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Stellar Events Primary Spectrum: "Stellar Pulse" */
+    --stellar-void: 10 10 15;        /* Deep space background */
+    --stellar-midnight: 26 26 46;    /* Primary dark */
+    --stellar-nebula: 22 33 62;      /* Secondary dark */
+    --stellar-cosmic: 45 55 72;      /* Tertiary dark */
+    
+    /* Stellar Events Accent Colors: "Event Aura" */
+    --stellar-electric: 0 212 255;    /* Primary electric blue */
+    --stellar-plasma: 124 58 237;     /* Vivid purple */
+    --stellar-aurora: 6 255 165;      /* Neon green */
+    --stellar-flare: 255 107 107;     /* Energetic coral */
+    --stellar-gold: 255 215 0;        /* Premium gold */
+    
+    /* Legacy cyber colors (for backward compatibility) */
+    --color-cyber-blue: 0 212 255;
+    --color-cyber-purple: 139 92 246;
+    --color-cyber-green: 0 255 136;
+    --color-cyber-pink: 255 0 128;
+    --color-cyber-orange: 255 140 0;
+    --color-cyber-yellow: 255 215 0;
+    --color-cyber-red: 255 51 102;
+    --color-cyber-teal: 0 255 204;
+    
+    /* Vibrant event colors */
+    --color-vibrant-electric: 0 255 255;
+    --color-vibrant-neon: 57 255 20;
+    --color-vibrant-magenta: 255 0 255;
+    --color-vibrant-laser: 255 7 58;
+    --color-vibrant-plasma: 191 0 255;
+    --color-vibrant-hologram: 125 249 255;
+    --color-vibrant-aurora: 0 255 127;
+    --color-vibrant-cosmic: 148 0 211;
+    
+    /* Light theme colors */
+    --color-background: 255 255 255;
+    --color-background-secondary: 248 250 252;
+    --color-background-elevated: 241 245 249;
+    --color-background-overlay: 248 250 252;
+    
+    --color-surface: 255 255 255;
+    --color-surface-secondary: 248 250 252;
+    --color-surface-elevated: 241 245 249;
+    --color-surface-hover: 226 232 240;
+    
+    --color-border: 226 232 240;
+    --color-border-secondary: 203 213 225;
+    --color-border-accent: 148 163 184;
+    
+    --color-text: 15 23 42;
+    --color-text-secondary: 51 65 85;
+    --color-text-muted: 100 116 139;
+    --color-text-disabled: 148 163 184;
+    
+    /* Stellar Events Timing Variables */
+    --timing-instant: 0.1s;
+    --timing-quick: 0.2s;
+    --timing-smooth: 0.3s;
+    --timing-dramatic: 0.5s;
+    --timing-epic: 0.8s;
+    
+    /* Stellar Events Easing Functions */
+    --easing-stellar: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --easing-electric: cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Stellar Events Spacing: "Beat Mapping" */
+    --space-quantum: 0.25rem;    /* 4px */
+    --space-pulse: 0.5rem;       /* 8px */
+    --space-beat: 1rem;          /* 16px */
+    --space-measure: 1.5rem;     /* 24px */
+    --space-verse: 2rem;         /* 32px */
+    --space-chorus: 3rem;        /* 48px */
+    --space-song: 4rem;          /* 64px */
+    --space-album: 6rem;         /* 96px */
+    --space-concert: 8rem;       /* 128px */
+  }
+
+  .dark {
+    /* Stellar Events Dark Theme - Deep Space */
+    --color-background: var(--stellar-void);
+    --color-background-secondary: var(--stellar-midnight);
+    --color-background-elevated: var(--stellar-nebula);
+    --color-background-overlay: 15 15 35;
+    
+    --color-surface: var(--stellar-midnight);
+    --color-surface-secondary: 37 37 69;
+    --color-surface-elevated: var(--stellar-cosmic);
+    --color-surface-hover: 50 50 82;
+    
+    --color-border: 42 42 62;
+    --color-border-secondary: 58 58 94;
+    --color-border-accent: 74 74 110;
+    
+    --color-text: 255 255 255;
+    --color-text-secondary: 226 232 240;
+    --color-text-muted: 148 163 184;
+    --color-text-disabled: 100 116 139;
+  }
+
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-dark-bg text-neutral-100 antialiased;
+    @apply bg-background text-text antialiased;
     background-image:
-      radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+      radial-gradient(circle at 25% 25%, rgb(var(--color-cyber-blue) / 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgb(var(--color-cyber-purple) / 0.03) 0%, transparent 50%);
+    background-attachment: fixed;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', system-ui, sans-serif;
-    @apply font-semibold text-neutral-50;
+    @apply font-semibold text-text;
   }
 
-  /* Scrollbar styling for dark theme */
+  /* Theme-aware scrollbar styling */
   ::-webkit-scrollbar {
     width: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-dark-surface;
+    background: rgb(var(--color-surface));
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-primary-600 rounded-full;
+    background: rgb(var(--color-cyber-blue));
+    border-radius: 9999px;
+    transition: background 0.3s ease;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary-500;
+    background: rgb(var(--color-cyber-blue) / 0.8);
+  }
+
+  /* Selection styling */
+  ::selection {
+    background: rgb(var(--color-cyber-blue) / 0.3);
+    color: rgb(var(--color-text));
   }
 }
 
 @layer components {
+  /* Enhanced button system */
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-bg disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center font-medium rounded-cyber transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden;
+  }
+
+  .btn-xs {
+    @apply px-2 py-1 text-xs min-h-[2rem];
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm min-h-[2.25rem];
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-base min-h-[2.5rem];
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg min-h-[3rem];
+  }
+
+  .btn-xl {
+    @apply px-8 py-4 text-xl min-h-[3.5rem];
   }
 
   .btn-primary {
@@ -47,71 +179,675 @@
   }
 
   .btn-secondary {
-    @apply btn bg-gradient-to-r from-secondary-600 to-secondary-700 text-white hover:from-secondary-500 hover:to-secondary-600 focus:ring-secondary-500 shadow-neon-purple hover:shadow-neon-purple transform hover:scale-105;
+    @apply btn bg-gradient-to-r from-secondary-600 to-secondary-700 text-white hover:from-secondary-500 hover:to-secondary-600 focus:ring-secondary-500 shadow-neon-purple transform hover:scale-105;
+  }
+
+  .btn-accent {
+    @apply btn bg-gradient-to-r from-accent-600 to-accent-700 text-white hover:from-accent-500 hover:to-accent-600 focus:ring-accent-500 shadow-neon-green transform hover:scale-105;
+  }
+
+  .btn-cyber {
+    @apply btn bg-gradient-to-r from-cyber-blue to-cyber-purple text-white hover:shadow-neon-lg transform hover:scale-105 animate-glow-pulse;
+  }
+
+  .btn-vibrant {
+    @apply btn bg-gradient-vibrant text-white hover:shadow-neon-lg transform hover:scale-105 animate-energy-pulse;
   }
 
   .btn-outline {
-    @apply btn border border-primary-500 text-primary-400 hover:bg-primary-500/10 hover:text-primary-300 focus:ring-primary-500 hover:shadow-neon;
+    @apply btn border-2 border-primary-500 text-primary-500 hover:bg-primary-500/10 hover:text-primary-400 focus:ring-primary-500 hover:shadow-neon;
   }
 
   .btn-ghost {
-    @apply btn text-neutral-400 hover:bg-dark-surface hover:text-neutral-200 focus:ring-primary-500;
+    @apply btn text-text-secondary hover:bg-surface-hover hover:text-text focus:ring-primary-500;
   }
 
-  .btn-lg {
-    @apply px-6 py-3 text-base;
+  .btn-glass {
+    @apply btn bg-surface/20 backdrop-blur-md border border-border/30 text-text hover:bg-surface/30 hover:border-border/50 shadow-glass;
   }
 
-  .btn-sm {
-    @apply px-3 py-1.5 text-xs;
-  }
-
+  /* Enhanced card system */
   .card {
-    @apply bg-dark-surface rounded-xl shadow-dark border border-dark-border backdrop-blur-sm;
+    @apply bg-surface rounded-xl shadow-lg border border-border backdrop-blur-sm transition-all duration-300;
+  }
+
+  .card-sm {
+    @apply p-4 rounded-lg;
+  }
+
+  .card-md {
+    @apply p-6 rounded-xl;
+  }
+
+  .card-lg {
+    @apply p-8 rounded-2xl;
   }
 
   .card-glow {
-    @apply card shadow-cyber hover:shadow-neon transition-all duration-300;
+    @apply card shadow-cyber hover:shadow-neon transition-all duration-300 hover:scale-[1.02];
   }
 
+  .card-glass {
+    @apply bg-surface/20 backdrop-blur-md border border-border/30 rounded-xl shadow-glass hover:bg-surface/30 hover:border-border/50 transition-all duration-300;
+  }
+
+  .card-cyber {
+    @apply card border-cyber-blue/30 shadow-neon hover:shadow-neon-lg hover:border-cyber-blue/50 animate-glow-pulse;
+  }
+
+  .card-vibrant {
+    @apply card border-vibrant-electric/30 shadow-cyber hover:shadow-neon-lg animate-hologram;
+  }
+
+  /* Enhanced input system */
   .input {
-    @apply block w-full px-3 py-2 bg-dark-surface border border-dark-border rounded-lg text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300;
+    @apply block w-full px-4 py-2 bg-surface border border-border rounded-cyber text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300;
   }
 
+  .input-sm {
+    @apply px-3 py-1.5 text-sm min-h-[2.25rem];
+  }
+
+  .input-md {
+    @apply px-4 py-2 text-base min-h-[2.5rem];
+  }
+
+  .input-lg {
+    @apply px-5 py-3 text-lg min-h-[3rem];
+  }
+
+  .input-cyber {
+    @apply input border-cyber-blue/30 focus:border-cyber-blue focus:ring-cyber-blue/50 focus:shadow-neon;
+  }
+
+  .input-glass {
+    @apply bg-surface/20 backdrop-blur-md border border-border/30 focus:bg-surface/30 focus:border-border/50;
+  }
+
+  /* Text utilities */
   .gradient-text {
-    @apply bg-gradient-to-r from-cyber-blue via-secondary-500 to-accent-500 bg-clip-text text-transparent animate-neon-flicker;
+    @apply bg-gradient-cyber bg-clip-text text-transparent animate-neon-flicker;
+  }
+
+  .gradient-text-vibrant {
+    @apply bg-gradient-vibrant bg-clip-text text-transparent animate-energy-pulse;
   }
 
   .neon-text {
-    @apply text-cyber-blue drop-shadow-[0_0_10px_rgba(0,212,255,0.8)];
+    color: rgb(var(--color-cyber-blue));
+    filter: drop-shadow(0 0 10px rgb(var(--color-cyber-blue) / 0.8));
   }
 
+  .neon-text-purple {
+    color: rgb(var(--color-cyber-purple));
+    filter: drop-shadow(0 0 10px rgb(var(--color-cyber-purple) / 0.8));
+  }
+
+  .neon-text-green {
+    color: rgb(var(--color-cyber-green));
+    filter: drop-shadow(0 0 10px rgb(var(--color-cyber-green) / 0.8));
+  }
+
+  .cyber-text {
+    @apply font-mono text-cyber-blue animate-neon-flicker;
+  }
+
+  /* Border utilities */
   .cyber-border {
-    @apply border border-primary-500/30 hover:border-primary-400 transition-colors duration-300;
+    @apply border border-cyber-blue/30 hover:border-cyber-blue/50 transition-colors duration-300;
   }
 
+  .cyber-border-glow {
+    @apply cyber-border shadow-neon hover:shadow-neon-lg;
+  }
+
+  .glass-border {
+    @apply border border-border/30 backdrop-blur-md;
+  }
+
+  /* Layout utilities */
   .section-padding {
     @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding-y {
+    @apply py-12 sm:py-16 lg:py-20;
   }
 
   .container-max {
     @apply max-w-7xl mx-auto;
   }
 
-  .blockchain-grid {
+  .container-cyber {
+    @apply container-max section-padding;
+  }
+
+  /* Background patterns */
+  .cyber-grid {
     background-image:
-      linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+      linear-gradient(rgb(var(--color-cyber-blue) / 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--color-cyber-blue) / 0.1) 1px, transparent 1px);
     background-size: 40px 40px;
     animation: cyberGrid 4s linear infinite;
   }
 
+  .cyber-grid-sm {
+    background-size: 20px 20px;
+  }
+
+  .cyber-grid-lg {
+    background-size: 60px 60px;
+  }
+
+  .matrix-bg {
+    background-image: linear-gradient(180deg, transparent 0%, rgb(var(--color-cyber-green) / 0.05) 50%, transparent 100%);
+    animation: matrix 20s linear infinite;
+  }
+
+  .hologram-bg {
+    background-image: linear-gradient(45deg, transparent 30%, rgb(var(--color-cyber-blue) / 0.05) 50%, transparent 70%);
+    animation: hologram 3s ease-in-out infinite;
+  }
+
+  /* Animation utilities */
   .floating-element {
     @apply animate-float;
   }
 
+  .floating-element-slow {
+    @apply animate-float-slow;
+  }
+
   .glow-effect {
     @apply animate-glow;
+  }
+
+  .pulse-glow {
+    @apply animate-pulse-glow;
+  }
+
+  .cyber-pulse {
+    @apply animate-glow-pulse;
+  }
+
+  .energy-pulse {
+    @apply animate-energy-pulse;
+  }
+
+  .quantum-shift {
+    @apply animate-quantum-shift;
+  }
+
+  .data-stream {
+    @apply animate-data-stream;
+  }
+
+  .matrix-effect {
+    @apply animate-matrix;
+  }
+
+  .scan-effect {
+    @apply animate-scan;
+  }
+
+  .glitch-effect {
+    @apply animate-glitch;
+  }
+
+  .hologram-effect {
+    @apply animate-hologram;
+  }
+
+  /* Stellar Events Keyframes: "Pulse of Life" */
+  @keyframes stellarBreathe {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+  }
+
+  @keyframes electricSurge {
+    0% { box-shadow: 0 0 0 0 rgb(var(--stellar-electric) / 0.7); }
+    70% { box-shadow: 0 0 0 10px rgb(var(--stellar-electric) / 0); }
+    100% { box-shadow: 0 0 0 0 rgb(var(--stellar-electric) / 0); }
+  }
+
+  @keyframes cosmicFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes dataStream {
+    0% { transform: translateX(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
+
+  @keyframes holographicShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes stellarPulse {
+    0%, 100% { 
+      box-shadow: 0 0 5px rgb(var(--stellar-electric) / 0.5);
+      transform: scale(1);
+    }
+    50% { 
+      box-shadow: 0 0 20px rgb(var(--stellar-electric) / 0.8), 0 0 30px rgb(var(--stellar-electric) / 0.6);
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes plasmaPulse {
+    0%, 100% { 
+      box-shadow: 0 0 5px rgb(var(--stellar-plasma) / 0.5);
+    }
+    50% { 
+      box-shadow: 0 0 20px rgb(var(--stellar-plasma) / 0.8), 0 0 30px rgb(var(--stellar-plasma) / 0.6);
+    }
+  }
+
+  @keyframes auroraPulse {
+    0%, 100% { 
+      box-shadow: 0 0 5px rgb(var(--stellar-aurora) / 0.5);
+    }
+    50% { 
+      box-shadow: 0 0 20px rgb(var(--stellar-aurora) / 0.8), 0 0 30px rgb(var(--stellar-aurora) / 0.6);
+    }
+  }
+
+  @keyframes stellarShimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  @keyframes quantumFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+
+  @keyframes energyWave {
+    0% { transform: translateY(-100%) scaleY(0); }
+    50% { transform: translateY(0%) scaleY(1); }
+    100% { transform: translateY(100%) scaleY(0); }
+  }
+
+  /* Stellar Events Component Classes */
+  .stellar-breathe {
+    animation: stellarBreathe 3s ease-in-out infinite;
+  }
+
+  .electric-surge {
+    animation: electricSurge 1s ease-out infinite;
+  }
+
+  .cosmic-float {
+    animation: cosmicFloat 3s ease-in-out infinite;
+  }
+
+  .data-stream {
+    animation: dataStream 2s linear infinite;
+  }
+
+  .holographic-shift {
+    background: linear-gradient(45deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)), rgb(var(--stellar-aurora)), rgb(var(--stellar-flare)));
+    background-size: 400% 400%;
+    animation: holographicShift 3s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stellar-pulse {
+    animation: stellarPulse 2s ease-in-out infinite;
+  }
+
+  .plasma-pulse {
+    animation: plasmaPulse 2s ease-in-out infinite;
+  }
+
+  .aurora-pulse {
+    animation: auroraPulse 2s ease-in-out infinite;
+  }
+
+  .stellar-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--stellar-electric) / 0.2),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: stellarShimmer 2s infinite;
+  }
+
+  .quantum-flicker {
+    animation: quantumFlicker 1.5s ease-in-out infinite alternate;
+  }
+
+  .energy-wave {
+    animation: energyWave 2s linear infinite;
+  }
+
+  /* Stellar Events Button Enhancements - Theme Aware */
+  .btn-stellar-primary {
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    transition: all var(--timing-smooth) var(--easing-stellar);
+    position: relative;
+    overflow: hidden;
+    color: white;
+    /* Light mode styling (default) */
+    background: linear-gradient(135deg, rgb(59 130 246), rgb(147 51 234));
+  }
+
+  /* Dark mode styling for primary button */
+  .dark .btn-stellar-primary {
+    background: linear-gradient(135deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)));
+  }
+
+  .btn-stellar-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-stellar-primary:hover::before {
+    left: 100%;
+  }
+
+  .btn-stellar-ghost {
+    background: transparent;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    backdrop-filter: blur(10px);
+    transition: all var(--timing-smooth) var(--easing-stellar);
+    /* Light mode styling (default) */
+    border: 2px solid rgb(59 130 246 / 0.6);
+    color: rgb(59 130 246);
+  }
+
+  .btn-stellar-ghost:hover {
+    border-color: rgb(59 130 246);
+    box-shadow: 0 0 20px rgb(59 130 246 / 0.2);
+    background: rgb(59 130 246 / 0.1);
+  }
+
+  /* Dark mode styling for ghost button */
+  .dark .btn-stellar-ghost {
+    border: 2px solid rgb(var(--stellar-electric) / 0.5);
+    color: rgb(var(--stellar-electric));
+  }
+
+  .dark .btn-stellar-ghost:hover {
+    border-color: rgb(var(--stellar-electric));
+    box-shadow: 0 0 20px rgb(var(--stellar-electric) / 0.3);
+    background: rgb(var(--stellar-electric) / 0.1);
+  }
+
+  /* Header Button Enhancements */
+  .btn-header-primary {
+    background: linear-gradient(135deg, rgb(59 130 246), rgb(147 51 234));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+  }
+
+  .dark .btn-header-primary {
+    background: linear-gradient(135deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)));
+    box-shadow: 0 4px 14px 0 rgb(var(--stellar-electric) / 0.25);
+  }
+
+  .btn-header-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.4);
+  }
+
+  .dark .btn-header-primary:hover {
+    box-shadow: 0 6px 20px 0 rgb(var(--stellar-electric) / 0.4);
+  }
+
+  .btn-header-ghost {
+    background: transparent;
+    color: rgb(var(--color-text-secondary));
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+  }
+
+  .btn-header-ghost:hover {
+    color: rgb(var(--color-text));
+    background: rgb(var(--color-surface-hover));
+    border-color: rgb(var(--color-border-accent));
+    transform: translateY(-1px);
+  }
+
+  /* Mobile menu enhancements */
+  .mobile-menu-item {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+  }
+
+  .mobile-menu-item:hover {
+    background: rgb(var(--color-surface-hover));
+    transform: translateX(4px);
+  }
+
+  /* Header logo hover effect */
+  .header-logo-text {
+    background: linear-gradient(135deg, rgb(var(--color-text)), rgb(var(--color-text)));
+    background-clip: text;
+    -webkit-background-clip: text;
+    transition: all 0.3s ease;
+  }
+
+  .dark .header-logo-text:hover {
+    background: linear-gradient(135deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header-logo-text:hover {
+    background: linear-gradient(135deg, rgb(59 130 246), rgb(147 51 234));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Theme-aware neon glow effects */
+  .neon-glow-electric {
+    color: rgb(59 130 246);
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  }
+
+  .dark .neon-glow-electric {
+    color: rgb(var(--stellar-electric));
+    text-shadow: 0 0 10px rgb(var(--stellar-electric) / 0.5), 0 0 20px rgb(var(--stellar-electric) / 0.3);
+  }
+
+  .neon-glow-plasma {
+    color: rgb(147 51 234);
+    text-shadow: 0 0 10px rgba(147, 51, 234, 0.5);
+  }
+
+  .dark .neon-glow-plasma {
+    color: rgb(var(--stellar-plasma));
+    text-shadow: 0 0 10px rgb(var(--stellar-plasma) / 0.5), 0 0 20px rgb(var(--stellar-plasma) / 0.3);
+  }
+
+  .neon-glow-aurora {
+    color: rgb(34 197 94);
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+  }
+
+  .dark .neon-glow-aurora {
+    color: rgb(var(--stellar-aurora));
+    text-shadow: 0 0 10px rgb(var(--stellar-aurora) / 0.5), 0 0 20px rgb(var(--stellar-aurora) / 0.3);
+  }
+
+  /* Stellar Events Card Enhancements */
+  .event-card {
+    background: rgb(var(--stellar-midnight) / 0.8);
+    border: 1px solid rgb(var(--stellar-electric) / 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    transition: all var(--timing-dramatic) var(--easing-stellar);
+    position: relative;
+  }
+
+  .event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)), rgb(var(--stellar-aurora)));
+    opacity: 0;
+    transition: opacity var(--timing-smooth);
+  }
+
+  .event-card:hover::before {
+    opacity: 1;
+  }
+
+  .event-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgb(var(--stellar-electric) / 0.5);
+    box-shadow: 0 20px 40px rgb(var(--stellar-electric) / 0.2);
+  }
+
+  /* Stellar Events Glassmorphism */
+  .glass-panel {
+    background: rgb(var(--stellar-midnight) / 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Stellar Events Neon Effects */
+  .neon-glow {
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor,
+      0 0 20px currentColor;
+    filter: drop-shadow(0 0 10px currentColor);
+  }
+
+  .neon-glow-electric {
+    color: rgb(var(--stellar-electric));
+    text-shadow: 
+      0 0 5px rgb(var(--stellar-electric)),
+      0 0 10px rgb(var(--stellar-electric)),
+      0 0 15px rgb(var(--stellar-electric)),
+      0 0 20px rgb(var(--stellar-electric));
+  }
+
+  .neon-glow-plasma {
+    color: rgb(var(--stellar-plasma));
+    text-shadow: 
+      0 0 5px rgb(var(--stellar-plasma)),
+      0 0 10px rgb(var(--stellar-plasma)),
+      0 0 15px rgb(var(--stellar-plasma)),
+      0 0 20px rgb(var(--stellar-plasma));
+  }
+
+  .neon-glow-aurora {
+    color: rgb(var(--stellar-aurora));
+    text-shadow: 
+      0 0 5px rgb(var(--stellar-aurora)),
+      0 0 10px rgb(var(--stellar-aurora)),
+      0 0 15px rgb(var(--stellar-aurora)),
+      0 0 20px rgb(var(--stellar-aurora));
+  }
+
+  /* Stellar Events Blockchain Visualization */
+  .blockchain-stream {
+    position: relative;
+    height: 4px;
+    background: rgb(var(--stellar-electric) / 0.2);
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .blockchain-stream::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 20px;
+    background: linear-gradient(90deg, transparent, rgb(var(--stellar-electric)), transparent);
+    animation: dataStream 2s linear infinite;
+  }
+
+  /* Stellar Events Transaction States */
+  .tx-pending {
+    background: linear-gradient(45deg, rgb(var(--stellar-gold) / 0.2), rgb(var(--stellar-gold) / 0.1));
+    border: 2px solid rgb(var(--stellar-gold) / 0.5);
+    animation: stellarBreathe 2s ease-in-out infinite;
+  }
+
+  .tx-confirmed {
+    background: linear-gradient(45deg, rgb(var(--stellar-aurora) / 0.2), rgb(var(--stellar-aurora) / 0.1));
+    border: 2px solid rgb(var(--stellar-aurora));
+    box-shadow: 0 0 20px rgb(var(--stellar-aurora) / 0.3);
+  }
+
+  .tx-failed {
+    background: linear-gradient(45deg, rgb(var(--stellar-flare) / 0.2), rgb(var(--stellar-flare) / 0.1));
+    border: 2px solid rgb(var(--stellar-flare));
+    animation: electricSurge 1s ease-out infinite;
+  }
+
+  /* Stellar Events Focus States */
+  .focus-visible {
+    outline: 3px solid rgb(var(--stellar-electric));
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  .focus-visible:focus {
+    box-shadow: 0 0 0 4px rgb(var(--stellar-electric) / 0.3);
+  }
+
+  /* High Contrast Support */
+  @media (prefers-contrast: high) {
+    :root {
+      --stellar-electric: 0 184 230;
+      --stellar-plasma: 149 69 255;
+    }
+  }
+
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
@@ -130,5 +866,42 @@
   
   .animation-delay-600 {
     animation-delay: 600ms;
+  }
+
+  /* Stellar Events Spacing Utilities */
+  .space-quantum { @apply p-1; }
+  .space-pulse { @apply p-2; }
+  .space-beat { @apply p-4; }
+  .space-measure { @apply p-6; }
+  .space-verse { @apply p-8; }
+  .space-chorus { @apply p-12; }
+  .space-song { @apply p-16; }
+  .space-album { @apply p-24; }
+  .space-concert { @apply p-32; }
+
+  /* Stellar Events Typography Utilities */
+  .text-stellar-hero {
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+
+  .text-stellar-section {
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .text-stellar-body {
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .text-stellar-caption {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
   }
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# ConnectSphere Setup Script
-echo "🚀 Setting up ConnectSphere..."
+# Passa Setup Script
+echo "🚀 Setting up Passa..."
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then

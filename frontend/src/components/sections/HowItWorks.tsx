@@ -1,48 +1,45 @@
 import { ScrollReveal } from '../ui/ScrollReveal'
+import SectionHeader from '../ui/SectionHeader'
 
 const HowItWorks = () => {
   const steps = [
     {
       step: '01',
-      title: 'Create & Connect',
-      description: 'Creators and event organizers join the platform and set up their profiles with automated revenue sharing.',
+      title: 'Sign Up & Set Up',
+      description: 'Join our platform and create your profile in minutes. Set up your payment details and start connecting with your audience.',
       icon: '🚀'
     },
     {
       step: '02',
-      title: 'Promote & Share',
-      description: 'Content creators promote events and experiences with trackable links to measure their impact.',
+      title: 'Share & Promote',
+      description: 'Share your events and content with special links. Track how many people click and engage with what you share.',
       icon: '📢'
     },
     {
       step: '03',
-      title: 'Engage & Purchase',
-      description: 'Fans discover content, buy secure digital tickets, and earn rewards for their engagement.',
+      title: 'Fans Buy Tickets',
+      description: 'Your fans discover your content and buy secure tickets. They also earn rewards for supporting you and staying engaged.',
       icon: '🎯'
     },
     {
       step: '04',
-      title: 'Earn Instantly',
-      description: 'Everyone gets paid automatically and instantly when transactions happen - no delays, no hassle.',
+      title: 'Get Paid Instantly',
+      description: 'Receive your money immediately when someone buys tickets or content. No waiting weeks - payments happen in seconds.',
       icon: '💰'
     }
   ]
 
   return (
-    <section className="py-20 lg:py-32 bg-gradient-to-br from-dark-surface to-dark-bg">
+    <section className="py-20 lg:py-32 bg-gradient-to-br from-surface to-background">
       <div className="container-max section-padding">
         {/* Section header */}
-        <ScrollReveal direction="up" className="text-center mb-20">
-          <div className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-secondary-500/20 to-accent-500/20 border border-secondary-500/30 mb-6">
-            <span className="text-secondary-400 font-medium">Simple Process</span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-neutral-50 mb-6">
-            How Passa Works
-          </h2>
-          <p className="text-xl text-neutral-300 max-w-4xl mx-auto leading-relaxed">
-            Four simple steps to revolutionize how creators connect with their audiences and monetize their content
-          </p>
-        </ScrollReveal>
+        <SectionHeader
+          badge="How It Works"
+          badgeColor="secondary"
+          title="Get Started in"
+          subtitle="4 Easy Steps"
+          description="Simple steps to start earning money from your content and connecting with your audience"
+        />
 
         {/* Steps */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -51,7 +48,7 @@ const HowItWorks = () => {
               key={step.step}
               direction="up"
               delay={index * 0.1}
-              className="text-center relative group"
+              className="text-center relative group h-full"
             >
               {/* Connection line */}
               {index < steps.length - 1 && (
@@ -59,9 +56,9 @@ const HowItWorks = () => {
               )}
 
               {/* Step content */}
-              <div className="relative z-10 p-6 rounded-xl bg-dark-surface/30 border border-secondary-500/20 hover:border-secondary-500/40 transition-all duration-300 hover:bg-dark-surface/50">
+              <div className="relative z-10 p-6 rounded-xl bg-surface/50 border border-border hover:border-secondary-500/40 transition-all duration-300 hover:bg-surface/80 h-full flex flex-col">
                 {/* Step number */}
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-secondary-500 to-accent-500 text-white font-bold text-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-stellar-plasma to-stellar-aurora text-text font-bold text-xl mb-4 group-hover:scale-110 transition-transform duration-300 mx-auto">
                   {step.step}
                 </div>
 
@@ -71,12 +68,12 @@ const HowItWorks = () => {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-2xl font-bold text-neutral-50 mb-4 group-hover:text-secondary-400 transition-colors duration-300">
+                <h3 className="text-2xl font-bold text-text mb-4 group-hover:text-secondary-400 transition-colors duration-300">
                   {step.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-neutral-300 leading-relaxed">
+                <p className="text-text-secondary leading-relaxed flex-grow">
                   {step.description}
                 </p>
               </div>

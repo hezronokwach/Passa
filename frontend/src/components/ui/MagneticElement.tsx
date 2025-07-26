@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ReactNode, useRef, useState } from 'react'
+import React, { ReactNode, useRef, useState } from 'react'
 
 interface MagneticElementProps {
   children: ReactNode

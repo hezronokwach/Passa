@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { COLORS } from '../../utils/colors'
 
 interface Node {
   id: number
@@ -121,13 +122,13 @@ const NetworkVisualization = ({
 
         <defs>
           <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#00d4ff" />
-            <stop offset="50%" stopColor="#8b5cf6" />
-            <stop offset="100%" stopColor="#00ff88" />
+            <stop offset="0%" stopColor={COLORS.CYBER_BLUE_HEX} />
+            <stop offset="50%" stopColor={COLORS.CYBER_PURPLE_HEX} />
+            <stop offset="100%" stopColor={COLORS.CYBER_GREEN_HEX} />
           </linearGradient>
           <radialGradient id="nodeGradient" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#00d4ff" />
-            <stop offset="100%" stopColor="#8b5cf6" />
+            <stop offset="0%" stopColor={COLORS.CYBER_BLUE_HEX} />
+            <stop offset="100%" stopColor={COLORS.CYBER_PURPLE_HEX} />
           </radialGradient>
         </defs>
       </svg>

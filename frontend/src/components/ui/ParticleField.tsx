@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { CYBER_COLORS } from '../../utils/colors'
 
 interface Particle {
   id: number
@@ -20,7 +21,7 @@ interface ParticleFieldProps {
 const ParticleField = ({ 
   className = '', 
   particleCount = 50,
-  colors = ['#00d4ff', '#8b5cf6', '#00ff88', '#ff0080']
+  colors = CYBER_COLORS
 }: ParticleFieldProps) => {
   const [particles, setParticles] = useState<Particle[]>([])
 

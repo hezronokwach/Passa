@@ -1,15 +1,21 @@
 import { motion } from 'framer-motion'
-import { ReactNode, useState } from 'react'
+import React, { ReactNode, useState } from 'react'
+import { getCyberBlue, getCyberColor, getVibrantColor } from '../../utils/colors'
+import { ANIMATION } from '../../utils/constants'
 
 interface InteractiveButtonProps {
   children: ReactNode
   onClick?: () => void
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'primary' | 'secondary' | 'accent' | 'cyber' | 'vibrant' | 'outline' | 'ghost' | 'glass'
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   className?: string
   disabled?: boolean
   glowEffect?: boolean
   rippleEffect?: boolean
+  pulseEffect?: boolean
+  loading?: boolean
+  icon?: ReactNode
+  iconPosition?: 'left' | 'right'
 }
 
 const InteractiveButton = ({
@@ -21,11 +27,15 @@ const InteractiveButton = ({
   disabled = false,
   glowEffect = true,
   rippleEffect = true,
+  pulseEffect = false,
+  loading = false,
+  icon,
+  iconPosition = 'left',
 }: InteractiveButtonProps) => {
   const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([])
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled) return
+    if (disabled || loading) return
 
     if (rippleEffect) {
       const rect = e.currentTarget.getBoundingClientRect()
@@ -43,43 +53,125 @@ const InteractiveButton = ({
     onClick?.()
   }
 
-  const variants = {
-    primary: 'bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-500 hover:to-primary-600 shadow-neon hover:shadow-neon-lg',
-    secondary: 'bg-gradient-to-r from-secondary-600 to-secondary-700 text-white hover:from-secondary-500 hover:to-secondary-600 shadow-neon-purple',
-    outline: 'border border-primary-500 text-primary-400 hover:bg-primary-500/10 hover:text-primary-300 hover:shadow-neon',
-    ghost: 'text-neutral-400 hover:bg-dark-surface hover:text-neutral-200',
+  const getVariantClasses = () => {
+    const baseClasses = 'btn'
+    
+    switch (variant) {
+      case 'primary':
+        return `${baseClasses} btn-primary`
+      case 'secondary':
+        return `${baseClasses} btn-secondary`
+      case 'accent':
+        return `${baseClasses} btn-accent`
+      case 'cyber':
+        return `${baseClasses} btn-cyber`
+      case 'vibrant':
+        return `${baseClasses} btn-vibrant`
+      case 'outline':
+        return `${baseClasses} btn-outline`
+      case 'ghost':
+        return `${baseClasses} btn-ghost`
+      case 'glass':
+        return `${baseClasses} btn-glass`
+      default:
+        return `${baseClasses} btn-primary`
+    }
   }
 
-  const sizes = {
-    sm: 'px-3 py-1.5 text-xs',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-6 py-3 text-base',
+  const getSizeClasses = () => {
+    switch (size) {
+      case 'xs':
+        return 'btn-xs'
+      case 'sm':
+        return 'btn-sm'
+      case 'md':
+        return 'btn-md'
+      case 'lg':
+        return 'btn-lg'
+      case 'xl':
+        return 'btn-xl'
+      default:
+        return 'btn-md'
+    }
   }
+
+  const getGlowAnimation = () => {
+    if (!glowEffect || disabled || loading) return {}
+    
+    switch (variant) {
+      case 'cyber':
+        return {
+          boxShadow: [
+            `0 0 5px ${getCyberColor('blue', 0.3)}`,
+            `0 0 20px ${getCyberColor('blue', 0.6)}`,
+            `0 0 5px ${getCyberColor('blue', 0.3)}`,
+          ]
+        }
+      case 'vibrant':
+        return {
+          boxShadow: [
+            `0 0 5px ${getVibrantColor('electric', 0.3)}`,
+            `0 0 20px ${getVibrantColor('electric', 0.6)}`,
+            `0 0 5px ${getVibrantColor('electric', 0.3)}`,
+          ]
+        }
+      default:
+        return {
+          boxShadow: [
+            `0 0 5px ${getCyberBlue(0.3)}`,
+            `0 0 20px ${getCyberBlue(0.5)}`,
+            `0 0 5px ${getCyberBlue(0.3)}`,
+          ]
+        }
+    }
+  }
+
+  const renderContent = () => (
+    <>
+      {icon && iconPosition === 'left' && (
+        <span className="mr-2 flex-shrink-0">{icon}</span>
+      )}
+      
+      {loading ? (
+        <motion.div
+          className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+        />
+      ) : (
+        children
+      )}
+      
+      {icon && iconPosition === 'right' && (
+        <span className="ml-2 flex-shrink-0">{icon}</span>
+      )}
+    </>
+  )
 
   return (
     <motion.button
       className={`
-        relative inline-flex items-center justify-center font-medium rounded-lg 
-        transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 
-        focus:ring-offset-dark-bg focus:ring-primary-500 overflow-hidden
-        ${variants[variant]} ${sizes[size]} ${className}
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+        ${getVariantClasses()} ${getSizeClasses()} ${className}
+        ${disabled || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+        ${pulseEffect ? 'animate-pulse-glow' : ''}
       `}
       onClick={handleClick}
-      disabled={disabled}
-      whileHover={disabled ? {} : { scale: 1.05 }}
-      whileTap={disabled ? {} : { scale: 0.95 }}
-      animate={glowEffect && !disabled ? {
-        boxShadow: [
-          '0 0 5px rgba(0, 212, 255, 0.3)',
-          '0 0 20px rgba(0, 212, 255, 0.5)',
-          '0 0 5px rgba(0, 212, 255, 0.3)',
-        ]
-      } : {}}
-      transition={{ duration: 2, repeat: Infinity }}
+      disabled={disabled || loading}
+      whileHover={disabled || loading ? {} : { scale: 1.05 }}
+      whileTap={disabled || loading ? {} : { scale: 0.95 }}
+      animate={getGlowAnimation()}
+      transition={{ 
+        duration: ANIMATION.GLOW_CYCLE / 1000, 
+        repeat: glowEffect ? Infinity : 0,
+        ease: 'easeInOut'
+      }}
+      aria-disabled={disabled || loading}
+      aria-busy={loading}
     >
       {/* Content */}
-      <span className="relative z-10">{children}</span>
+      <span className="relative z-10 flex items-center justify-center">
+        {renderContent()}
+      </span>
 
       {/* Ripple effects */}
       {ripples.map((ripple) => (
@@ -94,16 +186,31 @@ const InteractiveButton = ({
           }}
           initial={{ scale: 0, opacity: 1 }}
           animate={{ scale: 4, opacity: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
         />
       ))}
 
       {/* Hover overlay */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0"
-        whileHover={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
+        className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 rounded-cyber"
+        whileHover={{ opacity: disabled || loading ? 0 : 1 }}
+        transition={{ duration: ANIMATION.FAST / 1000 }}
       />
+
+      {/* Scan line effect for cyber variant */}
+      {variant === 'cyber' && !disabled && !loading && (
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-cyber-blue/20 to-transparent"
+          initial={{ x: '-100%' }}
+          animate={{ x: '100%' }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            repeatDelay: 3,
+            ease: 'linear'
+          }}
+        />
+      )}
     </motion.button>
   )
 }
