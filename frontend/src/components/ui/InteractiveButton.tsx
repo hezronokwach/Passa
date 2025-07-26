@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
-import { ReactNode, useState } from 'react'
+import React, { ReactNode, useState } from 'react'
 import { getCyberBlue, getCyberColor, getVibrantColor } from '../../utils/colors'
-import { ANIMATION, COMPONENT_SIZES } from '../../utils/constants'
+import { ANIMATION } from '../../utils/constants'
 
 interface InteractiveButtonProps {
   children: ReactNode

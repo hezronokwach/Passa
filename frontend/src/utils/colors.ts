@@ -5,13 +5,7 @@
 
 export type Theme = 'light' | 'dark'
 
-// Get CSS custom property value
-const getCSSVar = (property: string): string => {
-  if (typeof window !== 'undefined') {
-    return getComputedStyle(document.documentElement).getPropertyValue(property).trim()
-  }
-  return ''
-}
+
 
 // Stellar Events Design System Colors
 export const STELLAR_COLORS = {
