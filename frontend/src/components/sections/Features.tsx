@@ -247,7 +247,10 @@ const Features = () => {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="mt-20 text-center"
         >
-          <div className="bg-surface/95 backdrop-blur-xl rounded-3xl border border-border p-8 lg:p-12 shadow-xl dark:shadow-2xl">
+          <div className="bg-surface backdrop-blur-xl rounded-3xl border border-border p-8 lg:p-12 shadow-xl dark:shadow-2xl dark:bg-surface/95 relative overflow-hidden">
+            {/* Enhanced background for better contrast */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 to-secondary-50/50 dark:from-stellar-electric/5 dark:to-stellar-plasma/5 rounded-3xl"></div>
+            <div className="relative z-10">
             <h3 className="text-3xl lg:text-4xl font-bold text-text mb-4 holographic-shift">
               Ready to Transform Your Events?
             </h3>
@@ -272,6 +275,7 @@ const Features = () => {
                 <PlayIcon className="h-5 w-5" />
                 Watch Demo
               </motion.button>
+            </div>
             </div>
           </div>
         </motion.div>
