@@ -4,7 +4,20 @@
 
 @layer base {
   :root {
-    /* Cyber accent colors (consistent across themes) */
+    /* Stellar Events Primary Spectrum: "Stellar Pulse" */
+    --stellar-void: 10 10 15;        /* Deep space background */
+    --stellar-midnight: 26 26 46;    /* Primary dark */
+    --stellar-nebula: 22 33 62;      /* Secondary dark */
+    --stellar-cosmic: 45 55 72;      /* Tertiary dark */
+    
+    /* Stellar Events Accent Colors: "Event Aura" */
+    --stellar-electric: 0 212 255;    /* Primary electric blue */
+    --stellar-plasma: 124 58 237;     /* Vivid purple */
+    --stellar-aurora: 6 255 165;      /* Neon green */
+    --stellar-flare: 255 107 107;     /* Energetic coral */
+    --stellar-gold: 255 215 0;        /* Premium gold */
+    
+    /* Legacy cyber colors (for backward compatibility) */
     --color-cyber-blue: 0 212 255;
     --color-cyber-purple: 139 92 246;
     --color-cyber-green: 0 255 136;
@@ -43,18 +56,41 @@
     --color-text-secondary: 51 65 85;
     --color-text-muted: 100 116 139;
     --color-text-disabled: 148 163 184;
+    
+    /* Stellar Events Timing Variables */
+    --timing-instant: 0.1s;
+    --timing-quick: 0.2s;
+    --timing-smooth: 0.3s;
+    --timing-dramatic: 0.5s;
+    --timing-epic: 0.8s;
+    
+    /* Stellar Events Easing Functions */
+    --easing-stellar: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --easing-electric: cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Stellar Events Spacing: "Beat Mapping" */
+    --space-quantum: 0.25rem;    /* 4px */
+    --space-pulse: 0.5rem;       /* 8px */
+    --space-beat: 1rem;          /* 16px */
+    --space-measure: 1.5rem;     /* 24px */
+    --space-verse: 2rem;         /* 32px */
+    --space-chorus: 3rem;        /* 48px */
+    --space-song: 4rem;          /* 64px */
+    --space-album: 6rem;         /* 96px */
+    --space-concert: 8rem;       /* 128px */
   }
 
   .dark {
-    /* Dark theme colors */
-    --color-background: 10 10 15;
-    --color-background-secondary: 26 26 46;
-    --color-background-elevated: 22 33 62;
+    /* Stellar Events Dark Theme - Deep Space */
+    --color-background: var(--stellar-void);
+    --color-background-secondary: var(--stellar-midnight);
+    --color-background-elevated: var(--stellar-nebula);
     --color-background-overlay: 15 15 35;
     
-    --color-surface: 26 26 46;
+    --color-surface: var(--stellar-midnight);
     --color-surface-secondary: 37 37 69;
-    --color-surface-elevated: 42 42 74;
+    --color-surface-elevated: var(--stellar-cosmic);
     --color-surface-hover: 50 50 82;
     
     --color-border: 42 42 62;
@@ -361,6 +397,327 @@
   .hologram-effect {
     @apply animate-hologram;
   }
+
+  /* Stellar Events Keyframes: "Pulse of Life" */
+  @keyframes stellarBreathe {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+  }
+
+  @keyframes electricSurge {
+    0% { box-shadow: 0 0 0 0 rgb(var(--stellar-electric) / 0.7); }
+    70% { box-shadow: 0 0 0 10px rgb(var(--stellar-electric) / 0); }
+    100% { box-shadow: 0 0 0 0 rgb(var(--stellar-electric) / 0); }
+  }
+
+  @keyframes cosmicFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes dataStream {
+    0% { transform: translateX(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
+
+  @keyframes holographicShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes stellarPulse {
+    0%, 100% { 
+      box-shadow: 0 0 5px rgb(var(--stellar-electric) / 0.5);
+      transform: scale(1);
+    }
+    50% { 
+      box-shadow: 0 0 20px rgb(var(--stellar-electric) / 0.8), 0 0 30px rgb(var(--stellar-electric) / 0.6);
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes plasmaPulse {
+    0%, 100% { 
+      box-shadow: 0 0 5px rgb(var(--stellar-plasma) / 0.5);
+    }
+    50% { 
+      box-shadow: 0 0 20px rgb(var(--stellar-plasma) / 0.8), 0 0 30px rgb(var(--stellar-plasma) / 0.6);
+    }
+  }
+
+  @keyframes auroraPulse {
+    0%, 100% { 
+      box-shadow: 0 0 5px rgb(var(--stellar-aurora) / 0.5);
+    }
+    50% { 
+      box-shadow: 0 0 20px rgb(var(--stellar-aurora) / 0.8), 0 0 30px rgb(var(--stellar-aurora) / 0.6);
+    }
+  }
+
+  @keyframes stellarShimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  @keyframes quantumFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+
+  @keyframes energyWave {
+    0% { transform: translateY(-100%) scaleY(0); }
+    50% { transform: translateY(0%) scaleY(1); }
+    100% { transform: translateY(100%) scaleY(0); }
+  }
+
+  /* Stellar Events Component Classes */
+  .stellar-breathe {
+    animation: stellarBreathe 3s ease-in-out infinite;
+  }
+
+  .electric-surge {
+    animation: electricSurge 1s ease-out infinite;
+  }
+
+  .cosmic-float {
+    animation: cosmicFloat 3s ease-in-out infinite;
+  }
+
+  .data-stream {
+    animation: dataStream 2s linear infinite;
+  }
+
+  .holographic-shift {
+    background: linear-gradient(45deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)), rgb(var(--stellar-aurora)), rgb(var(--stellar-flare)));
+    background-size: 400% 400%;
+    animation: holographicShift 3s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stellar-pulse {
+    animation: stellarPulse 2s ease-in-out infinite;
+  }
+
+  .plasma-pulse {
+    animation: plasmaPulse 2s ease-in-out infinite;
+  }
+
+  .aurora-pulse {
+    animation: auroraPulse 2s ease-in-out infinite;
+  }
+
+  .stellar-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--stellar-electric) / 0.2),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: stellarShimmer 2s infinite;
+  }
+
+  .quantum-flicker {
+    animation: quantumFlicker 1.5s ease-in-out infinite alternate;
+  }
+
+  .energy-wave {
+    animation: energyWave 2s linear infinite;
+  }
+
+  /* Stellar Events Button Enhancements */
+  .btn-stellar-primary {
+    background: linear-gradient(135deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)));
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    color: white;
+    transition: all var(--timing-smooth) var(--easing-stellar);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-stellar-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-stellar-primary:hover::before {
+    left: 100%;
+  }
+
+  .btn-stellar-ghost {
+    background: transparent;
+    border: 2px solid rgb(var(--stellar-electric) / 0.5);
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    color: rgb(var(--stellar-electric));
+    backdrop-filter: blur(10px);
+    transition: all var(--timing-smooth) var(--easing-stellar);
+  }
+
+  .btn-stellar-ghost:hover {
+    border-color: rgb(var(--stellar-electric));
+    box-shadow: 0 0 20px rgb(var(--stellar-electric) / 0.3);
+    background: rgb(var(--stellar-electric) / 0.1);
+  }
+
+  /* Stellar Events Card Enhancements */
+  .event-card {
+    background: rgb(var(--stellar-midnight) / 0.8);
+    border: 1px solid rgb(var(--stellar-electric) / 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    transition: all var(--timing-dramatic) var(--easing-stellar);
+    position: relative;
+  }
+
+  .event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)), rgb(var(--stellar-aurora)));
+    opacity: 0;
+    transition: opacity var(--timing-smooth);
+  }
+
+  .event-card:hover::before {
+    opacity: 1;
+  }
+
+  .event-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgb(var(--stellar-electric) / 0.5);
+    box-shadow: 0 20px 40px rgb(var(--stellar-electric) / 0.2);
+  }
+
+  /* Stellar Events Glassmorphism */
+  .glass-panel {
+    background: rgb(var(--stellar-midnight) / 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Stellar Events Neon Effects */
+  .neon-glow {
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor,
+      0 0 20px currentColor;
+    filter: drop-shadow(0 0 10px currentColor);
+  }
+
+  .neon-glow-electric {
+    color: rgb(var(--stellar-electric));
+    text-shadow: 
+      0 0 5px rgb(var(--stellar-electric)),
+      0 0 10px rgb(var(--stellar-electric)),
+      0 0 15px rgb(var(--stellar-electric)),
+      0 0 20px rgb(var(--stellar-electric));
+  }
+
+  .neon-glow-plasma {
+    color: rgb(var(--stellar-plasma));
+    text-shadow: 
+      0 0 5px rgb(var(--stellar-plasma)),
+      0 0 10px rgb(var(--stellar-plasma)),
+      0 0 15px rgb(var(--stellar-plasma)),
+      0 0 20px rgb(var(--stellar-plasma));
+  }
+
+  .neon-glow-aurora {
+    color: rgb(var(--stellar-aurora));
+    text-shadow: 
+      0 0 5px rgb(var(--stellar-aurora)),
+      0 0 10px rgb(var(--stellar-aurora)),
+      0 0 15px rgb(var(--stellar-aurora)),
+      0 0 20px rgb(var(--stellar-aurora));
+  }
+
+  /* Stellar Events Blockchain Visualization */
+  .blockchain-stream {
+    position: relative;
+    height: 4px;
+    background: rgb(var(--stellar-electric) / 0.2);
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .blockchain-stream::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 20px;
+    background: linear-gradient(90deg, transparent, rgb(var(--stellar-electric)), transparent);
+    animation: dataStream 2s linear infinite;
+  }
+
+  /* Stellar Events Transaction States */
+  .tx-pending {
+    background: linear-gradient(45deg, rgb(var(--stellar-gold) / 0.2), rgb(var(--stellar-gold) / 0.1));
+    border: 2px solid rgb(var(--stellar-gold) / 0.5);
+    animation: stellarBreathe 2s ease-in-out infinite;
+  }
+
+  .tx-confirmed {
+    background: linear-gradient(45deg, rgb(var(--stellar-aurora) / 0.2), rgb(var(--stellar-aurora) / 0.1));
+    border: 2px solid rgb(var(--stellar-aurora));
+    box-shadow: 0 0 20px rgb(var(--stellar-aurora) / 0.3);
+  }
+
+  .tx-failed {
+    background: linear-gradient(45deg, rgb(var(--stellar-flare) / 0.2), rgb(var(--stellar-flare) / 0.1));
+    border: 2px solid rgb(var(--stellar-flare));
+    animation: electricSurge 1s ease-out infinite;
+  }
+
+  /* Stellar Events Focus States */
+  .focus-visible {
+    outline: 3px solid rgb(var(--stellar-electric));
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  .focus-visible:focus {
+    box-shadow: 0 0 0 4px rgb(var(--stellar-electric) / 0.3);
+  }
+
+  /* High Contrast Support */
+  @media (prefers-contrast: high) {
+    :root {
+      --stellar-electric: 0 184 230;
+      --stellar-plasma: 149 69 255;
+    }
+  }
+
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 @layer utilities {
@@ -378,5 +735,42 @@
   
   .animation-delay-600 {
     animation-delay: 600ms;
+  }
+
+  /* Stellar Events Spacing Utilities */
+  .space-quantum { @apply p-1; }
+  .space-pulse { @apply p-2; }
+  .space-beat { @apply p-4; }
+  .space-measure { @apply p-6; }
+  .space-verse { @apply p-8; }
+  .space-chorus { @apply p-12; }
+  .space-song { @apply p-16; }
+  .space-album { @apply p-24; }
+  .space-concert { @apply p-32; }
+
+  /* Stellar Events Typography Utilities */
+  .text-stellar-hero {
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+
+  .text-stellar-section {
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .text-stellar-body {
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .text-stellar-caption {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
   }
 }
