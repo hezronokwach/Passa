@@ -598,6 +598,87 @@
     background: rgb(59 130 246 / 0.1);
   }
 
+  /* Header Button Enhancements */
+  .btn-header-primary {
+    background: linear-gradient(135deg, rgb(59 130 246), rgb(147 51 234));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+  }
+
+  .dark .btn-header-primary {
+    background: linear-gradient(135deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)));
+    box-shadow: 0 4px 14px 0 rgb(var(--stellar-electric) / 0.25);
+  }
+
+  .btn-header-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.4);
+  }
+
+  .dark .btn-header-primary:hover {
+    box-shadow: 0 6px 20px 0 rgb(var(--stellar-electric) / 0.4);
+  }
+
+  .btn-header-ghost {
+    background: transparent;
+    color: rgb(var(--color-text-secondary));
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+  }
+
+  .btn-header-ghost:hover {
+    color: rgb(var(--color-text));
+    background: rgb(var(--color-surface-hover));
+    border-color: rgb(var(--color-border-accent));
+    transform: translateY(-1px);
+  }
+
+  /* Mobile menu enhancements */
+  .mobile-menu-item {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+  }
+
+  .mobile-menu-item:hover {
+    background: rgb(var(--color-surface-hover));
+    transform: translateX(4px);
+  }
+
+  /* Header logo hover effect */
+  .header-logo-text {
+    background: linear-gradient(135deg, rgb(var(--color-text)), rgb(var(--color-text)));
+    background-clip: text;
+    -webkit-background-clip: text;
+    transition: all 0.3s ease;
+  }
+
+  .dark .header-logo-text:hover {
+    background: linear-gradient(135deg, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header-logo-text:hover {
+    background: linear-gradient(135deg, rgb(59 130 246), rgb(147 51 234));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   /* Stellar Events Card Enhancements */
   .event-card {
     background: rgb(var(--stellar-midnight) / 0.8);
