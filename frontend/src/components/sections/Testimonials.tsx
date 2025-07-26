@@ -8,7 +8,7 @@ const Testimonials = () => {
       name: 'Alex Chen',
       role: 'Event Organizer',
       company: 'Global Events Co.',
-      content: 'ConnectSphere solved our fake ticket problem completely. Getting paid instantly and seeing clear reports has changed how we run events.',
+      content: 'Passa solved our fake ticket problem completely. Getting paid instantly and seeing clear reports has changed how we run events.',
       avatar: '👨‍💼',
       color: 'blue'
     },
@@ -38,7 +38,7 @@ const Testimonials = () => {
           badgeColor="accent"
           title="Loved by Creators"
           subtitle="Worldwide"
-          description="See what event organizers, content creators, and brands are saying about their ConnectSphere experience"
+          description="See what event organizers, content creators, and brands are saying about their Passa experience"
         />
 
         <div className="grid md:grid-cols-3 gap-8">

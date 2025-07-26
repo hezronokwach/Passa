@@ -1,7 +1,7 @@
-# ConnectSphere Design System
+# Passa Design System
 
 ## Overview
-A comprehensive design system for the ConnectSphere Web3 event platform, featuring a futuristic cyber aesthetic with full light/dark theme support and vibrant interactive elements.
+A comprehensive design system for the Passa Web3 event platform, featuring a futuristic cyber aesthetic with full light/dark theme support and vibrant interactive elements.
 
 ## 🎨 Color System
 
@@ -378,7 +378,7 @@ function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          ConnectSphere
+          Passa
         </motion.h1>
         
         <motion.p 

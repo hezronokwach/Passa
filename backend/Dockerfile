@@ -39,14 +39,14 @@ WORKDIR /app
 ENV NODE_ENV production
 
 RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 connectsphere
+RUN adduser --system --uid 1001 Passa
 
 # Copy built application
-COPY --from=builder --chown=connectsphere:nodejs /app/dist ./dist
-COPY --from=builder --chown=connectsphere:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=connectsphere:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=Passa:nodejs /app/dist ./dist
+COPY --from=builder --chown=Passa:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=Passa:nodejs /app/package.json ./package.json
 
-USER connectsphere
+USER Passa
 
 EXPOSE 3001
 ENV PORT 3001

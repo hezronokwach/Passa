@@ -22,7 +22,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   const [theme, setThemeState] = useState<Theme>(() => {
     // Check localStorage first, then system preference, then default
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('connectsphere-theme') as Theme
+      const stored = localStorage.getItem('Passa-theme') as Theme
       if (stored && (stored === 'light' || stored === 'dark')) {
         return stored
       }
@@ -39,7 +39,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme)
-    localStorage.setItem('connectsphere-theme', newTheme)
+    localStorage.setItem('Passa-theme', newTheme)
     
     // Update document class for CSS
     document.documentElement.classList.remove('light', 'dark')
@@ -66,7 +66,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem('connectsphere-theme')) {
+      if (!localStorage.getItem('Passa-theme')) {
         setTheme(e.matches ? 'dark' : 'light')
       }
     }

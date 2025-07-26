@@ -1,9 +1,9 @@
 ```markdown
-# ConnectSphere - System Architecture and Technology Stack
+# Passa - System Architecture and Technology Stack
 
 ## System Overview
 
-ConnectSphere is a blockchain-powered web platform integrating event ticketing, creator monetization, and brand campaign management. Built on the Stellar blockchain with a Node.js/Express backend, it ensures transparency, automation, and scalability for Kenya’s entertainment and creator economies via a responsive React web application. It leverages Soroban for smart contracts, Stellar SDK for blockchain interactions, LOBSTR Wallet for user asset management, and anchors for fiat integration.
+Passa is a blockchain-powered web platform integrating event ticketing, creator monetization, and brand campaign management. Built on the Stellar blockchain with a Node.js/Express backend, it ensures transparency, automation, and scalability for Kenya’s entertainment and creator economies via a responsive React web application. It leverages Soroban for smart contracts, Stellar SDK for blockchain interactions, LOBSTR Wallet for user asset management, and anchors for fiat integration.
 
 ### Scope
 - **Event Management**: Fraud-free ticketing, revenue distribution, venue verification.
@@ -390,5 +390,5 @@ Analytics (ClickHouse) → Creator Payments (Soroban) → Fan Rewards (LOBSTR)
 - **Months 7-9**: Analytics enhancements (ClickHouse), UX improvements, security audits (Certora, Snyk).
 - **Months 10-12**: API for integrations, multi-language support (Swahili, English), regional expansion prep.
 
-*This architecture ensures ConnectSphere is a scalable, secure, and fast web platform, leveraging Node.js/Express, Stellar blockchain, and Soroban for Kenya’s entertainment ecosystem.*
+*This architecture ensures Passa is a scalable, secure, and fast web platform, leveraging Node.js/Express, Stellar blockchain, and Soroban for Kenya’s entertainment ecosystem.*
 ```

@@ -3,9 +3,7 @@ import {
   BoltIcon,
   ChartBarIcon,
   SparklesIcon,
-  CurrencyDollarIcon,
   UserGroupIcon,
-  ShieldCheckIcon,
   PlayIcon,
   MusicalNoteIcon
 } from '@heroicons/react/24/outline'
@@ -15,6 +13,19 @@ import { ScrollReveal } from '../ui/ScrollReveal'
 import SectionHeader from '../ui/SectionHeader'
 
 const Features = () => {
+  // Helper function to convert Tailwind gradient classes to CSS custom properties
+  const getGradientStyle = (gradientClass: string) => {
+    const gradientMap: Record<string, string> = {
+      'from-stellar-electric to-stellar-plasma': 'linear-gradient(to right, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)))',
+      'from-stellar-plasma to-stellar-flare': 'linear-gradient(to right, rgb(var(--stellar-plasma)), rgb(var(--stellar-flare)))',
+      'from-stellar-aurora to-stellar-electric': 'linear-gradient(to right, rgb(var(--stellar-aurora)), rgb(var(--stellar-electric)))',
+      'from-stellar-gold to-stellar-electric': 'linear-gradient(to right, rgb(var(--stellar-gold)), rgb(var(--stellar-electric)))',
+      'from-stellar-plasma to-stellar-aurora': 'linear-gradient(to right, rgb(var(--stellar-plasma)), rgb(var(--stellar-aurora)))',
+      'from-stellar-aurora to-stellar-gold': 'linear-gradient(to right, rgb(var(--stellar-aurora)), rgb(var(--stellar-gold)))'
+    }
+    return gradientMap[gradientClass] || 'linear-gradient(to right, rgb(var(--stellar-electric)), rgb(var(--stellar-plasma)))'
+  }
+
   const features = [
     {
       icon: TicketIcon,
@@ -68,8 +79,8 @@ const Features = () => {
 
   return (
     <section className="relative py-20 lg:py-32 overflow-hidden">
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-stellar-void via-stellar-midnight to-stellar-nebula" />
+      {/* Dynamic Background - theme-aware */}
+      <div className="absolute inset-0 bg-background" />
       
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -77,7 +88,7 @@ const Features = () => {
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute text-6xl opacity-5"
+            className="absolute text-6xl opacity-5 text-text-muted"
             style={{
               left: `${15 + i * 15}%`,
               top: `${10 + (i % 4) * 20}%`,
@@ -98,9 +109,12 @@ const Features = () => {
           </motion.div>
         ))}
 
-        {/* Pulsing gradient orbs */}
+        {/* Pulsing gradient orbs - theme-aware */}
         <motion.div
-          className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-gradient-to-r from-stellar-electric/10 to-stellar-plasma/10 blur-3xl"
+          className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-3xl"
+          style={{
+            background: 'linear-gradient(to right, rgb(var(--stellar-electric) / 0.1), rgb(var(--stellar-plasma) / 0.1))'
+          }}
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.6, 0.3],
@@ -108,7 +122,10 @@ const Features = () => {
           transition={{ duration: 4, repeat: Infinity }}
         />
         <motion.div
-          className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full bg-gradient-to-r from-stellar-aurora/10 to-stellar-gold/10 blur-3xl"
+          className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full blur-3xl"
+          style={{
+            background: 'linear-gradient(to right, rgb(var(--stellar-aurora) / 0.1), rgb(var(--stellar-gold) / 0.1))'
+          }}
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.2, 0.5, 0.2],
@@ -150,22 +167,25 @@ const Features = () => {
                   animated={true}
                 >
                   {/* Background pattern */}
-                  <div className="absolute top-4 right-4 text-6xl opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+                  <div className="absolute top-4 right-4 text-6xl opacity-10 group-hover:opacity-20 transition-opacity duration-300 text-text-muted">
                     {feature.bgPattern}
                   </div>
 
                   <div className="p-8 h-full flex flex-col min-h-[360px] relative z-10">
-                    {/* Icon with enhanced animation */}
-                    <motion.div 
-                      className={`inline-flex p-4 rounded-xl bg-gradient-to-r ${feature.gradient} mb-6 self-start relative`}
-                      whileHover={{ 
+                    {/* Icon with enhanced animation - theme-aware */}
+                    <motion.div
+                      className="inline-flex p-4 rounded-xl mb-6 self-start relative"
+                      style={{
+                        background: getGradientStyle(feature.gradient)
+                      }}
+                      whileHover={{
                         scale: 1.1,
                         rotate: [0, -5, 5, 0],
                       }}
                       transition={{ duration: 0.3 }}
                     >
                       <feature.icon className="h-8 w-8 text-white relative z-10" />
-                      
+
                       {/* Icon glow effect */}
                       <motion.div
                         className="absolute inset-0 rounded-xl bg-white/20"
@@ -175,26 +195,29 @@ const Features = () => {
                       />
                     </motion.div>
 
-                    {/* Title with holographic effect */}
-                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:holographic-shift transition-all duration-300">
+                    {/* Title with theme-aware text */}
+                    <h3 className="text-2xl font-bold text-text mb-4 group-hover:holographic-shift transition-all duration-300">
                       {feature.title}
                     </h3>
 
-                    {/* Description */}
-                    <p className="text-gray-300 leading-relaxed group-hover:text-white transition-colors flex-grow">
+                    {/* Description with theme-aware text */}
+                    <p className="text-text-secondary leading-relaxed group-hover:text-text transition-colors flex-grow">
                       {feature.description}
                     </p>
 
-                    {/* Interactive bottom element */}
+                    {/* Interactive bottom element - theme-aware */}
                     <div className="mt-6 flex items-center justify-between">
-                      <motion.div 
-                        className={`h-1 bg-gradient-to-r ${feature.gradient} rounded-full transition-all duration-500 group-hover:w-full`}
+                      <motion.div
+                        className="h-1 rounded-full transition-all duration-500 group-hover:w-full"
+                        style={{
+                          background: getGradientStyle(feature.gradient)
+                        }}
                         initial={{ width: '30%' }}
                         whileHover={{ width: '100%' }}
                       />
-                      
+
                       <motion.div
-                        className="text-white/60 group-hover:text-white transition-colors"
+                        className="text-text-muted group-hover:text-text transition-colors"
                         whileHover={{ x: 5 }}
                       >
                         →
@@ -202,9 +225,12 @@ const Features = () => {
                     </div>
                   </div>
 
-                  {/* Hover overlay effect */}
+                  {/* Hover overlay effect - theme-aware */}
                   <motion.div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
+                    className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500"
+                    style={{
+                      background: getGradientStyle(feature.gradient).replace('to right', 'to bottom right')
+                    }}
                     initial={{ opacity: 0 }}
                     whileHover={{ opacity: 0.1 }}
                   />
@@ -214,21 +240,21 @@ const Features = () => {
           ))}
         </div>
 
-        {/* Call to action section */}
+        {/* Call to action section - fully theme-aware */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
           className="mt-20 text-center"
         >
-          <div className="bg-gradient-to-r from-stellar-electric/10 to-stellar-plasma/10 backdrop-blur-xl rounded-3xl border border-border/30 p-8 lg:p-12">
+          <div className="bg-surface/95 backdrop-blur-xl rounded-3xl border border-border p-8 lg:p-12 shadow-xl dark:shadow-2xl">
             <h3 className="text-3xl lg:text-4xl font-bold text-text mb-4 holographic-shift">
               Ready to Transform Your Events?
             </h3>
             <p className="text-xl text-text-secondary mb-8 max-w-2xl mx-auto">
               Join thousands of creators who are already revolutionizing live entertainment with blockchain technology
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -237,7 +263,7 @@ const Features = () => {
               >
                 Start Creating Events
               </motion.button>
-              
+
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

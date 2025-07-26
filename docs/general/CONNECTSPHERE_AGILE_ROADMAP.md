@@ -1,4 +1,4 @@
-# ConnectSphere Agile Development Roadmap
+# Passa Agile Development Roadmap
 
 ## Team Composition
 - **UI/UX & Frontend:** 2 Developers

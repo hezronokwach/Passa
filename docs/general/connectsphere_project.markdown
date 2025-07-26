@@ -1,9 +1,9 @@
 ```markdown
-# ConnectSphere - Decentralized Creator Economy Platform
+# Passa - Decentralized Creator Economy Platform
 
 ## Executive Summary
 
-ConnectSphere is a blockchain-powered web platform that unifies Kenya's $120M events industry and $3.17M creator economy (projected by 2029) into a transparent, automated ecosystem. Built on the Stellar blockchain with a Node.js/Express backend, it connects event organizers, content creators, brand marketers, and fans via a responsive React web application. The platform addresses inefficiencies like ticket fraud, delayed creator payments, and opaque brand campaign ROI using Soroban smart contracts, Stellar SDK, and LOBSTR Wallet integration.
+Passa is a blockchain-powered web platform that unifies Kenya's $120M events industry and $3.17M creator economy (projected by 2029) into a transparent, automated ecosystem. Built on the Stellar blockchain with a Node.js/Express backend, it connects event organizers, content creators, brand marketers, and fans via a responsive React web application. The platform addresses inefficiencies like ticket fraud, delayed creator payments, and opaque brand campaign ROI using Soroban smart contracts, Stellar SDK, and LOBSTR Wallet integration.
 
 **Market Opportunity**: $123M addressable market in Kenya, expandable to $450M across East Africa.  
 **Investment Ask**: $850,000 seed funding for 18-month development and market penetration.  
@@ -36,7 +36,7 @@ The $65M annual loss from inefficiencies can be captured by connecting events, c
 
 ## Solution Overview
 
-ConnectSphere leverages the Stellar blockchain with a Node.js/Express backend and Soroban smart contracts to create a multi-stakeholder web ecosystem, accessible via a React web application. It uses Stellar SDK for blockchain interactions, LOBSTR Wallet for user asset management, and anchors for fiat on/off-ramps, ensuring fast, secure, and scalable operations.
+Passa leverages the Stellar blockchain with a Node.js/Express backend and Soroban smart contracts to create a multi-stakeholder web ecosystem, accessible via a React web application. It uses Stellar SDK for blockchain interactions, LOBSTR Wallet for user asset management, and anchors for fiat on/off-ramps, ensuring fast, secure, and scalable operations.
 
 ### Core Features
 1. **Unforgeable Tickets**: Stellar-based NFT tokens eliminate fraud.
@@ -160,7 +160,7 @@ ConnectSphere leverages the Stellar blockchain with a Node.js/Express backend an
 - **Metrics**: $150K brand spend, 300% campaign ROI, 95% creator payments within 24 hours, 80% brand renewal.
 
 ### Marketing Approach
-- **Digital**: Social media campaigns, SEO for “ConnectSphere Kenya,” creator success stories.
+- **Digital**: Social media campaigns, SEO for “Passa Kenya,” creator success stories.
 - **Partnerships**: Industry associations, music streaming platforms, referral programs.
 - **Events**: Sponsor Music In Africa, Creative Economy Summit, host networking events.
 
@@ -232,5 +232,5 @@ ConnectSphere leverages the Stellar blockchain with a Node.js/Express backend an
 4. **Team**: Finalize founding team and equity agreements.
 5. **Timeline**: Investor meetings (Weeks 1-2), validation (Weeks 3-4), term sheet (Weeks 5-6), funding close (Weeks 7-8).
 
-*ConnectSphere is poised to transform Kenya’s digital entertainment economy with a scalable, secure web platform powered by Stellar blockchain, Node.js/Express, and Soroban smart contracts.*
+*Passa is poised to transform Kenya’s digital entertainment economy with a scalable, secure web platform powered by Stellar blockchain, Node.js/Express, and Soroban smart contracts.*
 ```

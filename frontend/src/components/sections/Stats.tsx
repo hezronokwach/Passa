@@ -22,9 +22,9 @@ const Stats = () => {
         <SectionHeader
           badge="Platform Impact"
           badgeColor="primary"
-          title="ConnectSphere by the"
+          title="Passa by the"
           subtitle="Numbers"
-          description="Join thousands of creators who are already building their future with ConnectSphere's innovative platform"
+          description="Join thousands of creators who are already building their future with Passa's innovative platform"
         />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
