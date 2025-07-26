@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
-import { ArrowRightIcon, PlayIcon, SparklesIcon, TicketIcon, CalendarDaysIcon, UserGroupIcon } from '@heroicons/react/24/outline'
+import { PlayIcon, SparklesIcon, TicketIcon, CalendarDaysIcon, UserGroupIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect } from 'react'
 import StellarButton from '../ui/StellarButton'
+import ThemeToggle from '../ui/ThemeToggle'
 
 const Hero = () => {
   const [currentEventIndex, setCurrentEventIndex] = useState(0)
@@ -52,6 +53,11 @@ const Hero = () => {
 
   return (
     <section className="relative overflow-hidden min-h-screen">
+      {/* Theme Toggle - Top Right */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle variant="icon" className="bg-surface/80 backdrop-blur-md border border-border/30 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300" />
+      </div>
+
       {/* Dynamic Background with Event Image */}
       <div className="absolute inset-0">
         <motion.div
@@ -65,7 +71,7 @@ const Hero = () => {
           }}
         />
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background-overlay/80 via-background-overlay/60 to-background-overlay/40" />
         {/* Stellar gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-stellar-electric/20 via-transparent to-stellar-plasma/20" />
       </div>
@@ -76,7 +82,7 @@ const Hero = () => {
         {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute text-white/10 text-4xl"
+            className="absolute text-text/10 text-4xl"
             style={{
               left: `${10 + i * 12}%`,
               top: `${20 + (i % 3) * 25}%`,
@@ -130,9 +136,9 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="inline-flex items-center px-4 py-2.5 rounded-2xl bg-gradient-to-r from-red-500/15 to-red-600/15 border border-red-500/30 text-red-300 text-xs font-semibold tracking-wider mb-12 backdrop-blur-md shadow-lg shadow-red-500/10"
+              className="inline-flex items-center px-4 py-2.5 rounded-2xl bg-gradient-to-r from-stellar-flare/15 to-stellar-flare/20 border border-stellar-flare/30 text-stellar-flare text-xs font-semibold tracking-wider mb-12 backdrop-blur-md shadow-lg shadow-stellar-flare/10"
             >
-              <div className="w-1.5 h-1.5 bg-red-400 rounded-full mr-2.5 animate-pulse" />
+              <div className="w-1.5 h-1.5 bg-stellar-flare rounded-full mr-2.5 animate-pulse" />
               LIVE EVENTS HAPPENING NOW
             </motion.div>
 
@@ -141,16 +147,16 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="font-display font-black text-white mb-12 leading-[0.85] tracking-tight"
+              className="font-display font-black text-text mb-12 leading-[0.85] tracking-tight"
               style={{
                 fontSize: 'clamp(3rem, 10vw, 7rem)',
-                textShadow: '0 4px 20px rgba(0, 0, 0, 0.5)'
+                textShadow: '0 4px 20px rgb(var(--color-background-overlay) / 0.5)'
               }}
             >
               <span className="block">
                 Experience{' '}
                 <span className="relative inline-block">
-                  <span className="holographic-shift bg-gradient-to-r from-stellar-electric via-stellar-plasma to-stellar-aurora bg-clip-text text-transparent">
+                  <span className="holographic-shift">
                     Epic
                   </span>
                 </span>
@@ -167,7 +173,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-xl font-light text-gray-200 mb-12 max-w-2xl leading-relaxed tracking-wide"
+              className="text-xl font-light text-text-secondary mb-12 max-w-2xl leading-relaxed tracking-wide"
               style={{
                 fontSize: 'clamp(1.125rem, 2.5vw, 1.375rem)',
                 lineHeight: '1.7'
@@ -204,7 +210,7 @@ const Hero = () => {
                 icon={<PlayIcon className="h-5 w-5" />}
                 iconPosition="left"
                 pulseEffect={true}
-                className="font-medium tracking-wide border-2 border-white/20 hover:border-white/40 backdrop-blur-md"
+                className="font-medium tracking-wide border-2 border-border/40 hover:border-border-accent backdrop-blur-md"
               >
                 Watch Trailer
               </StellarButton>
@@ -222,21 +228,21 @@ const Hero = () => {
                 whileHover={{ scale: 1.05 }}
               >
                 <div className="text-4xl lg:text-5xl font-black neon-glow-electric mb-3 stellar-breathe tracking-tight">500+</div>
-                <div className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors tracking-wider uppercase">Live Events</div>
+                <div className="text-sm font-medium text-text-muted group-hover:text-text transition-colors tracking-wider uppercase">Live Events</div>
               </motion.div>
               <motion.div
                 className="text-center lg:text-left group"
                 whileHover={{ scale: 1.05 }}
               >
                 <div className="text-4xl lg:text-5xl font-black neon-glow-plasma mb-3 stellar-breathe animation-delay-200 tracking-tight">2M+</div>
-                <div className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors tracking-wider uppercase">Happy Fans</div>
+                <div className="text-sm font-medium text-text-muted group-hover:text-text transition-colors tracking-wider uppercase">Happy Fans</div>
               </motion.div>
               <motion.div
                 className="text-center lg:text-left group"
                 whileHover={{ scale: 1.05 }}
               >
                 <div className="text-4xl lg:text-5xl font-black neon-glow-aurora mb-3 stellar-breathe animation-delay-400 tracking-tight">100%</div>
-                <div className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors tracking-wider uppercase">Secure</div>
+                <div className="text-sm font-medium text-text-muted group-hover:text-text transition-colors tracking-wider uppercase">Secure</div>
               </motion.div>
             </motion.div>
           </motion.div>
@@ -254,10 +260,9 @@ const Hero = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="group relative bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-2xl rounded-[2rem] border border-white/15 overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_35px_60px_-12px_rgba(0,212,255,0.15)] transition-all duration-500"
+              className="group relative bg-surface/80 backdrop-blur-2xl rounded-[2rem] border border-border/30 overflow-hidden shadow-2xl hover:shadow-stellar-electric/15 transition-all duration-500"
               style={{
-                perspective: '1000px',
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)'
+                perspective: '1000px'
               }}
             >
               {/* Event Image */}
@@ -270,41 +275,41 @@ const Hero = () => {
                   animate={{ scale: 1 }}
                   transition={{ duration: 1.5 }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background-overlay/70 via-background-overlay/20 to-transparent" />
 
                 {/* Genre Badge */}
-                <div className="absolute top-5 left-5 px-4 py-2 bg-gradient-to-r from-stellar-electric/90 to-stellar-electric/80 text-white text-xs font-semibold rounded-2xl backdrop-blur-md shadow-lg border border-stellar-electric/30 tracking-wide">
+                <div className="absolute top-5 left-5 px-4 py-2 bg-gradient-to-r from-stellar-electric/90 to-stellar-electric/80 text-text text-xs font-semibold rounded-2xl backdrop-blur-md shadow-lg border border-stellar-electric/30 tracking-wide">
                   {currentEvent.genre}
                 </div>
 
                 {/* Price Badge */}
-                <div className="absolute top-5 right-5 px-4 py-2 bg-gradient-to-r from-stellar-gold/95 to-stellar-gold/85 text-black text-xs font-bold rounded-2xl backdrop-blur-md shadow-lg border border-stellar-gold/40 tracking-wide">
+                <div className="absolute top-5 right-5 px-4 py-2 bg-gradient-to-r from-stellar-gold/95 to-stellar-gold/85 text-background text-xs font-bold rounded-2xl backdrop-blur-md shadow-lg border border-stellar-gold/40 tracking-wide">
                   {currentEvent.price}
                 </div>
               </div>
 
               {/* Event Details */}
               <div className="p-8">
-                <h3 className="text-2xl font-black text-white mb-5 tracking-tight leading-tight">
-                  <span className="holographic-shift bg-gradient-to-r from-white via-stellar-electric to-white bg-clip-text text-transparent">
+                <h3 className="text-2xl font-black text-text mb-5 tracking-tight leading-tight">
+                  <span className="holographic-shift">
                     {currentEvent.title}
                   </span>
                 </h3>
 
                 <div className="space-y-4 mb-8">
-                  <div className="flex items-center text-gray-200 group/item hover:text-white transition-colors">
+                  <div className="flex items-center text-text-secondary group/item hover:text-text transition-colors">
                     <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-stellar-electric/10 border border-stellar-electric/20 mr-4 group-hover/item:bg-stellar-electric/20 transition-colors">
                       <CalendarDaysIcon className="h-5 w-5 text-stellar-electric" />
                     </div>
                     <span className="font-medium tracking-wide">{currentEvent.date}</span>
                   </div>
-                  <div className="flex items-center text-gray-200 group/item hover:text-white transition-colors">
+                  <div className="flex items-center text-text-secondary group/item hover:text-text transition-colors">
                     <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-stellar-plasma/10 border border-stellar-plasma/20 mr-4 group-hover/item:bg-stellar-plasma/20 transition-colors">
                       <SparklesIcon className="h-5 w-5 text-stellar-plasma" />
                     </div>
                     <span className="font-medium tracking-wide">{currentEvent.location}</span>
                   </div>
-                  <div className="flex items-center text-gray-200 group/item hover:text-white transition-colors">
+                  <div className="flex items-center text-text-secondary group/item hover:text-text transition-colors">
                     <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-stellar-aurora/10 border border-stellar-aurora/20 mr-4 group-hover/item:bg-stellar-aurora/20 transition-colors">
                       <UserGroupIcon className="h-5 w-5 text-stellar-aurora" />
                     </div>
@@ -338,7 +343,7 @@ const Hero = () => {
                   className={`relative w-4 h-4 rounded-full transition-all duration-500 transform hover:scale-125 ${
                     index === currentEventIndex
                       ? 'bg-stellar-electric shadow-lg shadow-stellar-electric/50 scale-110'
-                      : 'bg-white/25 hover:bg-white/40 border border-white/20'
+                      : 'bg-border hover:bg-border-accent border border-border'
                   }`}
                 >
                   {index === currentEventIndex && (
@@ -355,10 +360,10 @@ const Hero = () => {
                 rotate: [0, 3, 0, -3, 0]
               }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-8 -right-8 bg-gradient-to-br from-stellar-plasma/90 to-stellar-flare/90 text-white p-5 rounded-2xl backdrop-blur-xl border border-stellar-plasma/20 shadow-2xl shadow-stellar-plasma/20 hover:shadow-stellar-plasma/40 transition-all duration-500"
+              className="absolute -top-8 -right-8 bg-gradient-to-br from-stellar-plasma/90 to-stellar-flare/90 text-text p-5 rounded-2xl backdrop-blur-xl border border-stellar-plasma/20 shadow-2xl shadow-stellar-plasma/20 hover:shadow-stellar-plasma/40 transition-all duration-500"
             >
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-surface/40 flex items-center justify-center">
                   <span className="text-lg">🎵</span>
                 </div>
                 <span className="font-semibold tracking-wide text-sm">Live Music</span>
@@ -371,10 +376,10 @@ const Hero = () => {
                 rotate: [0, -3, 0, 3, 0]
               }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-8 -left-8 bg-gradient-to-br from-stellar-electric/90 to-stellar-aurora/90 text-white p-5 rounded-2xl backdrop-blur-xl border border-stellar-electric/20 shadow-2xl shadow-stellar-electric/20 hover:shadow-stellar-electric/40 transition-all duration-500"
+              className="absolute -bottom-8 -left-8 bg-gradient-to-br from-stellar-electric/90 to-stellar-aurora/90 text-text p-5 rounded-2xl backdrop-blur-xl border border-stellar-electric/20 shadow-2xl shadow-stellar-electric/20 hover:shadow-stellar-electric/40 transition-all duration-500"
             >
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-surface/40 flex items-center justify-center">
                   <span className="text-lg">🎫</span>
                 </div>
                 <span className="font-semibold tracking-wide text-sm">NFT Tickets</span>
@@ -394,7 +399,7 @@ const Hero = () => {
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          className="w-7 h-12 border-2 border-white/25 rounded-2xl flex justify-center backdrop-blur-sm bg-white/5 group-hover:border-stellar-electric/50 transition-all duration-300"
+          className="w-7 h-12 border-2 border-border/50 rounded-2xl flex justify-center backdrop-blur-sm bg-surface/20 group-hover:border-stellar-electric/50 transition-all duration-300"
         >
           <motion.div
             animate={{ y: [0, 16, 0] }}
@@ -402,7 +407,7 @@ const Hero = () => {
             className="w-1.5 h-4 bg-gradient-to-b from-stellar-electric to-stellar-aurora rounded-full mt-2 group-hover:shadow-lg group-hover:shadow-stellar-electric/50 transition-all duration-300"
           />
         </motion.div>
-        <div className="text-xs text-white/40 text-center mt-3 font-medium tracking-wider uppercase">Scroll</div>
+        <div className="text-xs text-text-muted text-center mt-3 font-medium tracking-wider uppercase">Scroll</div>
       </motion.div>
     </section>
   )

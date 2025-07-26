@@ -32,10 +32,10 @@ const Footer = () => {
   }
 
   return (
-    <footer className="relative bg-dark-bg border-t border-primary-500/20 overflow-hidden">
+    <footer className="relative bg-background border-t border-border/30 overflow-hidden">
       {/* Background elements */}
       <BlockchainGrid className="opacity-5" animated={true} />
-      <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-surface/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-surface/30 to-transparent" />
 
       <div className="relative container-max section-padding py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-8">
@@ -51,18 +51,18 @@ const Footer = () => {
                 <div className="transform group-hover:scale-110 transition-transform duration-300">
                   <Logo />
                 </div>
-                <span className="text-2xl font-display font-bold gradient-text">
+                <span className="text-2xl font-display font-bold text-text">
                   Passa
                 </span>
               </Link>
-              <p className="text-neutral-300 mb-8 max-w-sm leading-relaxed">
+              <p className="text-text-secondary mb-8 max-w-sm leading-relaxed">
                 Revolutionizing the global creator economy with cutting-edge blockchain technology,
                 AI-powered insights, and seamless connectivity.
               </p>
               <div className="flex space-x-6">
                 <motion.a
                   href="#"
-                  className="text-neutral-400 hover:text-cyber-blue transition-all duration-300 text-2xl"
+                  className="text-text-muted hover:text-stellar-electric transition-all duration-300 text-2xl"
                   whileHover={{ scale: 1.2, rotate: 5 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -71,7 +71,7 @@ const Footer = () => {
                 </motion.a>
                 <motion.a
                   href="#"
-                  className="text-neutral-400 hover:text-secondary-400 transition-all duration-300 text-2xl"
+                  className="text-text-muted hover:text-stellar-plasma transition-all duration-300 text-2xl"
                   whileHover={{ scale: 1.2, rotate: -5 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -80,7 +80,7 @@ const Footer = () => {
                 </motion.a>
                 <motion.a
                   href="#"
-                  className="text-neutral-400 hover:text-accent-400 transition-all duration-300 text-2xl"
+                  className="text-text-muted hover:text-stellar-aurora transition-all duration-300 text-2xl"
                   whileHover={{ scale: 1.2, rotate: 5 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -89,7 +89,7 @@ const Footer = () => {
                 </motion.a>
                 <motion.a
                   href="#"
-                  className="text-neutral-400 hover:text-cyber-pink transition-all duration-300 text-2xl"
+                  className="text-text-muted hover:text-stellar-flare transition-all duration-300 text-2xl"
                   whileHover={{ scale: 1.2, rotate: -5 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -107,7 +107,7 @@ const Footer = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-neutral-50 font-bold mb-6 text-lg">Platform</h3>
+            <h3 className="text-text font-bold mb-6 text-lg">Platform</h3>
             <ul className="space-y-3">
               {navigation.platform.map((item, index) => (
                 <motion.li
@@ -119,7 +119,7 @@ const Footer = () => {
                 >
                   <Link
                     to={item.href}
-                    className="text-neutral-400 hover:text-cyber-blue transition-all duration-300 hover:translate-x-1 inline-block"
+                    className="text-text-muted hover:text-text transition-all duration-300 hover:translate-x-1 inline-block"
                   >
                     {item.name}
                   </Link>
@@ -129,13 +129,13 @@ const Footer = () => {
           </motion.div>
 
           <div>
-            <h3 className="text-white font-semibold mb-4">Company</h3>
+            <h3 className="text-text font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
               {navigation.company.map((item) => (
                 <li key={item.name}>
                   <Link
                     to={item.href}
-                    className="text-neutral-400 hover:text-white transition-colors"
+                    className="text-text-muted hover:text-text transition-colors"
                   >
                     {item.name}
                   </Link>
@@ -145,13 +145,13 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-white font-semibold mb-4">Resources</h3>
+            <h3 className="text-text font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               {navigation.resources.map((item) => (
                 <li key={item.name}>
                   <Link
                     to={item.href}
-                    className="text-neutral-400 hover:text-white transition-colors"
+                    className="text-text-muted hover:text-text transition-colors"
                   >
                     {item.name}
                   </Link>
@@ -161,13 +161,13 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-white font-semibold mb-4">Legal</h3>
+            <h3 className="text-text font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
               {navigation.legal.map((item) => (
                 <li key={item.name}>
                   <Link
                     to={item.href}
-                    className="text-neutral-400 hover:text-white transition-colors"
+                    className="text-text-muted hover:text-text transition-colors"
                   >
                     {item.name}
                   </Link>
@@ -178,19 +178,19 @@ const Footer = () => {
         </div>
 
         <motion.div
-          className="border-t border-primary-500/20 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center"
+          className="border-t border-border/30 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <p className="text-neutral-400 text-sm">
+          <p className="text-text-muted text-sm">
             © 2025 Passa. All rights reserved. Built on{' '}
-            <span className="text-cyber-blue font-medium">Stellar Blockchain</span>.
+            <span className="text-stellar-electric font-medium">Stellar Blockchain</span>.
           </p>
-          <p className="text-neutral-400 text-sm mt-4 md:mt-0">
-            Made with <span className="text-red-400">❤️</span> for creators worldwide{' '}
-            <span className="text-cyber-blue">🌍</span>
+          <p className="text-text-muted text-sm mt-4 md:mt-0">
+            Made with <span className="text-stellar-flare">❤️</span> for creators worldwide{' '}
+            <span className="text-stellar-electric">🌍</span>
           </p>
         </motion.div>
       </div>

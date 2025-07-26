@@ -16,7 +16,7 @@ import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider>
       <div className="min-h-screen bg-background transition-colors duration-300">
         {/* Cyber grid background */}
         <div className="fixed inset-0 cyber-grid opacity-30 pointer-events-none" />

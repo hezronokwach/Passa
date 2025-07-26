@@ -221,11 +221,11 @@ const Features = () => {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="mt-20 text-center"
         >
-          <div className="bg-gradient-to-r from-stellar-electric/10 to-stellar-plasma/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 lg:p-12">
-            <h3 className="text-3xl lg:text-4xl font-bold text-white mb-4 holographic-shift">
+          <div className="bg-gradient-to-r from-stellar-electric/10 to-stellar-plasma/10 backdrop-blur-xl rounded-3xl border border-border/30 p-8 lg:p-12">
+            <h3 className="text-3xl lg:text-4xl font-bold text-text mb-4 holographic-shift">
               Ready to Transform Your Events?
             </h3>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-text-secondary mb-8 max-w-2xl mx-auto">
               Join thousands of creators who are already revolutionizing live entertainment with blockchain technology
             </p>
             

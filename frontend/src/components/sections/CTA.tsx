@@ -108,7 +108,7 @@ const CTA = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-4xl lg:text-6xl font-display font-black text-white mb-6 leading-tight"
+              className="text-4xl lg:text-6xl font-display font-black text-text mb-6 leading-tight"
             >
               Ready to{' '}
               <span className="holographic-shift">
@@ -125,7 +125,7 @@ const CTA = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-xl lg:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed"
+              className="text-xl lg:text-2xl text-text-secondary mb-12 max-w-3xl mx-auto leading-relaxed"
             >
               Join the revolution of live entertainment. Create unforgettable events, connect with fans worldwide, and earn with every beat.
             </motion.p>

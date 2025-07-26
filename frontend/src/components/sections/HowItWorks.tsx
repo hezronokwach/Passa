@@ -58,7 +58,7 @@ const HowItWorks = () => {
               {/* Step content */}
               <div className="relative z-10 p-6 rounded-xl bg-surface/50 border border-border hover:border-secondary-500/40 transition-all duration-300 hover:bg-surface/80 h-full flex flex-col">
                 {/* Step number */}
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-secondary-500 to-accent-500 text-white font-bold text-xl mb-4 group-hover:scale-110 transition-transform duration-300 mx-auto">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-stellar-plasma to-stellar-aurora text-text font-bold text-xl mb-4 group-hover:scale-110 transition-transform duration-300 mx-auto">
                   {step.step}
                 </div>
 

@@ -15,9 +15,9 @@ interface ThemeProviderProps {
   defaultTheme?: Theme
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ 
-  children, 
-  defaultTheme = 'dark' 
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+  children,
+  defaultTheme
 }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
     // Check localStorage first, then system preference, then default
@@ -26,13 +26,15 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
       if (stored && (stored === 'light' || stored === 'dark')) {
         return stored
       }
-      
+
       // Check system preference
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         return 'dark'
+      } else {
+        return 'light'
       }
     }
-    return defaultTheme
+    return defaultTheme || 'dark'
   })
 
   const setTheme = (newTheme: Theme) => {
