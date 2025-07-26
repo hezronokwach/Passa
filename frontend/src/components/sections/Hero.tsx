@@ -12,7 +12,7 @@ const Hero = () => {
     {
       id: 1,
       title: "Stellar Nights Festival",
-      date: "Dec 31, 2024",
+      date: "Dec 31, 2025",
       location: "Miami Beach",
       image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&h=600&fit=crop&crop=center",
       genre: "Electronic",

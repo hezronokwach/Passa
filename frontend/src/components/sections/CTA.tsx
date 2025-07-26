@@ -8,16 +8,16 @@ const CTA = () => {
 
   return (
     <section className="relative py-20 lg:py-32 overflow-hidden">
-      {/* Concert Stage Background */}
+      {/* Concert Stage Background - Theme Aware */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-stellar-midnight to-stellar-void" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background-secondary to-background-elevated dark:from-black dark:via-stellar-midnight dark:to-stellar-void" />
         
         {/* Stage Lights Effect */}
         <div className="absolute inset-0">
           {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-2 h-full bg-gradient-to-b from-transparent via-stellar-electric/20 to-transparent"
+              className="absolute w-2 h-full bg-gradient-to-b from-transparent via-primary-500/20 dark:via-stellar-electric/20 to-transparent"
               style={{
                 left: `${10 + i * 12}%`,
                 transform: `rotate(${-45 + i * 10}deg)`,
@@ -36,8 +36,8 @@ const CTA = () => {
           ))}
         </div>
 
-        {/* Crowd Silhouette Effect */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent" />
+        {/* Crowd Silhouette Effect - Theme Aware */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background-secondary/80 dark:from-black/80 to-transparent" />
         
         {/* Floating Concert Elements */}
         {[...Array(12)].map((_, i) => (
@@ -92,12 +92,12 @@ const CTA = () => {
             transition={{ duration: 0.8 }}
             className="max-w-4xl mx-auto"
           >
-            {/* Badge */}
+            {/* Badge - Theme Aware */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-stellar-electric/20 to-stellar-plasma/20 border border-stellar-electric/30 text-stellar-electric text-sm font-medium mb-8 backdrop-blur-sm"
+              className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-primary-500/20 to-secondary-500/20 dark:from-stellar-electric/20 dark:to-stellar-plasma/20 border border-primary-500/30 dark:border-stellar-electric/30 text-primary-600 dark:text-stellar-electric text-sm font-medium mb-8 backdrop-blur-sm"
             >
               <SparklesIcon className="mr-2 h-4 w-4" />
               The Future of Entertainment is Here
@@ -142,7 +142,7 @@ const CTA = () => {
                 onHoverEnd={() => setHoveredButton(null)}
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative bg-gradient-to-r from-stellar-electric to-stellar-plasma text-white px-12 py-6 rounded-2xl font-bold text-xl transition-all duration-300 group overflow-hidden shadow-2xl"
+                className="relative bg-gradient-to-r from-primary-500 to-secondary-500 dark:from-stellar-electric dark:to-stellar-plasma text-white px-12 py-6 rounded-2xl font-bold text-xl transition-all duration-300 group overflow-hidden shadow-2xl"
               >
                 <span className="relative z-10 flex items-center justify-center">
                   <TicketIcon className="mr-3 h-6 w-6" />
@@ -175,23 +175,27 @@ const CTA = () => {
                 onHoverEnd={() => setHoveredButton(null)}
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative border-2 border-stellar-electric text-stellar-electric hover:bg-stellar-electric/10 px-12 py-6 rounded-2xl font-bold text-xl transition-all duration-300 backdrop-blur-sm group overflow-hidden"
+                className="relative border-2 border-primary-500 dark:border-stellar-electric text-primary-600 dark:text-stellar-electric hover:bg-primary-500/10 dark:hover:bg-stellar-electric/10 px-12 py-6 rounded-2xl font-bold text-xl transition-all duration-300 backdrop-blur-sm group overflow-hidden"
               >
                 <span className="relative z-10 flex items-center justify-center">
                   <PlayIcon className="mr-3 h-6 w-6" />
                   Watch Demo
                 </span>
                 
-                {/* Border glow effect */}
+                {/* Border glow effect - Theme Aware */}
                 <motion.div
-                  className="absolute inset-0 border-2 border-stellar-electric rounded-2xl"
+                  className="absolute inset-0 border-2 border-primary-500 dark:border-stellar-electric rounded-2xl"
                   initial={{ opacity: 0, scale: 1 }}
-                  animate={{ 
+                  animate={{
                     opacity: hoveredButton === 'explore' ? 1 : 0,
                     scale: hoveredButton === 'explore' ? 1.05 : 1
                   }}
                   style={{
-                    boxShadow: hoveredButton === 'explore' ? '0 0 30px rgba(0, 212, 255, 0.5)' : 'none'
+                    boxShadow: hoveredButton === 'explore'
+                      ? (document.documentElement.classList.contains('dark')
+                          ? '0 0 30px rgba(0, 212, 255, 0.5)'
+                          : '0 0 30px rgba(59, 130, 246, 0.5)')
+                      : 'none'
                   }}
                   transition={{ duration: 0.3 }}
                 />
@@ -224,7 +228,7 @@ const CTA = () => {
                   <div className={`text-3xl font-bold neon-glow-${stat.color.split('-')[1]} mb-2 stellar-breathe`}>
                     {stat.number}
                   </div>
-                  <div className="text-gray-400 group-hover:text-gray-300 transition-colors">
+                  <div className="text-text-muted group-hover:text-text-secondary transition-colors">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -234,8 +238,8 @@ const CTA = () => {
         </ScrollReveal>
       </div>
 
-      {/* Bottom wave effect */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-stellar-void to-transparent" />
+      {/* Bottom wave effect - Theme Aware */}
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background-secondary dark:from-stellar-void to-transparent" />
     </section>
   )
 }
