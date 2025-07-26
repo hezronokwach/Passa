@@ -280,12 +280,7 @@ const Hero = () => {
                 {/* Genre Badge */}
                 <div className="absolute top-5 left-5 px-4 py-2 bg-gradient-to-r from-stellar-electric/90 to-stellar-electric/80 text-text text-xs font-semibold rounded-2xl backdrop-blur-md shadow-lg border border-stellar-electric/30 tracking-wide">
                   {currentEvent.genre}
-                </div>
-
-                {/* Price Badge */}
-                <div className="absolute top-5 right-5 px-4 py-2 bg-gradient-to-r from-stellar-gold/95 to-stellar-gold/85 text-background text-xs font-bold rounded-2xl backdrop-blur-md shadow-lg border border-stellar-gold/40 tracking-wide">
-                  {currentEvent.price}
-                </div>
+                </div>             
               </div>
 
               {/* Event Details */}
