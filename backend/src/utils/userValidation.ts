@@ -64,8 +64,8 @@ export class UserValidation {
       throw new UserValidationError('Phone number must be between 10 and 20 characters', 'phone');
     }
     
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    if (!phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
+    const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
+    if (!phoneRegex.test(phone.replace(/[\s\-()]/g, ''))) {
       throw new UserValidationError('Invalid phone number format', 'phone');
     }
   }
@@ -89,7 +89,7 @@ export class UserValidation {
       throw new UserValidationError(`${fieldName} must be between 1 and 100 characters`, fieldName);
     }
     
-    const nameRegex = /^[a-zA-Z\s\-'\.]+$/;
+    const nameRegex = /^[a-zA-Z\s\-'.]+$/;
     if (!nameRegex.test(name)) {
       throw new UserValidationError(`${fieldName} can only contain letters, spaces, hyphens, apostrophes, and periods`, fieldName);
     }
@@ -207,7 +207,7 @@ export class UserValidation {
     }
     
     if (sanitized.phone) {
-      sanitized.phone = sanitized.phone.replace(/[\s\-\(\)]/g, '');
+      sanitized.phone = sanitized.phone.replace(/[\s\-()]/g, '');
     }
     
     return sanitized;
