@@ -8,16 +8,11 @@ import { config } from '@/config/environment';
 import { logger } from '@/utils/logger';
 import { errorHandler } from '@/middleware/errorHandler';
 import { notFoundHandler } from '@/middleware/notFoundHandler';
-import { authMiddleware } from '@/middleware/auth';
 
 // Import routes
 import authRoutes from '@/routes/auth';
 import userRoutes from '@/routes/users';
 import eventRoutes from '@/routes/events';
-import creatorRoutes from '@/routes/creators';
-import brandRoutes from '@/routes/brands';
-import ticketRoutes from '@/routes/tickets';
-import analyticsRoutes from '@/routes/analytics';
 
 const app = express();
 
@@ -43,23 +38,19 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     environment: config.app.env,
-    version: process.env.npm_package_version || '1.0.0',
+    version: process.env['npm_package_version'] || '1.0.0',
   });
 });
 
 // API routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', authMiddleware, userRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
-app.use('/api/creators', creatorRoutes);
-app.use('/api/brands', authMiddleware, brandRoutes);
-app.use('/api/tickets', ticketRoutes);
-app.use('/api/analytics', authMiddleware, analyticsRoutes);
 
 // Error handling middleware
 app.use(notFoundHandler);
