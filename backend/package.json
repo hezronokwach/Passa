@@ -17,6 +17,9 @@
     "db:rollback": "knex migrate:rollback",
     "db:seed": "knex seed:run",
     "db:reset": "knex migrate:rollback --all && knex migrate:latest && knex seed:run",
+    "db:setup": "ts-node src/scripts/setup-database.ts",
+    "db:status": "knex migrate:status",
+    "db:validate": "ts-node src/scripts/validate-schema.ts",
     "generate:types": "ts-node scripts/generate-types.ts",
     "docs:generate": "typedoc src/index.ts"
   },
