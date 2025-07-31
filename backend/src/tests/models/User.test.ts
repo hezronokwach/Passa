@@ -4,20 +4,34 @@ import { UserValidationError } from '@/utils/userValidation';
 import { db } from '@/config/database';
 
 describe('UserModel', () => {
+  // Helper function to generate unique test data
+  const generateUniqueUserData = (suffix?: string) => {
+    const timestamp = Date.now();
+    const randomNum = Math.floor(Math.random() * 1000);
+    const uniqueSuffix = suffix || `${timestamp}_${randomNum}`;
+    return {
+      username: `testuser_${uniqueSuffix}`,
+      email: `test_${uniqueSuffix}@example.com`,
+      password: 'password123',
+      first_name: 'Test',
+      last_name: 'User',
+    };
+  };
+
   beforeAll(async () => {
     // Run migrations for test database
     await db.migrate.latest();
-    
+
     // Seed test roles if they don't exist
     const existingRoles = await db('user_roles').select('role_name');
     const existingRoleNames = existingRoles.map(r => r.role_name);
-    
+
     const rolesToInsert = [
       { role_name: 'fan', display_name: 'Fan', is_active: true },
       { role_name: 'creator', display_name: 'Creator', is_active: true },
       { role_name: 'brand', display_name: 'Brand', is_active: true },
     ].filter(role => !existingRoleNames.includes(role.role_name));
-    
+
     if (rolesToInsert.length > 0) {
       await db('user_roles').insert(rolesToInsert);
     }
@@ -38,13 +52,7 @@ describe('UserModel', () => {
 
   describe('CRUD Operations', () => {
     it('should create a new user with validation', async () => {
-      const userData = {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-        first_name: 'Test',
-        last_name: 'User',
-      };
+      const userData = generateUniqueUserData();
 
       const user = await UserModel.create(userData);
 
@@ -80,37 +88,21 @@ describe('UserModel', () => {
     });
 
     it('should prevent duplicate email', async () => {
-      const userData = {
-        username: 'testuser1',
-        email: 'test@example.com',
-        password: 'password123',
-      };
-
+      const userData = generateUniqueUserData('email1');
       await UserModel.create(userData);
 
-      const duplicateData = {
-        username: 'testuser2',
-        email: 'test@example.com',
-        password: 'password456',
-      };
+      const duplicateData = generateUniqueUserData('email2');
+      duplicateData.email = userData.email; // Use same email
 
       await expect(UserModel.create(duplicateData)).rejects.toThrow('Email already exists');
     });
 
     it('should prevent duplicate username', async () => {
-      const userData = {
-        username: 'testuser',
-        email: 'test1@example.com',
-        password: 'password123',
-      };
-
+      const userData = generateUniqueUserData('username1');
       await UserModel.create(userData);
 
-      const duplicateData = {
-        username: 'testuser',
-        email: 'test2@example.com',
-        password: 'password456',
-      };
+      const duplicateData = generateUniqueUserData('username2');
+      duplicateData.username = userData.username; // Use same username
 
       await expect(UserModel.create(duplicateData)).rejects.toThrow('Username already exists');
     });
@@ -199,13 +191,8 @@ describe('UserModel', () => {
     });
 
     it('should set and use password reset token', async () => {
-      const userData = {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      };
-
-      await UserModel.create(userData);
+      const userData = generateUniqueUserData('reset');
+      const createdUser = await UserModel.create(userData);
       const resetToken = await UserModel.setPasswordResetToken(userData.email);
 
       expect(resetToken).toBeDefined();
@@ -215,6 +202,8 @@ describe('UserModel', () => {
       const newPassword = 'newpassword456';
       const updatedUser = await UserModel.resetPassword(resetToken, newPassword);
 
+      expect(updatedUser).toBeDefined();
+      expect(updatedUser.user_id).toBe(createdUser.user_id);
       const isNewPasswordValid = await UserModel.verifyPassword(newPassword, updatedUser.password_hash);
       expect(isNewPasswordValid).toBe(true);
     });
@@ -270,43 +259,31 @@ describe('UserModel', () => {
   });
 
   describe('Search and Filtering', () => {
-    beforeEach(async () => {
-      // Create test users
-      await UserModel.create({
-        username: 'alice',
-        email: 'alice@example.com',
-        password: 'password123',
-        first_name: 'Alice',
-      });
-
-      await UserModel.create({
-        username: 'bob',
-        email: 'bob@example.com',
-        password: 'password123',
-        first_name: 'Bob',
-      });
-
-      await UserModel.create({
-        username: 'charlie',
-        email: 'charlie@example.com',
-        password: 'password123',
-        first_name: 'Charlie',
-      });
-    });
-
     it('should search users by username', async () => {
-      const result = await UserModel.search({ username: 'alice' });
+      // Create a test user for this specific test
+      const testUser = await UserModel.create(generateUniqueUserData('search'));
+
+      const result = await UserModel.search({ username: testUser.username });
 
       expect(result.data).toHaveLength(1);
-      expect(result.data[0]?.username).toBe('alice');
+      expect(result.data[0]?.username).toBe(testUser.username);
       expect(result.total).toBe(1);
     });
 
     it('should paginate search results', async () => {
+      // Get current user count
+      const initialResult = await UserModel.search({});
+      const initialCount = initialResult.total;
+
+      // Create test users for pagination test
+      await UserModel.create(generateUniqueUserData('page1'));
+      await UserModel.create(generateUniqueUserData('page2'));
+      await UserModel.create(generateUniqueUserData('page3'));
+
       const result = await UserModel.search({ page: 1, limit: 2 });
 
       expect(result.data).toHaveLength(2);
-      expect(result.total).toBe(3);
+      expect(result.total).toBe(initialCount + 3);
       expect(result.page).toBe(1);
       expect(result.limit).toBe(2);
     });
@@ -314,12 +291,7 @@ describe('UserModel', () => {
 
   describe('User Existence Check', () => {
     it('should check if user exists by email', async () => {
-      const userData = {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      };
-
+      const userData = generateUniqueUserData('exists');
       await UserModel.create(userData);
 
       const exists = await UserModel.exists(userData.email);
@@ -332,12 +304,7 @@ describe('UserModel', () => {
 
   describe('Integration with Other Models', () => {
     it('should work with UserRoleModel', async () => {
-      const userData = {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      };
-
+      const userData = generateUniqueUserData('role');
       const user = await UserModel.create(userData);
       await UserRoleModel.assignRole(user.user_id, 'creator');
 
