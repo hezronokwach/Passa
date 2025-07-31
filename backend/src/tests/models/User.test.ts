@@ -8,12 +8,19 @@ describe('UserModel', () => {
     // Run migrations for test database
     await db.migrate.latest();
     
-    // Seed test roles
-    await db('user_roles').insert([
+    // Seed test roles if they don't exist
+    const existingRoles = await db('user_roles').select('role_name');
+    const existingRoleNames = existingRoles.map(r => r.role_name);
+    
+    const rolesToInsert = [
       { role_name: 'fan', display_name: 'Fan', is_active: true },
       { role_name: 'creator', display_name: 'Creator', is_active: true },
       { role_name: 'brand', display_name: 'Brand', is_active: true },
-    ]);
+    ].filter(role => !existingRoleNames.includes(role.role_name));
+    
+    if (rolesToInsert.length > 0) {
+      await db('user_roles').insert(rolesToInsert);
+    }
   });
 
   afterAll(async () => {
