@@ -8,7 +8,7 @@ const knexConfig = {
     port: config.database.port,
     user: config.database.user,
     password: config.database.password,
-    database: config.database.name,
+    database: process.env['NODE_ENV'] === 'test' ? `${config.database.name}_test` : config.database.name,
   },
   pool: {
     min: 2,

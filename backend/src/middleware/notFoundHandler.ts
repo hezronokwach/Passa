@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-export const notFoundHandler = (req: Request, res: Response, next: NextFunction) => {
+export const notFoundHandler = (req: Request, res: Response, _next: NextFunction) => { // eslint-disable-line @typescript-eslint/no-unused-vars
   res.status(404).json({
     success: false,
     error: {

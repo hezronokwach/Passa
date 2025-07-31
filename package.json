@@ -6,22 +6,18 @@
   "workspaces": [
     "backend",
     "frontend",
-    "contracts",
     "shared"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:contracts\"",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "npm run dev --workspace=backend",
     "dev:frontend": "npm run dev --workspace=frontend",
-    "dev:contracts": "npm run dev --workspace=contracts",
     "build": "npm run build --workspaces",
     "build:backend": "npm run build --workspace=backend",
     "build:frontend": "npm run build --workspace=frontend",
-    "build:contracts": "npm run build --workspace=contracts",
     "test": "npm run test --workspaces",
     "test:backend": "npm run test --workspace=backend",
     "test:frontend": "npm run test --workspace=frontend",
-    "test:contracts": "npm run test --workspace=contracts",
     "lint": "npm run lint --workspaces",
     "lint:fix": "npm run lint:fix --workspaces",
     "install:all": "npm install && npm run install --workspaces",
@@ -29,9 +25,7 @@
     "deploy:dev": "npm run deploy:dev --workspace=infrastructure",
     "deploy:prod": "npm run deploy:prod --workspace=infrastructure",
     "db:migrate": "npm run db:migrate --workspace=backend",
-    "db:seed": "npm run db:seed --workspace=backend",
-    "contracts:deploy": "npm run deploy --workspace=contracts",
-    "contracts:test": "npm run test --workspace=contracts"
+    "db:seed": "npm run db:seed --workspace=backend"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -39,10 +33,11 @@
     "concurrently": "^8.2.2",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.1.2",
+    "eslint-plugin-prettier": "^5.5.3",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
-    "prettier": "^3.1.1"
+    "prettier": "^3.1.1",
+    "tsconfig-paths": "^4.2.0"
   },
   "engines": {
     "node": ">=18.0.0",

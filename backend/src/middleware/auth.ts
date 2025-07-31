@@ -14,7 +14,7 @@ export interface AuthenticatedRequest extends Request {
 
 export const authMiddleware = (
   req: AuthenticatedRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   try {
@@ -46,7 +46,7 @@ export const authMiddleware = (
 };
 
 export const requireRole = (roles: string[]) => {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(createError('Authentication required', 401));
     }
