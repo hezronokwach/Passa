@@ -62,6 +62,7 @@ Passa is a comprehensive creator economy platform featuring:
 ### Prerequisites
 - **Node.js 18+**
 - **npm** or **yarn**
+- **PostgreSQL 14+**
 - **Git**
 
 ### Quick Start
@@ -72,20 +73,54 @@ git clone https://github.com/hezronokwach/Passa.git
 cd Passa
 ```
 
-2. **Install frontend dependencies:**
+2. **Install dependencies:**
 ```bash
+# Install frontend dependencies
 cd frontend
+npm install
+
+# Install backend dependencies
+cd ../backend
 npm install
 ```
 
-3. **Start the development server:**
+3. **Setup environment:**
 ```bash
+# Copy environment file
+cp .env.example .env
+# Edit .env with your database credentials
+```
+
+4. **Setup database:**
+```bash
+cd backend
+
+# Create databases
+createdb passa_dev
+createdb passa_dev_test
+
+# Run migrations
+npm run db:migrate
+
+# Seed initial data
+npm run db:seed
+```
+
+5. **Start development servers:**
+```bash
+# Terminal 1 - Backend API
+cd backend
+npm run dev
+
+# Terminal 2 - Frontend
+cd frontend
 npm run dev
 ```
 
-4. **Open your browser:**
+6. **Open your browser:**
 ```
-http://localhost:3000
+Frontend: http://localhost:3000
+Backend API: http://localhost:3001
 ```
 
 ### Build for Production
@@ -94,9 +129,12 @@ http://localhost:3000
 # Build the frontend
 cd frontend
 npm run build
-
-# Preview the production build
 npm run preview
+
+# Build the backend
+cd backend
+npm run build
+npm start
 ```
 
 ## 📁 Project Structure
@@ -141,6 +179,100 @@ Passa/
 - Optimized spacing and typography
 - Responsive navigation menu
 - Fast loading on mobile networks
+
+## 🛠️ Backend Development
+
+### Database Commands
+
+```bash
+cd backend
+
+# Migration commands
+npm run db:migrate          # Run latest migrations
+npm run db:rollback         # Rollback last migration
+npm run db:reset            # Reset database (rollback all + migrate + seed)
+npm run db:status           # Check migration status
+
+# Seed commands
+npm run db:seed             # Run all seed files
+
+# Utility commands
+npm run db:setup            # Setup database from scratch
+npm run db:validate         # Validate database schema
+```
+
+### Testing
+
+```bash
+cd backend
+
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Test specific file
+npm test -- User.test.ts
+```
+
+### Code Quality
+
+```bash
+cd backend
+
+# Linting
+npm run lint                # Check for linting errors
+npm run lint:fix            # Fix linting errors
+
+# Formatting
+npm run format              # Format code with Prettier
+```
+
+### Development Scripts
+
+```bash
+cd backend
+
+# Development
+npm run dev                 # Start development server with hot reload
+npm run build               # Build for production
+npm start                   # Start production server
+
+# Documentation
+npm run docs:generate       # Generate API documentation
+```
+
+### User Model API
+
+The User Model provides comprehensive user management:
+
+```typescript
+// Create user
+const user = await UserModel.create({
+  username: 'johndoe',
+  email: 'john@example.com',
+  password: 'securepassword123',
+  first_name: 'John',
+  last_name: 'Doe'
+});
+
+// Find user
+const user = await UserModel.findByEmail('john@example.com');
+
+// Update user
+const updated = await UserModel.update(userId, { first_name: 'Johnny' });
+
+// Role management
+await UserRoleModel.assignRole(userId, 'creator');
+const roles = await UserRoleModel.getUserRoles(userId);
+
+// Activity logging
+await UserActivityModel.logActivity(userId, 'login', { ip_address: '127.0.0.1' });
+```
 
 ## 🗺️ Development Roadmap
 
