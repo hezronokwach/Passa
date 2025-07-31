@@ -3,6 +3,14 @@
 import { db, testConnection, closeConnection } from '../config/database';
 import { logger } from '../utils/logger';
 
+interface TableInfo {
+  table_name: string;
+}
+
+interface QueryResult {
+  rows: TableInfo[];
+}
+
 
 
 async function validateSchema() {
@@ -17,15 +25,15 @@ async function validateSchema() {
 
     // Get all tables
     const tables = await db.raw(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_schema = 'public'
       AND table_type = 'BASE TABLE'
       ORDER BY table_name
-    `);
+    `) as QueryResult;
 
     logger.info(`📊 Found ${tables.rows.length} tables:`);
-    tables.rows.forEach((table: any) => {
+    tables.rows.forEach((table: TableInfo) => {
       logger.info(`  - ${table.table_name}`);
     });
 
@@ -38,7 +46,7 @@ async function validateSchema() {
       'permissions', 'audit_logs'
     ];
 
-    const existingTables = tables.rows.map((t: any) => t.table_name);
+    const existingTables = tables.rows.map((t: TableInfo) => t.table_name);
     const missingTables = expectedTables.filter(table => !existingTables.includes(table));
 
     if (missingTables.length > 0) {
