@@ -31,6 +31,9 @@ export interface Event {
   is_private: boolean;
   access_code?: string;
   published_at?: Date;
+  completed_at?: Date;
+  cancelled_at?: Date;
+  smart_contract_id?: number;
   is_deleted: boolean;
   deleted_at?: Date;
   created_at: Date;
@@ -61,6 +64,7 @@ export interface CreateEventInput {
   is_featured?: boolean;
   is_private?: boolean;
   access_code?: string;
+  smart_contract_id?: number;
   tag_ids?: number[];
 }
 
@@ -87,6 +91,7 @@ export interface UpdateEventInput {
   is_featured?: boolean;
   is_private?: boolean;
   access_code?: string;
+  smart_contract_id?: number;
   tag_ids?: number[];
 }
 

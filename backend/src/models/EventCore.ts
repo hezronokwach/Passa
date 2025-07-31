@@ -75,6 +75,7 @@ export class EventCoreModel {
           is_featured: sanitizedData.is_featured || false,
           is_private: sanitizedData.is_private || false,
           access_code: sanitizedData.access_code,
+          smart_contract_id: sanitizedData.smart_contract_id,
           is_deleted: false,
         })
         .returning('*');
