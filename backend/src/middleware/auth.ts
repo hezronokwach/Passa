@@ -3,6 +3,15 @@ import jwt from 'jsonwebtoken';
 import { config } from '@/config/environment';
 import { createError } from './errorHandler';
 
+export interface JwtPayload {
+  id: string;
+  email: string;
+  role: string;
+  stellarPublicKey?: string;
+  iat?: number;
+  exp?: number;
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
@@ -26,13 +35,13 @@ export const authMiddleware = (
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
     
-    const decoded = jwt.verify(token, config.jwt.secret) as any;
+    const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
     
     req.user = {
       id: decoded.id,
       email: decoded.email,
       role: decoded.role,
-      stellarPublicKey: decoded.stellarPublicKey,
+      ...(decoded.stellarPublicKey && { stellarPublicKey: decoded.stellarPublicKey }),
     };
     
     next();

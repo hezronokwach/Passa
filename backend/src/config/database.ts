@@ -1,5 +1,6 @@
 import knex from 'knex';
 import { config } from './environment';
+import { logger } from '@/utils/logger';
 
 const knexConfig = {
   client: 'postgresql',
@@ -33,7 +34,7 @@ export const testConnection = async (): Promise<boolean> => {
     await db.raw('SELECT 1');
     return true;
   } catch (error) {
-    console.error('Database connection failed:', error);
+    logger.error('Database connection failed:', error);
     return false;
   }
 };

@@ -302,6 +302,10 @@ export class UserModel {
       })
       .returning('*');
 
+    if (!updatedUser) {
+      throw new Error('Failed to update user password');
+    }
+
     return updatedUser;
   }
 

@@ -1,5 +1,6 @@
 import { db } from '@/config/database';
 import { ActivityLogInput } from '@/types/user';
+import { logger } from '@/utils/logger';
 
 export interface ActivityLog {
   log_id: number;
@@ -41,7 +42,7 @@ export class UserActivityModel {
       });
     } catch (error) {
       // Log activity errors should not break the main flow
-      console.error('Failed to log user activity:', error);
+      logger.error('Failed to log user activity:', error);
     }
   }
 
