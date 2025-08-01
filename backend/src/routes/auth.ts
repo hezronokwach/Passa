@@ -43,6 +43,48 @@ router.post('/signup', async (req: Request, res: Response) => {
   }
 });
 
+router.post('/signin', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const user = await UserModel.findByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const passwordValid = await UserModel.verifyPassword(password, user.password_hash);
+    if (!passwordValid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user.user_id, username: user.username },
+      process.env['JWT_SECRET'] || 'secretkey',
+      { expiresIn: '1h' }
+    );
+
+    return res.status(200).json({
+      message: 'Signin successful',
+      user: {
+        user_id: user.user_id,
+        username: user.username,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error('Signin error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Health check route
 router.get('/health', (_req, res) => {
   res.json({ message: 'Auth routes placeholder' });
