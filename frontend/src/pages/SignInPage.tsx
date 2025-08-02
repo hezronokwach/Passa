@@ -23,10 +23,34 @@ const SignInPage = () => {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle sign in logic here
-    console.log('Sign in:', formData)
+    try {
+      const response = await fetch('http://localhost:3000/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        alert('Signin failed: ' + (errorData.error || 'Unknown error'))
+        return
+      }
+
+      const data = await response.json()
+      localStorage.setItem('authToken', data.token)
+      // Redirect to dashboard
+      window.location.href = '/dashboard'
+    } catch (error) {
+      console.error('Signin error:', error)
+      alert('Signin failed: ' + error)
+    }
   }
 
   return (

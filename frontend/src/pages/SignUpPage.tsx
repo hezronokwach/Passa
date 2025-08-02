@@ -13,6 +13,7 @@ const SignUpPage = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -30,10 +31,37 @@ const SignUpPage = () => {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle sign up logic here
-    console.log('Sign up:', formData)
+    try {
+      const response = await fetch('http://localhost:3000/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        alert('Signup failed: ' + (errorData.error || 'Unknown error'))
+        return
+      }
+
+      const data = await response.json()
+      localStorage.setItem('authToken', data.token)
+      // Redirect to dashboard
+      window.location.href = '/dashboard'
+    } catch (error) {
+      console.error('Signup error:', error)
+      alert('Signup failed: ' + error)
+    }
   }
 
   const passwordRequirements = [
@@ -131,6 +159,21 @@ const SignUpPage = () => {
                           required
                         />
                       </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-neutral-300 mb-3">
+                          Username
+                        </label>
+                        <input
+                          type="text"
+                          name="username"
+                          value={formData.username}
+                          onChange={handleInputChange}
+                          className="input w-full"
+                          placeholder="JDoe"
+                          required
+                        />
                     </div>
 
                     {/* Email Field */}
