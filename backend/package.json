@@ -20,12 +20,11 @@
     "db:setup": "ts-node src/scripts/setup-database.ts",
     "db:status": "knex migrate:status",
     "db:validate": "ts-node src/scripts/validate-schema.ts",
-    "generate:types": "ts-node scripts/generate-types.ts",
     "docs:generate": "typedoc src/index.ts"
   },
   "dependencies": {
     "aws-sdk": "^2.1518.0",
-    "axios": "^1.6.2",
+    "axios": "^1.11.0",
     "bcryptjs": "^2.4.3",
     "bull": "^4.12.2",
     "compression": "^1.7.4",
@@ -89,6 +88,7 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.8",
+    "tsconfig-paths": "^4.2.0",
     "typedoc": "^0.25.4",
     "typescript": "^5.3.3"
   },
