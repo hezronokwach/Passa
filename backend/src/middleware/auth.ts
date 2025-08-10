@@ -4,7 +4,7 @@ import { config } from '@/config/environment';
 import { createError } from './errorHandler';
 
 export interface JwtPayload {
-  id: string;
+  id: number;
   email: string;
   role: string;
   stellarPublicKey?: string;
@@ -14,7 +14,7 @@ export interface JwtPayload {
 
 export interface AuthenticatedRequest extends Request {
   user?: {
-    id: string;
+    id: number;
     email: string;
     role: string;
     stellarPublicKey?: string;
