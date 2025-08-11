@@ -1,5 +1,6 @@
 #!/usr/bin/env ts-node
 
+import 'tsconfig-paths/register';
 import { db, testConnection, closeConnection } from '../config/database';
 import { logger } from '../utils/logger';
 

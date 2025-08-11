@@ -2,6 +2,8 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { CreateUserInput } from '../types/user';
 import { Request, Response } from 'express';
+import { config } from '@/config/environment';
+import { SignOptions } from 'jsonwebtoken';
 
 const router = Router();
 
@@ -16,11 +18,15 @@ router.post('/signup', async (req: Request, res: Response) => {
     const newUser = await UserModel.create(userData);
 
     // Generate JWT token
-    const token = jwt.sign(
-      { userId: newUser.user_id, username: newUser.username },
-      process.env['JWT_SECRET'] || 'secretkey',
-      { expiresIn: '1h' }
-    );
+    const payload = { 
+      id: newUser.user_id, 
+      email: newUser.email,
+      role: 'user' // Default role
+    };
+    
+    const options: SignOptions = { expiresIn: config.jwt.expiresIn as any };
+    
+    const token = jwt.sign(payload, config.jwt.secret, options);
 
     // Return user info and token
     return res.status(201).json({
@@ -62,11 +68,18 @@ router.post('/signin', async (req: Request, res: Response) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.user_id, username: user.username },
-      process.env['JWT_SECRET'] || 'secretkey',
-      { expiresIn: '1h' }
-    );
+    const payload = { 
+      id: user.user_id, 
+      email: user.email,
+      role: 'user' // Default role, would be fetched from user roles in a real implementation
+    };
+    
+    const options: SignOptions = { expiresIn: config.jwt.expiresIn as any };
+    
+    const token = jwt.sign(payload, config.jwt.secret, options);
+
+    // Update last login
+    await UserModel.update(user.user_id, { last_login_at: new Date() } as any);
 
     return res.status(200).json({
       message: 'Signin successful',
