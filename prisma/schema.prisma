@@ -1,0 +1,196 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// USER AND PROFILE MODELS
+
+model User {
+  id               Int                @id @default(autoincrement())
+  email            String             @unique
+  password         String
+  name             String?
+  role             Role               @default(FAN)
+  creatorProfile   CreatorProfile?
+  organizerProfile OrganizerProfile?
+  // Relations
+  eventsOrganized  Event[]
+  submissions      Submission[]
+  purchasedTickets PurchasedTicket[]
+  attributions     Attribution[]
+}
+
+model CreatorProfile {
+  id        Int             @id @default(autoincrement())
+  user      User            @relation(fields: [userId], references: [id])
+  userId    Int             @unique
+  bio       String?         @db.Text
+  skills    String[]
+  website   String?
+  // Relations
+  portfolio PortfolioItem[]
+}
+
+model PortfolioItem {
+  id               Int               @id @default(autoincrement())
+  creatorProfile   CreatorProfile    @relation(fields: [creatorProfileId], references: [id])
+  creatorProfileId Int
+  title            String
+  description      String?           @db.Text
+  type             PortfolioItemType
+  url              String
+  createdAt        DateTime          @default(now())
+}
+
+model OrganizerProfile {
+  id          Int     @id @default(autoincrement())
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int     @unique
+  companyName String?
+  bio         String? @db.Text
+  website     String?
+}
+
+// EVENT AND TICKET MODELS
+
+model Event {
+  id               Int               @id @default(autoincrement())
+  title            String
+  description      String            @db.Text
+  date             DateTime
+  location         String
+  country          String
+  imageUrl         String
+  organizer        User              @relation(fields: [organizerId], references: [id])
+  organizerId      Int
+  artistSplit      Int               @default(70)
+  venueSplit       Int               @default(20)
+  passaSplit       Int               @default(10)
+  // Relations
+  tickets          Ticket[]
+  purchasedTickets PurchasedTicket[]
+  briefs           CreativeBrief[]
+  attributions     Attribution[]
+  createdAt        DateTime          @default(now())
+}
+
+model Ticket {
+  id               Int               @id @default(autoincrement())
+  event            Event             @relation(fields: [eventId], references: [id])
+  eventId          Int
+  name             String
+  price            Float
+  quantity         Int
+  sold             Int               @default(0)
+  // Relations
+  purchasedTickets PurchasedTicket[]
+}
+
+model PurchasedTicket {
+  id                Int           @id @default(autoincrement())
+  event             Event         @relation(fields: [eventId], references: [id])
+  eventId           Int
+  ticket            Ticket        @relation(fields: [ticketId], references: [id])
+  ticketId          Int
+  owner             User          @relation(fields: [ownerId], references: [id])
+  ownerId           Int
+  status            TicketStatus  @default(ACTIVE)
+  transaction       Transaction?
+  createdAt         DateTime      @default(now())
+}
+
+model Transaction {
+  id                Int             @id @default(autoincrement())
+  purchasedTicket   PurchasedTicket @relation(fields: [purchasedTicketId], references: [id])
+  purchasedTicketId Int             @unique
+  amount            Float
+  currency          String
+  blockchainTxId    String          @unique
+  status            String
+  createdAt         DateTime        @default(now())
+}
+
+// CREATIVE AND SUBMISSION MODELS
+
+model CreativeBrief {
+  id             Int          @id @default(autoincrement())
+  event          Event        @relation(fields: [eventId], references: [id])
+  eventId        Int
+  title          String
+  description    String       @db.Text
+  budget         Float
+  requiredSkills String[]
+  // Relations
+  submissions    Submission[]
+  createdAt      DateTime     @default(now())
+}
+
+model Submission {
+  id        Int              @id @default(autoincrement())
+  brief     CreativeBrief    @relation(fields: [briefId], references: [id])
+  briefId   Int
+  creator   User             @relation(fields: [creatorId], references: [id])
+  creatorId Int
+  message   String?          @db.Text
+  fileUrl   String
+  status    SubmissionStatus @default(PENDING)
+  // Relations
+  attribution Attribution?
+  createdAt DateTime         @default(now())
+}
+
+model Attribution {
+  id               Int              @id @default(autoincrement())
+  event            Event            @relation(fields: [eventId], references: [id])
+  eventId          Int
+  user             User             @relation(fields: [userId], references: [id])
+  userId           Int
+  submission       Submission?      @relation(fields: [submissionId], references: [id])
+  submissionId     Int?             @unique
+  contributionType ContributionType
+  sharePercentage  Float
+  createdAt        DateTime         @default(now())
+}
+
+model NewsletterSubscription {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+// ENUMS
+
+enum Role {
+  FAN
+  CREATOR
+  ORGANIZER
+  ADMIN
+}
+
+enum PortfolioItemType {
+  IMAGE
+  VIDEO
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TicketStatus {
+  ACTIVE
+  USED
+}
+
+enum ContributionType {
+  CREATIVE
+  SPONSORSHIP
+}
