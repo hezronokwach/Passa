@@ -30,16 +30,16 @@ export async function createSession(userId: number, role: string) {
   const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
   const session = await encrypt({ userId, role, expires });
 
-  cookies().set('session', session, { expires, httpOnly: true });
+  (await cookies()).set('session', session, { expires, httpOnly: true });
 }
 
 export async function getSession() {
-  const sessionCookie = cookies().get('session')?.value;
+  const sessionCookie = (await cookies()).get('session')?.value;
   if (!sessionCookie) return null;
   const session = await decrypt(sessionCookie);
   return session;
 }
 
 export async function deleteSession() {
-  cookies().set('session', '', { expires: new Date(0) });
+  (await cookies()).set('session', '', { expires: new Date(0) });
 }

@@ -38,8 +38,14 @@ yarn-error.log*
 next-env.d.ts
 
 .genkit/*
-.env*
+.env
 
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# prisma
+/prisma/migrations
+
+# system files
+Thumbs.db

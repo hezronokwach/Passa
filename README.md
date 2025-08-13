@@ -32,16 +32,31 @@ Passa is a cutting-edge event ticketing platform built for the African continent
     ```
 2.  **Set up your environment**:
     - Copy the `.env.example` file to `.env`.
-    - Add your PostgreSQL database connection string to the `DATABASE_URL` variable.
+    - Update the `DATABASE_URL` variable with your PostgreSQL database connection string.
+    - Set the `SESSION_SECRET` to a secure random string.
+    - Add your Google Gemini API key to `GEMINI_API_KEY` if you want to use AI features.
     ```
     DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
+    SESSION_SECRET="your-super-secret-session-key"
+    GEMINI_API_KEY="your-gemini-api-key"
     ```
-3.  **Sync the database schema**:
+3.  **Set up the database**:
+    You can either run our setup script:
     ```bash
-    npx prisma db push
+    ./simple-setup.sh
+    ```
+    Or manually run Prisma migrations:
+    ```bash
+    npx prisma migrate dev --name init
     ```
 4.  **Run the development server**:
     ```bash
     npm run dev
     ```
 The application will be available at `http://localhost:9002`.
+
+## Database Setup
+
+If you're using a local PostgreSQL instance, make sure it's running and you have a database created. The `simple-setup.sh` script will attempt to create the database automatically using Prisma.
+
+For production deployments, update the `DATABASE_URL` in your environment variables to point to your production database.
