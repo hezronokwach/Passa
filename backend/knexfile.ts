@@ -1,8 +1,10 @@
 import type { Knex } from 'knex';
 import dotenv from 'dotenv';
+import path from 'path';
 
-
-dotenv.config({ path: '../.env' });
+// Load environment variables from the .env file in the backend directory
+// This makes it work correctly when run from the project root.
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const knexConfig: { [key: string]: Knex.Config } = {
   development: {

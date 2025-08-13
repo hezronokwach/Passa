@@ -22,6 +22,8 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    // This proxy is for development only (when running `npm run dev` in the frontend folder).
+    // It is not used in the production build.
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
@@ -30,7 +32,8 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: '../backend/public',
+    emptyOutDir: true,
     sourcemap: true,
   },
   define: {

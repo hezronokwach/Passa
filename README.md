@@ -67,8 +67,8 @@ Passa is a comprehensive creator economy platform featuring:
 
 ### Quick Start
 
-1. **Clone the repository:**
-```bash
+1.  **Clone the repository:**
+    ```bash
 git clone https://github.com/hezronokwach/Passa.git
 cd Passa
 ```
@@ -125,16 +125,16 @@ Backend API: http://localhost:3001
 
 ### Build for Production
 
+The backend is configured to serve the compiled frontend files.
+
 ```bash
-# Build the frontend
+# 1. Build the frontend application
 cd frontend
 npm run build
-npm run preview
 
-# Build the backend
-cd backend
-npm run build
-npm start
+# 2. Start the production backend server
+cd ../backend
+npm start # This will start the backend and serve the frontend
 ```
 
 ## 📁 Project Structure

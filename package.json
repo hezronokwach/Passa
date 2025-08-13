@@ -1,77 +1,36 @@
 {
-  "name": "passa",
+  "name": "passa-monorepo",
   "version": "1.0.0",
-  "description": "Next-Generation Blockchain-Powered Creator Economy Platform",
   "private": true,
+  "description": "A modern blockchain-powered creator economy platform built on Stellar.",
   "workspaces": [
-    "backend",
     "frontend",
-    "shared"
+    "backend"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "npm run dev --workspace=backend",
-    "dev:frontend": "npm run dev --workspace=frontend",
-    "build": "npm run build --workspaces",
-    "build:backend": "npm run build --workspace=backend",
-    "build:frontend": "npm run build --workspace=frontend",
-    "test": "npm run test --workspaces",
-    "test:backend": "npm run test --workspace=backend",
-    "test:frontend": "npm run test --workspace=frontend",
-    "lint": "npm run lint --workspaces",
-    "lint:fix": "npm run lint:fix --workspaces",
-    "install:all": "npm install && npm run install --workspaces",
-    "clean": "npm run clean --workspaces && rm -rf node_modules",
-    "deploy:dev": "npm run deploy:dev --workspace=infrastructure",
-    "deploy:prod": "npm run deploy:prod --workspace=infrastructure",
-    "db:migrate": "npm run db:migrate --workspace=backend",
-    "db:seed": "npm run db:seed --workspace=backend"
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:frontend": "npm run dev --workspace=@passa/frontend",
+    "dev:backend": "npm run dev --workspace=@passa/backend",
+    "build": "npm run build --workspace=@passa/frontend && npm run build --workspace=@passa/backend",
+    "build:frontend": "npm run build --workspace=@passa/frontend",
+    "build:backend": "npm run build --workspace=@passa/backend",
+    "start": "npm start --workspace=@passa/backend",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "db:migrate": "npm run db:migrate --workspace=@passa/backend",
+    "db:seed": "npm run db:seed --workspace=@passa/backend",
+    "db:reset": "npm run db:reset --workspace=@passa/backend",
+    "db:setup": "npm run db:setup --workspace=@passa/backend",
+    "db:status": "npm run db:status --workspace=@passa/backend"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "concurrently": "^8.2.2",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.5.3",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.2.0",
-    "prettier": "^3.1.1",
-    "tsconfig-paths": "^4.2.0"
+    "concurrently": "^8.2.2"
   },
   "engines": {
     "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "npm": ">=8.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-org/Passa.git"
-  },
-  "keywords": [
-    "blockchain",
-    "stellar",
-    "soroban",
-    "creator-economy",
-    "events",
-    "ticketing",
-    "defi",
-    "web3",
-    "passa"
-  ],
-  "author": "Passa Team",
-  "license": "MIT",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
-  }
+  "author": "Hezron Okwach <hezronokwach@gmail.com>",
+  "license": "MIT"
 }

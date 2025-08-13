@@ -9,7 +9,6 @@ import { config } from '@/config/environment';
 import { logger } from '@/utils/logger';
 import { errorHandler } from '@/middleware/errorHandler';
 import { notFoundHandler } from '@/middleware/notFoundHandler';
-import { singleServerConfig } from './config/singleServer';
 
 // Import routes
 import authRoutes from '@/routes/auth';
@@ -50,37 +49,25 @@ app.get('/health', (_req, res) => {
 });
 
 // API routes
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 
-// const staticPath = path.join(process.cwd(), 'public');
-// app.use('/static', express.static(staticPath));
+// --- Serve Static Frontend in Production ---
+// This block should be after all API routes and before the error handlers.
+// It's wrapped in a production check to avoid serving stale files in development.
+if (config.app.env === 'production') {
+  const frontendBuildPath = path.join(__dirname, '..', 'public');
 
-  // 1. Serve static files with caching
-  app.use(
-    '/static',
-    express.static(singleServerConfig.frontendBuildPath, singleServerConfig.staticCache)
-  );
+  // 1. Serve static assets from the 'public' folder
+  app.use(express.static(frontendBuildPath));
 
-  console.log("CONFIG: ", singleServerConfig);
-
-
-  // 2. SPA fallback for defined routes
-  singleServerConfig.spaFallback.routes.forEach(route => {
-    app.get(route, (_req, res) => {
-      res.sendFile(
-        path.join(singleServerConfig.frontendBuildPath, singleServerConfig.spaFallback.indexFile)
-      );
-    });
-  });
-
-  // Optional: catch-all for unknown routes (if you want all non-API requests to go to index.html)
+  // 2. For any other GET request that doesn't match a static file,
+  // serve the index.html. This is the catch-all for client-side routing.
   app.get('*', (_req, res) => {
-    res.sendFile(
-      path.join(singleServerConfig.frontendBuildPath, singleServerConfig.spaFallback.indexFile)
-    );
+    res.sendFile(path.join(frontendBuildPath, 'index.html'));
   });
+}
 
 // Error handling middleware
 app.use(notFoundHandler);
