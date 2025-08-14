@@ -55,6 +55,23 @@ Passa is a cutting-edge event ticketing platform built for the African continent
     ```
 The application will be available at `http://localhost:9002`.
 
+## Authentication System
+
+Passa implements a role-based authentication system with the following features:
+
+- **Secure Password Storage**: Passwords are hashed using bcrypt with 10 salt rounds
+- **Session Management**: JWT-based sessions with proper encryption
+- **Role-Based Access Control**: Users can be Fans, Creators, Organizers, or Admins
+- **Protected Routes**: Middleware ensures only authenticated users can access dashboard pages
+- **Automatic Redirection**: Users are redirected to their appropriate dashboard after login/signup
+
+### Roles
+
+- **Fan**: Can browse events and purchase tickets
+- **Creator**: Can apply for creative opportunities and manage their portfolio
+- **Organizer**: Can create events and manage submissions
+- **Admin**: Can access administrative features (not fully implemented yet)
+
 ## Database Setup
 
 If you're using a local PostgreSQL instance, make sure it's running and you have a database created. The `simple-setup.sh` script will attempt to create the database automatically using Prisma.
