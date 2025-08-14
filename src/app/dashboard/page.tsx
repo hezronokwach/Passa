@@ -4,7 +4,7 @@
 import { translateEventTitle } from '@/ai/flows/translate-event-title';
 import React from 'react';
 import { EventCard } from '@/components/passa/event-card';
-import { Header } from '@/components/passa/header';
+import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import prisma from '@/lib/db';
@@ -24,7 +24,26 @@ async function getUserRole() {
   return session?.role ?? 'FAN';
 }
 
+async function getUser() {
+  const session = await getSession();
+  if (!session) {
+    return null;
+  }
+  
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+  });
+  
+  return user;
+}
+
 export default async function DashboardPage() {
+  const user = await getUser();
+  if (!user) {
+    // Redirect to login if user is not found
+    return redirect('/login');
+  }
+  
   const userRole = await getUserRole();
   const rawEvents = await prisma.event.findMany({
     include: { tickets: true },
@@ -61,7 +80,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <Header />
+      <DashboardHeader user={user} />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-8">
