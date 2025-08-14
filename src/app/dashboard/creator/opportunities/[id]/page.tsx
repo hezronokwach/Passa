@@ -2,7 +2,8 @@
 'use client';
 
 import React from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
 import { createSubmission } from '@/app/actions/creator';
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
@@ -37,7 +38,7 @@ export default function BriefDetailPage({ params: { id } }: { params: { id: stri
         description: 'We need a stunning 2-minute promotional video to capture the vibrant energy of the Afrochella festival. The video should highlight key performances, audience reactions, and the overall cultural experience. The final deliverable should be a 16:9 MP4 file, under 100MB. We are looking for creative storytelling that captures the essence of Afrofuturism and community. Submissions will be reviewed on a rolling basis.'
     };
     
-    const [submissionState, formAction] = useFormState(createSubmission, {
+    const [submissionState, formAction] = useActionState(createSubmission, {
         message: '',
         errors: {},
     });
