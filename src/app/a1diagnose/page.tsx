@@ -7,6 +7,22 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from '@/lib/db';
 
+const DiagnoseError = (error: string) => {
+  return (
+    <>
+      <div style={{ color: 'red', width: '200px', textAlign: 'center', margin: '3rem auto' }}>{ error }</div>
+    </>
+  )
+}
+
+const DiagnoseSuccess = (message: string) => {
+  return (
+    <>
+      <div style={{ color: 'green', width: '200px', textAlign: 'center', margin: '3rem auto' }}>{ message }</div>
+    </>
+  )
+}
+
 async function diagnoseSignupIssue() {
   console.log('🔍 Diagnosing signup issue...\n');
   
@@ -20,7 +36,7 @@ async function diagnoseSignupIssue() {
     console.log('\nSolution: Make sure PostgreSQL is running and accessible');
     console.log('   Run: sudo systemctl start postgresql');
     console.log('   Or: brew services start postgresql (on macOS)');
-    return;
+    return DiagnoseError('Database connection failed');
   }
   
   // Test 2: User Table Structure
@@ -32,7 +48,7 @@ async function diagnoseSignupIssue() {
     console.error('User table issue:', (error as Error).message);
     console.log('\nSolution: Run database migrations');
     console.log('   Run: npx prisma migrate dev');
-    return;
+    return DiagnoseError('User table issue');
   }
   
   // Test 3: Create Test User
@@ -54,6 +70,7 @@ async function diagnoseSignupIssue() {
     
   } catch (error) {
     console.error('User creation failed:', (error as Error).message);
+    return DiagnoseError('User creation failed');
   }
   
   // Test 4: Check Database URL
@@ -78,9 +95,17 @@ async function diagnoseSignupIssue() {
     console.log(users);
   } catch (error) {
     console.error('Finding Users issue:', (error as Error).message);
-    return;
+    return DiagnoseError('Finding Users issue');
   }
+
+
+  // success
+  return DiagnoseSuccess("No issues");
 }
 
 // Run the diagnostic
-diagnoseSignupIssue().catch(console.error);
+export default function Diagnosis() {
+  return diagnoseSignupIssue();
+}
+// diagnoseSignupIssue().catch(console.error);
+

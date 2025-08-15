@@ -9,7 +9,6 @@ import { Role } from '@prisma/client';
 import { generateEmailVerificationToken, generatePasswordResetToken } from '@/lib/auth/utils';
 import { blockchainAuthService } from '@/lib/auth/blockchain';
 
-// Schemas
 const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -48,22 +47,17 @@ export async function signup(prevState: any, formData: FormData) {
     };
   }
 
-  console.log("Validted: ", validatedFields.data)
-
   const { email, password, role } = validatedFields.data;
 
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-        console.log("Existing user: ", existingUser);
       return { success: false, message: 'User with this email already exists.' };
     }
 
     const result = await prisma.$transaction(async (tx) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       const verificationToken = await generateEmailVerificationToken(email);
-
-      console.log("VerTok: ", verificationToken);
       
       const newUser = await tx.user.create({
         data: {
@@ -73,7 +67,6 @@ export async function signup(prevState: any, formData: FormData) {
           verificationToken: verificationToken,
         },
       });
-      console.log("Neuser: ", newUser);
 
       if (role === Role.CREATOR) {
         await tx.creatorProfile.create({ 
@@ -120,7 +113,11 @@ export async function signup(prevState: any, formData: FormData) {
 export async function login(prevState: any, formData: FormData) {
     const validatedFields = loginSchema.safeParse(Object.fromEntries(formData));
 
+    console.log("Validated: ", validatedFields)
+
     if (!validatedFields.success) {
+        console.log("Errors: ", validatedFields.error.flatten().fieldErrors)
+        
         return { success: false, message: 'Invalid form data', errors: validatedFields.error.flatten().fieldErrors };
     }
 
@@ -267,7 +264,6 @@ export async function loginWithWallet(prevState: any, formData: FormData) {
 
         await createSession(user.id, user.role);
 
-        // ✅ Use enum values and fix the switch logic
         switch(user.role) {
             case Role.ADMIN: 
                 redirect('/dashboard/admin');
