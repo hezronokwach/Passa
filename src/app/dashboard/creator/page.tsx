@@ -172,7 +172,7 @@ export default async function CreatorDashboardPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.contributedEvents}</div>
-                    <p className="text-xs text-muted-foreground">Unique events you've worked on</p>
+                    <p className="text-xs text-muted-foreground">Unique events you&apos;ve worked on</p>
                 </CardContent>
              </Card>
             <Card>

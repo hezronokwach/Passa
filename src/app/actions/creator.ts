@@ -36,7 +36,7 @@ const profileSchema = z.object({
 });
 
 
-export async function updateCreatorProfile(prevState: any, formData: FormData) {
+export async function updateCreatorProfile(prevState: unknown, formData: FormData) {
   const { userId, profileId } = await getAuthenticatedUser();
 
   const rawData = {
@@ -88,7 +88,7 @@ const portfolioSchema = z.object({
   file: z.instanceof(File).refine(file => file.size > 0, "File is required"),
 })
 
-export async function addPortfolioItem(prevState: any, formData: FormData) {
+export async function addPortfolioItem(prevState: unknown, formData: FormData) {
     const { profileId } = await getAuthenticatedUser();
     
     // For file uploads, we need to handle them carefully.
@@ -136,7 +136,7 @@ const submissionSchema = z.object({
     file: z.instanceof(File).refine(file => file.size > 0, "A file is required for submission."),
 });
 
-export async function createSubmission(prevState: any, formData: FormData) {
+export async function createSubmission(prevState: unknown, formData: FormData) {
     const { userId } = await getAuthenticatedUser();
 
     const validatedFields = submissionSchema.safeParse({

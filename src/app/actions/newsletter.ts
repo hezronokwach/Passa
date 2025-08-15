@@ -8,7 +8,7 @@ const subscribeSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
 });
 
-export async function subscribeToNewsletter(prevState: any, formData: FormData) {
+export async function subscribeToNewsletter(prevState: unknown, formData: FormData) {
   const validatedFields = subscribeSchema.safeParse({
     email: formData.get('email'),
   });

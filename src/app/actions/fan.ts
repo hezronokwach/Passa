@@ -78,8 +78,8 @@ export async function purchaseTicket(input: { eventId: number; ticketId: number 
     revalidatePath('/dashboard');
     return { success: true, message: 'Ticket purchased successfully!' };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Purchase error:", error);
-    return { success: false, message: error.message || 'An unexpected error occurred during purchase.' };
+    return { success: false, message: (error as Error).message || 'An unexpected error occurred during purchase.' };
   }
 }

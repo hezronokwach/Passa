@@ -1,8 +1,21 @@
 import type { Metadata } from 'next';
+import { Inter, Manrope } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/passa/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
+
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+  weight: ['400', '500', '600']
+});
+
+const manrope = Manrope({ 
+  subsets: ['latin'],
+  variable: '--font-manrope',
+  weight: ['800']
+});
 
 export const metadata: Metadata = {
   title: 'Passa – No-fuss African tickets on-chain',
@@ -17,12 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-      </head>
-      <body className={cn('font-body antialiased')}>
+      <body className={cn('font-body antialiased', inter.variable, manrope.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
           <Toaster />
