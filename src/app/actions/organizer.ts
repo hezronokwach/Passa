@@ -44,7 +44,7 @@ const eventSchema = z.object({
     path: ["revenueSplits"], // Assign error to a custom path
 });
 
-export async function createEvent(prevState: any, formData: FormData) {
+export async function createEvent(prevState: unknown, formData: FormData) {
   const { userId } = await getAuthenticatedUser();
 
   const validatedFields = eventSchema.safeParse({
@@ -126,7 +126,7 @@ const organizerProfileSchema = z.object({
   website: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
 });
 
-export async function updateOrganizerProfile(prevState: any, formData: FormData) {
+export async function updateOrganizerProfile(prevState: unknown, formData: FormData) {
   const { userId, profileId } = await getAuthenticatedUser();
 
   const rawData = {
@@ -178,7 +178,7 @@ const submissionStatusSchema = z.object({
     eventId: z.coerce.number(),
 });
 
-export async function updateSubmissionStatus(prevState: any, formData: FormData) {
+export async function updateSubmissionStatus(prevState: unknown, formData: FormData) {
     // Ensure the user is an organizer before proceeding
     await getAuthenticatedUser();
     
@@ -237,7 +237,7 @@ const sponsorshipSchema = z.object({
     eventId: z.coerce.number(),
 });
 
-export async function createSponsorship(prevState: any, formData: FormData) {
+export async function createSponsorship(prevState: unknown, formData: FormData) {
     const { userId } = await getAuthenticatedUser();
 
     const validatedFields = sponsorshipSchema.safeParse({

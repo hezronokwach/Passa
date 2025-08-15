@@ -86,7 +86,7 @@ export default function BriefDetailPage({ params: { id } }: { params: { id: stri
                                                 <div className="rounded-lg border-2 border-dashed border-green-500 bg-green-500/10 p-8 text-center">
                                                     <FileCheck className="mx-auto size-12 text-green-500 mb-4" />
                                                     <h3 className="text-xl font-bold text-green-600">Your work has been submitted!</h3>
-                                                    <p className="text-muted-foreground mt-2">The organizer has been notified. We'll let you know when they review your submission.</p>
+                                                    <p className="text-muted-foreground mt-2">The organizer has been notified. We&apos;ll let you know when they review your submission.</p>
                                                 </div>
                                             ) : (
                                                 <Card className="bg-background">
@@ -104,7 +104,7 @@ export default function BriefDetailPage({ params: { id } }: { params: { id: stri
                                                             </div>
                                                             <div className="space-y-2">
                                                                 <Label htmlFor="message">Message (Optional)</Label>
-                                                                <Textarea id="message" name="message" placeholder="Anything you'd like to add?" />
+                                                                <Textarea id="message" name="message" placeholder="Anything you&apos;d like to add?" />
                                                                 {submissionState?.errors?.message && <p className="text-sm text-destructive">{submissionState.errors.message[0]}</p>}
                                                             </div>
                                                             <SubmitButton />
