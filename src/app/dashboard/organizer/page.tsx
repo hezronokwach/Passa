@@ -2,21 +2,25 @@
 
 'use server';
 
-import { Header } from '@/components/passa/header';
+import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Users, BarChart2, User } from 'lucide-react';
 import Link from 'next/link';
 import prisma from '@/lib/db';
 import { getSession } from '@/lib/session';
+import { redirect } from 'next/navigation';
 
 async function getOrganizerData() {
     // Middleware protects this page, so session is guaranteed.
     const session = await getSession();
+    if (!session) {
+        redirect('/login');
+    }
+    
     const user = await prisma.user.findUniqueOrThrow({
-        where: { id: session!.userId }
+        where: { id: session.userId }
     });
-
 
     const events = await prisma.event.findMany({
         where: { organizerId: user.id },
@@ -53,6 +57,7 @@ async function getOrganizerData() {
     const approvedCreators = approvedCreatorIds.size;
 
     return {
+        user,
         events: events.map(event => ({
             id: event.id,
             title: event.title,
@@ -68,13 +73,12 @@ async function getOrganizerData() {
     }
 }
 
-
 export default async function OrganizerDashboardPage() {
-  const { events, stats } = await getOrganizerData();
+  const { user, events, stats } = await getOrganizerData();
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <Header />
+      <DashboardHeader user={user} />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-8">

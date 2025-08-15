@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 
-const protectedRoutes = ['/dashboard'];
+const protectedRoutes = [
+  '/dashboard',
+  '/dashboard/admin',
+  '/dashboard/creator',
+  '/dashboard/organizer',
+  '/dashboard/fan'
+];
 const publicRoutes = ['/login', '/register', '/'];
 
 export async function middleware(req: NextRequest) {
@@ -11,10 +17,12 @@ export async function middleware(req: NextRequest) {
 
   const session = await getSession();
 
+  // If accessing a protected route without a session, redirect to login
   if (isProtectedRoute && !session) {
     return NextResponse.redirect(new URL('/login', req.nextUrl));
   }
 
+  // If accessing auth pages while logged in, redirect to appropriate dashboard
   if ((path.startsWith('/login') || path.startsWith('/register')) && session) {
     switch (session.role) {
       case 'ADMIN':

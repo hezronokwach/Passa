@@ -2,7 +2,8 @@
 'use client';
 
 import React from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
 import { createEvent } from '@/app/actions/organizer';
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
@@ -44,7 +45,7 @@ export default function CreateEventPage() {
     };
 
 
-    const [state, formAction] = useFormState(createEvent, {
+    const [state, formAction] = useActionState(createEvent, {
         message: '',
         errors: {},
         success: false,

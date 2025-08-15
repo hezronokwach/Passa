@@ -5,25 +5,25 @@
 
 @layer base {
   :root {
-    --background: 300 25% 98%; /* Very light violet */
-    --foreground: 255 10% 10%;
+    --background: 30 25% 98%; /* Warm cream */
+    --foreground: 25 15% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 255 10% 10%;
+    --card-foreground: 25 15% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 255 10% 10%;
-    --primary: 258 59% 51%; /* Electric Violet */
+    --popover-foreground: 25 15% 15%;
+    --primary: 25 85% 55%; /* Vibrant African Orange */
     --primary-foreground: 0 0% 98%;
-    --secondary: 258 50% 95%;
-    --secondary-foreground: 255 10% 10%;
-    --muted: 258 40% 93%;
-    --muted-foreground: 255 10% 40%;
-    --accent: 43 100% 47%; /* Golden Yellow */
-    --accent-foreground: 255 10% 10%;
+    --secondary: 30 40% 95%;
+    --secondary-foreground: 25 15% 15%;
+    --muted: 30 30% 93%;
+    --muted-foreground: 25 15% 45%;
+    --accent: 45 90% 50%; /* Golden Yellow */
+    --accent-foreground: 25 15% 15%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 258 30% 88%;
-    --input: 258 30% 88%;
-    --ring: 258 59% 51%;
+    --border: 30 25% 88%;
+    --input: 30 25% 88%;
+    --ring: 25 85% 55%;
     --radius: 0.5rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -33,25 +33,25 @@
   }
 
   .dark {
-    --background: 258 20% 11%;
-    --foreground: 300 10% 98%;
-    --card: 258 20% 15%;
-    --card-foreground: 300 10% 98%;
-    --popover: 258 20% 11%;
-    --popover-foreground: 300 10% 98%;
-    --primary: 258 69% 61%; /* Electric Violet */
+    --background: 25 25% 8%;
+    --foreground: 30 15% 95%;
+    --card: 25 25% 12%;
+    --card-foreground: 30 15% 95%;
+    --popover: 25 25% 8%;
+    --popover-foreground: 30 15% 95%;
+    --primary: 25 85% 60%; /* Vibrant African Orange */
     --primary-foreground: 0 0% 98%;
-    --secondary: 258 20% 15%;
-    --secondary-foreground: 300 10% 98%;
-    --muted: 258 20% 20%;
-    --muted-foreground: 300 10% 60%;
-    --accent: 43 100% 57%; /* Golden Yellow */
-    --accent-foreground: 255 10% 10%;
+    --secondary: 25 25% 15%;
+    --secondary-foreground: 30 15% 95%;
+    --muted: 25 25% 18%;
+    --muted-foreground: 30 15% 65%;
+    --accent: 45 90% 55%; /* Golden Yellow */
+    --accent-foreground: 25 25% 8%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 258 20% 25%;
-    --input: 258 20% 25%;
-    --ring: 258 69% 61%;
+    --border: 25 25% 22%;
+    --input: 25 25% 22%;
+    --ring: 25 85% 60%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;

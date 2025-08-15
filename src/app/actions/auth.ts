@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
-import { createSession } from '@/lib/session';
+import { createSession, deleteSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { Role } from '@prisma/client';
 
@@ -51,20 +51,19 @@ export async function signup(prevState: any, formData: FormData) {
 
     await createSession(newUser.id, newUser.role);
 
+    console.log('✅ User signup successful:', { userId: newUser.id, email, role });
+
+    // Return the role and user ID for client-side redirection
+    return { 
+      success: true, 
+      role: role, 
+      userId: newUser.id,
+      message: 'Account created successfully.' 
+    };
+
   } catch (error) {
     console.error('Signup error:', error);
     return { success: false, message: 'An unexpected error occurred.' };
-  }
-
-  switch(role) {
-      case 'ADMIN':
-          redirect('/dashboard/admin');
-      case 'CREATOR':
-          redirect('/dashboard/creator');
-      case 'ORGANIZER':
-          redirect('/dashboard/organizer');
-      default:
-          redirect('/dashboard');
   }
 }
 
@@ -100,30 +99,24 @@ export async function login(prevState: any, formData: FormData) {
 
         await createSession(user.id, user.role);
 
+        console.log('✅ User login successful:', { userId: user.id, email, role: user.role });
+
+        // Return the role and user ID for client-side redirection
+        return { 
+          success: true, 
+          role: user.role, 
+          userId: user.id,
+          message: 'Logged in successfully.' 
+        };
+
     } catch (error) {
          console.error('Login error:', error);
         return { success: false, message: 'An unexpected error occurred.' };
     }
-    
-    // The middleware will handle the redirect on the next request.
-    // For a better UX, we can redirect from here.
-    const user = await prisma.user.findUnique({ where: { email } });
-     switch(user?.role) {
-      case 'ADMIN':
-          redirect('/dashboard/admin');
-      case 'CREATOR':
-          redirect('/dashboard/creator');
-      case 'ORGANIZER':
-          redirect('/dashboard/organizer');
-      case 'FAN':
-          redirect('/dashboard/fan');
-      default:
-          redirect('/dashboard');
-  }
 }
 
 export async function logout() {
-    // In a real app, you'd call a server action to clear the session cookie
-    console.log('Logging out...');
-    redirect('/login');
+  // Clear the session cookie
+  await deleteSession();
+  redirect('/login');
 }

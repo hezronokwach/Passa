@@ -3,7 +3,10 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import type { User } from '@prisma/client';
 
-const secretKey = process.env.SESSION_SECRET || 'your-fallback-secret-key';
+const secretKey = process.env.SESSION_SECRET;
+if (!secretKey) {
+  throw new Error('SESSION_SECRET environment variable is not set');
+}
 const key = new TextEncoder().encode(secretKey);
 
 export async function encrypt(payload: any) {
@@ -30,7 +33,7 @@ export async function createSession(userId: number, role: string) {
   const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
   const session = await encrypt({ userId, role, expires });
 
-  (await cookies()).set('session', session, { expires, httpOnly: true });
+  (await cookies()).set('session', session, { expires, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 }
 
 export async function getSession() {
@@ -41,5 +44,5 @@ export async function getSession() {
 }
 
 export async function deleteSession() {
-  (await cookies()).set('session', '', { expires: new Date(0) });
+  (await cookies()).delete('session');
 }

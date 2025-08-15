@@ -1,7 +1,8 @@
 
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,6 +12,7 @@ import { AuthLayout } from '@/components/passa/auth-layout';
 import { login } from '@/app/actions/auth';
 import { useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 
 function SubmitButton() {
@@ -25,20 +27,41 @@ function SubmitButton() {
 
 export default function LoginPage() {
     const { toast } = useToast();
-    const [state, formAction] = useFormState(login, {
+    const router = useRouter();
+    const [state, formAction] = useActionState(login, {
         success: false,
         message: '',
     });
 
     useEffect(() => {
-        if (!state.success && state.message) {
+        if (state?.success) {
+            toast({ title: 'Success!', description: state.message });
+            
+            // Redirect based on role
+            switch (state.role) {
+                case 'ADMIN':
+                    router.push('/dashboard/admin');
+                    break;
+                case 'CREATOR':
+                    router.push('/dashboard/creator');
+                    break;
+                case 'ORGANIZER':
+                    router.push('/dashboard/organizer');
+                    break;
+                case 'FAN':
+                    router.push('/dashboard/fan');
+                    break;
+                default:
+                    router.push('/dashboard');
+            }
+        } else if (!state.success && state.message) {
             toast({
                 title: "Login Failed",
                 description: state.message,
                 variant: 'destructive'
             })
         }
-    }, [state, toast]);
+    }, [state, toast, router]);
 
   return (
     <AuthLayout
