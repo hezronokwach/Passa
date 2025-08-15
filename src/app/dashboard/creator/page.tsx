@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Eye, FileText, CheckCircle, Clock, XCircle, FolderKanban, DollarSign, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -14,11 +15,24 @@ import { SubmissionsChart } from './submissions-chart';
 import { getSession } from '@/lib/session';
 
 async function getCreatorData() {
-    // Mock authenticated user - in a real app, this comes from a session.
     const session = await getSession();
-    // Middleware should protect this page, so session is guaranteed to exist.
+    if (!session) {
+        return {
+            stats: {
+                totalSubmissions: 0,
+                approvedCount: 0,
+                portfolioCount: 0,
+                totalEarnings: 0,
+                contributedEvents: 0,
+            },
+            chartData: [],
+            recentSubmissions: [],
+            error: 'No session found'
+        };
+    }
+    
     const user = await prisma.user.findUniqueOrThrow({
-        where: { id: session!.userId }
+        where: { id: session.userId }
     });
 
     const creatorProfile = await prisma.creatorProfile.findUnique({
@@ -99,7 +113,11 @@ const getStatusIcon = (status: string) => {
 
 
 export default async function CreatorDashboardPage() {
-  const { stats, chartData, recentSubmissions } = await getCreatorData();
+  const { stats, chartData, recentSubmissions, error } = await getCreatorData();
+  
+  if (error) {
+    return redirect('/login');
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">

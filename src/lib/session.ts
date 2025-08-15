@@ -1,3 +1,5 @@
+"use server"
+
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
@@ -33,7 +35,7 @@ export async function createSession(userId: number, role: string) {
   const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
   const session = await encrypt({ userId, role, expires });
 
-  (await cookies()).set('session', session, { expires, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+  (await cookies()).set('session', session, { expires, httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/' });
 }
 
 export async function getSession() {

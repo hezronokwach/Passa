@@ -1,5 +1,3 @@
-
-
 'use server';
 
 import { Header } from '@/components/passa/header';
@@ -7,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Ticket, Star, Compass, User, GanttChart } from 'lucide-react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
 import { MobileNav } from '@/components/passa/mobile-nav';
 import { getSession } from '@/lib/session';
@@ -14,9 +13,17 @@ import { getSession } from '@/lib/session';
 
 async function getFanStats() {
     const session = await getSession();
-    // Middleware protects this page, so session is guaranteed.
+    if (!session) {
+        return {
+            tickets: 0,
+            favoriteArtists: 0,
+            eventsAttended: 0,
+            error: 'No session found'
+        };
+    }
+    
     const user = await prisma.user.findUniqueOrThrow({
-        where: { id: session!.userId },
+        where: { id: session.userId },
         include: {
             _count: {
                 select: { purchasedTickets: true }
@@ -44,6 +51,10 @@ async function getFanStats() {
 
 export default async function FanDashboardPage() {
     const stats = await getFanStats();
+    
+    if (stats.error) {
+        return redirect('/login');
+    }
     
     return (
         <div className="flex min-h-screen w-full flex-col bg-background">

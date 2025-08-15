@@ -49,3 +49,6 @@ firestore-debug.log
 
 # system files
 Thumbs.db
+
+frontend/node_modules/.vite/deps
+backend/logs

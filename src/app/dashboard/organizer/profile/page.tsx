@@ -6,26 +6,20 @@ import React from 'react';
 import { Header } from '@/components/passa/header';
 import Link from 'next/link';
 import { ProfileForm } from './profile-form';
+import { getCurrentUserWithProfile } from '@/lib/auth/utils';
 import type { User, OrganizerProfile } from '@prisma/client';
-import { getSession } from '@/lib/session';
-import prisma from '@/lib/db';
 import { ArrowLeft } from 'lucide-react';
 
 type UserWithProfile = User & { organizerProfile: OrganizerProfile | null };
 
 async function getOrganizer(): Promise<UserWithProfile> {
-    const session = await getSession();
-    // Middleware protects this page
-    const user = await prisma.user.findUniqueOrThrow({
-        where: { id: session!.userId },
-        include: { organizerProfile: true }
-    });
+    const user = await getCurrentUserWithProfile();
 
     if (!user.organizerProfile) {
         throw new Error("Organizer profile not found for authenticated user.");
     }
 
-    return user;
+    return user as UserWithProfile;
 }
 
 export default async function OrganizerProfilePage() {

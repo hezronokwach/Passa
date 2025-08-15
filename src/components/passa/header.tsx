@@ -1,68 +1,23 @@
-
-'use client';
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
 import { ThemeToggle } from './theme-toggle';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { getSession } from '@/lib/session';
 import { logout } from '@/app/actions/auth';
+import { MobileNav } from './mobile-nav';
 
-export const Header = () => {
-  const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState<string | null>(null);
+export const Header = async () => {
+  const session = await getSession();
+  const isAuthenticated = !!session;
+  const userRole = session?.role as string | undefined;
 
-  useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/auth/check');
-        const data = await response.json();
-        console.log('Auth check response:', data);
-        setIsAuthenticated(data.authenticated);
-        setUserRole(data.role);
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        setIsAuthenticated(false);
-      }
-    };
-    checkAuth();
-  }, []);
   const navItems = [
-    { name: 'Events', href: '#events' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Stories', href: '#stories' },
+    { name: 'Events', href: '/events' },
+    { name: 'How It Works', href: '/how-it-works' },
+    { name: 'About', href: '/about' },
   ];
 
-  const scrollTo = (selector: string) => {
-    const element = document.querySelector(selector);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    } else {
-        router.push(`/${selector}`)
-    }
-  };
-
-  const navigateToLogin = () => {
-    router.push('/login');
-  }
-
-  const navigateToRegister = () => {
-    router.push('/register');
-  }
-
-  const handleLogout = async () => {
-    console.log('Logging out user');
-    await logout();
-  }
-
-  const navigateToDashboard = () => {
-    const dashboardPath = userRole ? `/dashboard/${userRole.toLowerCase()}` : '/dashboard';
-    console.log('Navigating to dashboard:', dashboardPath);
-    router.push(dashboardPath);
-  }
+  const dashboardPath = userRole ? `/dashboard/${userRole.toLowerCase()}` : '/login';
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -73,36 +28,41 @@ export const Header = () => {
         </Link>
         <nav className="hidden items-center gap-6 md:flex">
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.name}
               href={item.href}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollTo(item.href);
-              }}
-              className="cursor-pointer text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {item.name}
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          {isAuthenticated ? (
-            <>
-              <Button variant="ghost" className="hidden sm:inline-flex" onClick={navigateToDashboard}>
-                Dashboard
-              </Button>
-              <Button variant="outline" className="hidden sm:inline-flex" onClick={handleLogout}>
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" className="hidden sm:inline-flex" onClick={navigateToLogin}>Sign In</Button>
-              <Button className="hidden sm:inline-flex" onClick={navigateToRegister}>Register</Button>
-            </>
-          )}
+          <div className="hidden sm:flex items-center gap-2">
+            {isAuthenticated ? (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href={dashboardPath}>Dashboard</Link>
+                </Button>
+                <form action={logout}>
+                  <Button variant="outline" type="submit">
+                    Sign Out
+                  </Button>
+                </form>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                    <Link href="/login">Sign In</Link>
+                </Button>
+                <Button asChild>
+                    <Link href="/register">Register</Link>
+                </Button>
+              </>
+            )}
+          </div>
+          <MobileNav isAuthenticated={isAuthenticated} dashboardPath={dashboardPath} navItems={navItems} />
         </div>
       </div>
     </header>

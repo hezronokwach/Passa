@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useFormStatus } from 'react-dom';
@@ -34,24 +33,10 @@ export default function RegisterPage() {
   });
 
   useEffect(() => {
-    if (state?.success) {
+    if (state?.success && state?.redirect) {
       toast({ title: 'Success!', description: state.message });
-      
-      // Redirect based on role
-      switch (state.role) {
-          case 'ADMIN':
-              router.push('/dashboard/admin');
-              break;
-          case 'CREATOR':
-              router.push('/dashboard/creator');
-              break;
-          case 'ORGANIZER':
-              router.push('/dashboard/organizer');
-              break;
-          default:
-              router.push('/dashboard');
-      }
-    } else if (!state.success && state.message) {
+      router.push(state.redirect);
+    } else if (state && !state.success && state.message) {
       toast({
         title: "Registration Failed",
         description: state.message,
@@ -70,12 +55,12 @@ export default function RegisterPage() {
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" name="email" type="email" placeholder="you@example.com" required/>
-            {state.errors?.email && <p className="text-sm text-destructive">{state.errors.email[0]}</p>}
+            {state?.errors?.email && <p className="text-sm text-destructive">{state.errors.email[0]}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input id="password" name="password" type="password" required />
-            {state.errors?.password && <p className="text-sm text-destructive">{state.errors.password[0]}</p>}
+            {state?.errors?.password && <p className="text-sm text-destructive">{state.errors.password[0]}</p>}
           </div>
           <div className="space-y-2">
             <Label>I am a...</Label>
@@ -93,7 +78,7 @@ export default function RegisterPage() {
                 Organizer
               </Label>
             </RadioGroup>
-            {state.errors?.role && <p className="text-sm text-destructive">{state.errors.role[0]}</p>}
+            {state?.errors?.role && <p className="text-sm text-destructive">{state.errors.role[0]}</p>}
           </div>
           <SubmitButton/>
            <div className="relative my-4">

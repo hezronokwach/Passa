@@ -11,6 +11,8 @@ import prisma from '@/lib/db';
 import type { Event } from '@prisma/client';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
+import { redirect } from 'next/navigation'; 
+
 
 type TranslatedEvent = Event & {
   translatedTitle: string;
@@ -34,13 +36,14 @@ async function getUser() {
     where: { id: session.userId },
   });
   
-  return user;
+  return user ?? null;
 }
 
 export default async function DashboardPage() {
   const user = await getUser();
+  // const role = await getUserRole();
+
   if (!user) {
-    // Redirect to login if user is not found
     return redirect('/login');
   }
   

@@ -13,18 +13,23 @@ datasource db {
 // USER AND PROFILE MODELS
 
 model User {
-  id               Int                @id @default(autoincrement())
-  email            String             @unique
-  password         String
-  name             String?
-  role             Role               @default(FAN)
-  creatorProfile   CreatorProfile?
-  organizerProfile OrganizerProfile?
+  id                    Int                @id @default(autoincrement())
+  email                 String             @unique
+  password              String?
+  name                  String?
+  role                  Role               @default(FAN)
+  emailVerified         DateTime?
+  verificationToken     String?            @unique
+  passwordResetToken    String?            @unique
+  passwordResetExpires  DateTime?
+  walletAddress         String?            @unique
+  creatorProfile        CreatorProfile?
+  organizerProfile      OrganizerProfile?
   // Relations
-  eventsOrganized  Event[]
-  submissions      Submission[]
-  purchasedTickets PurchasedTicket[]
-  attributions     Attribution[]
+  eventsOrganized       Event[]
+  submissions           Submission[]
+  purchasedTickets      PurchasedTicket[]
+  attributions          Attribution[]
 }
 
 model CreatorProfile {
