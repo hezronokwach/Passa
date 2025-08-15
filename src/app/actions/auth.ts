@@ -282,6 +282,11 @@ export async function loginWithWallet(prevState: any, formData: FormData) {
 }
 
 export async function logout() {
-    await deleteSession();
-    redirect('/login');
+    try {
+        await deleteSession();
+        return { success: true };
+    } catch (error) {
+        console.error('Logout error:', error);
+        return { success: false, message: 'Failed to logout' };
+    }
 }
