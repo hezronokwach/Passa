@@ -12,7 +12,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTransition } from 'react';
 import { logout } from '@/app/actions/auth';
-import { useRouter } from 'next/navigation';
+
 import { User } from 'lucide-react';
 
 interface UserMenuProps {
@@ -25,12 +25,9 @@ interface UserMenuProps {
 
 export function UserMenu({ user }: UserMenuProps) {
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
-
   const handleLogout = () => {
-    startTransition(async () => {
-      await logout();
-      router.push('/login');
+    startTransition(() => {
+      logout();
     });
   };
 
