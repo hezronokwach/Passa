@@ -91,9 +91,12 @@ export async function signup(prevState: any, formData: FormData) {
 
     await createSession(result.id, result.role);
 
-    redirect(rolePaths[role] || '/dashboard');
+    return { 
+      success: true, 
+      message: 'Account created successfully!',
+      redirect: rolePaths[role] || '/dashboard' 
+    };
   } catch (error) {
-    if ((error as any)?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
     console.error('Signup error:', error);
     return { 
       success: false, 
@@ -132,10 +135,13 @@ export async function login(prevState: any, formData: FormData) {
 
         await createSession(user.id, user.role);
 
-        redirect(rolePaths[user.role] || '/dashboard');
+        return { 
+          success: true, 
+          message: 'Login successful!',
+          redirect: rolePaths[user.role] || '/dashboard' 
+        };
 
     } catch (error) {
-        if ((error as any)?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
         console.error("Login error:", error);
         return { success: false, message: 'An unexpected error occurred.' };
     }
@@ -241,7 +247,11 @@ export async function loginWithWallet(prevState: any, formData: FormData) {
 
         await createSession(user.id, user.role);
 
-        redirect(rolePaths[user.role] || '/dashboard');
+        return { 
+          success: true, 
+          message: 'Account created successfully!',
+          redirect: rolePaths[user.role] || '/dashboard' 
+        };
     } catch (error) {
         if ((error as any)?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
         console.error('Wallet login error:', error);
