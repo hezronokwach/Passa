@@ -5,26 +5,10 @@
 import React from 'react';
 import { Header } from '@/components/passa/header';
 import { ProfileForm } from './profile-form';
-import prisma from '@/lib/db';
-import { getSession } from '@/lib/session';
+import { getCurrentUserWithCreatorProfileAndPortfolio } from '@/lib/auth/utils';
 
 async function getCreatorProfile() {
-    const session = await getSession();
-    // Middleware protects this page, so session is guaranteed
-    const user = await prisma.user.findUniqueOrThrow({
-        where: { id: session!.userId },
-        include: {
-            creatorProfile: {
-                include: {
-                    portfolio: {
-                        orderBy: {
-                            createdAt: 'desc'
-                        }
-                    }
-                }
-            }
-        }
-    });
+    const user = await getCurrentUserWithCreatorProfileAndPortfolio();
 
     if (!user.creatorProfile) {
         // This case should not happen if signup logic is correct, but as a fallback

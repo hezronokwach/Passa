@@ -10,10 +10,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useTransition } from 'react';
 import { logout } from '@/app/actions/auth';
-
 import { User } from 'lucide-react';
+import { useFormStatus } from 'react-dom';
 
 interface UserMenuProps {
   user: {
@@ -23,14 +22,21 @@ interface UserMenuProps {
   };
 }
 
-export function UserMenu({ user }: UserMenuProps) {
-  const [isPending, startTransition] = useTransition();
-  const handleLogout = () => {
-    startTransition(() => {
-      logout();
-    });
-  };
+function LogoutButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            variant="ghost"
+            className="w-full justify-start"
+            type="submit"
+            disabled={pending}
+        >
+            {pending ? 'Logging out...' : 'Log out'}
+        </Button>
+    );
+}
 
+export function UserMenu({ user }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -59,14 +65,9 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={handleLogout}
-            disabled={isPending}
-          >
-            {isPending ? 'Logging out...' : 'Log out'}
-          </Button>
+            <form action={logout} className="w-full">
+                <LogoutButton />
+            </form>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
