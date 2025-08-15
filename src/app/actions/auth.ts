@@ -260,17 +260,14 @@ export async function loginWithWallet(prevState: any, formData: FormData) {
 }
 
 export async function logout() {
+    console.log("Logout action started.");
     try {
         await deleteSession();
+        console.log("Session deleted successfully.");
     } catch (error) {
         console.error('Logout error:', error);
         return { success: false, message: 'Failed to logout' };
     }
-    // redirect('/login');
-
-    return { 
-      success: true, 
-      message: 'Logout successful!',
-      redirect: '/login' 
-    };
+    console.log("Redirecting to /login...");
+    redirect('/login');
 }

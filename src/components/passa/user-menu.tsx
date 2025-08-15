@@ -64,7 +64,7 @@ export function UserMenu({ user }: UserMenuProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             <form action={logout} className="w-full">
                 <LogoutButton />
             </form>
