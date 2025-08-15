@@ -12,10 +12,18 @@ import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 
 async function getOrganizerData() {
-    // Middleware protects this page, so session is guaranteed.
     const session = await getSession();
     if (!session) {
-        redirect('/login');
+        return {
+            user: null,
+            events: [],
+            stats: {
+                totalEvents: 0,
+                totalSubmissions: 0,
+                approvedCreators: 0,
+            },
+            error: 'No session found'
+        };
     }
     
     const user = await prisma.user.findUniqueOrThrow({
@@ -74,7 +82,11 @@ async function getOrganizerData() {
 }
 
 export default async function OrganizerDashboardPage() {
-  const { user, events, stats } = await getOrganizerData();
+  const { user, events, stats, error } = await getOrganizerData();
+  
+  if (error || !user) {
+    return redirect('/login');
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">

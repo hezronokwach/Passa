@@ -36,7 +36,7 @@ async function getUser() {
     where: { id: session.userId },
   });
   
-  return user;
+  return user ?? null;
 }
 
 export default async function DashboardPage() {
