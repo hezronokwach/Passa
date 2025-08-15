@@ -113,24 +113,24 @@ export async function signup(prevState: any, formData: FormData) {
 export async function login(prevState: any, formData: FormData) {
     const validatedFields = loginSchema.safeParse(Object.fromEntries(formData));
 
-    console.log("Validated: ", validatedFields)
-
     if (!validatedFields.success) {
-        console.log("Errors: ", validatedFields.error.flatten().fieldErrors)
-        
-        return { success: false, message: 'Invalid form data', errors: validatedFields.error.flatten().fieldErrors };
+        return {
+            success: false,
+            message: 'Invalid form data',
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
     }
 
     const { email, password } = validatedFields.data;
 
     try {
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user || !user.password) {
-            return { success: false, message: 'Invalid email or password.' };
-        }
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true, role: true, password: true }, // only fetch what you need
+        });
 
-        if (!user.emailVerified) {
-            return { success: false, message: 'Please verify your email before logging in.' };
+        if (!user?.password) {
+            return { success: false, message: 'Invalid email or password.' };
         }
 
         const passwordsMatch = await bcrypt.compare(password, user.password);
@@ -140,25 +140,19 @@ export async function login(prevState: any, formData: FormData) {
 
         await createSession(user.id, user.role);
 
-        switch(user.role) {
-            case Role.ADMIN: 
-                redirect('/dashboard/admin');
-                break;
-            case Role.CREATOR: 
-                redirect('/dashboard/creator');
-                break;
-            case Role.ORGANIZER: 
-                redirect('/dashboard/organizer');
-                break;
-            case Role.FAN: 
-                redirect('/dashboard/fan');
-                break;
-            default: 
-                redirect('/dashboard');
-        }
+        // Role → dashboard path mapping
+        const rolePaths: Record<string, string> = {
+            [Role.ADMIN]: '/dashboard/admin',
+            [Role.CREATOR]: '/dashboard/creator',
+            [Role.ORGANIZER]: '/dashboard/organizer',
+            [Role.FAN]: '/dashboard/fan',
+        };
+
+        redirect(rolePaths[user.role] || '/dashboard');
 
     } catch (error) {
-        console.error('Login error:', error);
+        if ((error as any)?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
+        console.error("Login error:", error);
         return { success: false, message: 'An unexpected error occurred.' };
     }
 }
