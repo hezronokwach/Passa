@@ -2,7 +2,8 @@
 'use client';
 
 import React from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
 import { updateCreatorProfile, addPortfolioItem } from '@/app/actions/creator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,13 +53,13 @@ export function ProfileForm({ user, profile, portfolioItems }: ProfileFormProps)
   const { toast } = useToast();
   const [isAddWorkOpen, setIsAddWorkOpen] = React.useState(false);
 
-  const [profileState, profileFormAction] = useFormState(updateCreatorProfile, {
+  const [profileState, profileFormAction] = useActionState(updateCreatorProfile, {
     errors: {},
     message: '',
     success: false,
   });
 
-  const [portfolioState, portfolioFormAction] = useFormState(addPortfolioItem, {
+  const [portfolioState, portfolioFormAction] = useActionState(addPortfolioItem, {
     message: '',
     success: false,
   });

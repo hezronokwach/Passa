@@ -6,9 +6,30 @@ import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
 import { ThemeToggle } from './theme-toggle';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { logout } from '@/app/actions/auth';
 
 export const Header = () => {
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/check');
+        const data = await response.json();
+        console.log('Auth check response:', data);
+        setIsAuthenticated(data.authenticated);
+        setUserRole(data.role);
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, []);
   const navItems = [
     { name: 'Events', href: '#events' },
     { name: 'How It Works', href: '#how-it-works' },
@@ -30,6 +51,17 @@ export const Header = () => {
 
   const navigateToRegister = () => {
     router.push('/register');
+  }
+
+  const handleLogout = async () => {
+    console.log('Logging out user');
+    await logout();
+  }
+
+  const navigateToDashboard = () => {
+    const dashboardPath = userRole ? `/dashboard/${userRole.toLowerCase()}` : '/dashboard';
+    console.log('Navigating to dashboard:', dashboardPath);
+    router.push(dashboardPath);
   }
 
   return (
@@ -56,8 +88,21 @@ export const Header = () => {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button variant="ghost" className="hidden sm:inline-flex" onClick={navigateToLogin}>Sign In</Button>
-          <Button className="hidden sm:inline-flex" onClick={navigateToRegister}>Register</Button>
+          {isAuthenticated ? (
+            <>
+              <Button variant="ghost" className="hidden sm:inline-flex" onClick={navigateToDashboard}>
+                Dashboard
+              </Button>
+              <Button variant="outline" className="hidden sm:inline-flex" onClick={handleLogout}>
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" className="hidden sm:inline-flex" onClick={navigateToLogin}>Sign In</Button>
+              <Button className="hidden sm:inline-flex" onClick={navigateToRegister}>Register</Button>
+            </>
+          )}
         </div>
       </div>
     </header>

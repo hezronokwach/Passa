@@ -52,7 +52,7 @@ const TestimonialCarousel = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5, ease: 'easeInOut' }}
-                    className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center"
+                    className="absolute inset-0 flex flex-col items-center justify-center px-16 py-12 text-center"
                 >
                     <p className="font-headline text-2xl lg:text-3xl font-medium text-primary-foreground">
                         "{testimonials[index].quote}"
@@ -102,7 +102,7 @@ export const AuthLayout = ({ children, formPosition = 'left', title, description
                     animate={{ x: 0 }}
                     transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
                     className={cn(
-                        "flex w-full flex-col items-center justify-center p-8 lg:w-1/2",
+                        "flex w-full flex-col items-center justify-center p-8 lg:w-2/5",
                         formPosition === 'left' ? 'lg:order-1' : 'lg:order-2'
                     )}
                 >
@@ -126,7 +126,7 @@ export const AuthLayout = ({ children, formPosition = 'left', title, description
                     animate={{ opacity: 1 }}
                     transition={{ duration: 1, delay: 0.5 }}
                     className={cn(
-                        "hidden w-full items-center justify-center bg-primary lg:flex lg:w-1/2 relative overflow-hidden",
+                        "hidden w-full items-center justify-center bg-primary lg:flex lg:w-3/5 relative overflow-hidden",
                         formPosition === 'left' ? 'lg:order-2' : 'lg:order-1'
                     )}
                 >

@@ -2,7 +2,8 @@
 'use client';
 
 import React from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
 import { updateOrganizerProfile } from '@/app/actions/organizer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,7 +30,7 @@ interface ProfileFormProps {
 export function ProfileForm({ user, profile }: ProfileFormProps) {
   const { toast } = useToast();
 
-  const [state, formAction] = useFormState(updateOrganizerProfile, {
+  const [state, formAction] = useActionState(updateOrganizerProfile, {
     errors: {},
     message: '',
     success: false,
