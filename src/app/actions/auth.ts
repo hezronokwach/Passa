@@ -35,21 +35,29 @@ const walletLoginSchema = z.object({
     challenge: z.string(),
 });
 
+// Role → dashboard path mapping
+const rolePaths: Record<string, string> = {
+    [Role.ADMIN]: '/dashboard/admin',
+    [Role.CREATOR]: '/dashboard/creator',
+    [Role.ORGANIZER]: '/dashboard/organizer',
+    [Role.FAN]: '/dashboard/fan',
+};
+
 
 export async function signup(prevState: any, formData: FormData) {
-  const validatedFields = signupSchema.safeParse(Object.fromEntries(formData));
-
-  if (!validatedFields.success) {
-    return { 
-      success: false, 
-      message: 'Invalid form data.', 
-      errors: validatedFields.error.flatten().fieldErrors 
-    };
-  }
-
-  const { email, password, role } = validatedFields.data;
-
   try {
+    const validatedFields = signupSchema.safeParse(Object.fromEntries(formData));
+
+    if (!validatedFields.success) {
+      return { 
+        success: false, 
+        message: 'Invalid form data.', 
+        errors: validatedFields.error.flatten().fieldErrors 
+      };
+    }
+
+    const { email, password, role } = validatedFields.data;
+
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return { success: false, message: 'User with this email already exists.' };
@@ -83,30 +91,14 @@ export async function signup(prevState: any, formData: FormData) {
 
     await createSession(result.id, result.role);
 
+    redirect(rolePaths[role] || '/dashboard');
   } catch (error) {
+    if ((error as any)?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
     console.error('Signup error:', error);
     return { 
       success: false, 
       message: `Signup failed: ${(error as Error).message}` 
     };
-  }
-
-  switch(role) {
-      case Role.ADMIN: 
-          redirect('/dashboard/admin');
-          break;
-      case Role.CREATOR: 
-          redirect('/dashboard/creator');
-          break;
-      case Role.ORGANIZER: 
-          redirect('/dashboard/organizer');
-          break;
-      case Role.FAN: 
-          redirect('/dashboard/fan');
-          break;
-      default: 
-          redirect('/dashboard');
-          return;
   }
 }
 
@@ -139,14 +131,6 @@ export async function login(prevState: any, formData: FormData) {
         }
 
         await createSession(user.id, user.role);
-
-        // Role → dashboard path mapping
-        const rolePaths: Record<string, string> = {
-            [Role.ADMIN]: '/dashboard/admin',
-            [Role.CREATOR]: '/dashboard/creator',
-            [Role.ORGANIZER]: '/dashboard/organizer',
-            [Role.FAN]: '/dashboard/fan',
-        };
 
         redirect(rolePaths[user.role] || '/dashboard');
 
@@ -241,15 +225,14 @@ export async function resetPassword(prevState: any, formData: FormData) {
 }
 
 export async function loginWithWallet(prevState: any, formData: FormData) {
-    const validatedFields = walletLoginSchema.safeParse(Object.fromEntries(formData));
-
-    if (!validatedFields.success) {
-        return { success: false, message: 'Invalid form data', errors: validatedFields.error.flatten().fieldErrors };
-    }
-
-    const { publicKey, signature, challenge } = validatedFields.data;
-
     try {
+        const validatedFields = walletLoginSchema.safeParse(Object.fromEntries(formData));
+
+        if (!validatedFields.success) {
+            return { success: false, message: 'Invalid form data', errors: validatedFields.error.flatten().fieldErrors };
+        }
+
+        const { publicKey, signature, challenge } = validatedFields.data;
         const { success, user } = await blockchainAuthService.verifySignature(publicKey, signature, challenge);
 
         if (!success || !user) {
@@ -258,24 +241,9 @@ export async function loginWithWallet(prevState: any, formData: FormData) {
 
         await createSession(user.id, user.role);
 
-        switch(user.role) {
-            case Role.ADMIN: 
-                redirect('/dashboard/admin');
-                break;
-            case Role.CREATOR: 
-                redirect('/dashboard/creator');
-                break;
-            case Role.ORGANIZER: 
-                redirect('/dashboard/organizer');
-                break;
-            case Role.FAN: 
-                redirect('/dashboard/fan');
-                break;
-            default: 
-                redirect('/dashboard');
-        }
-
+        redirect(rolePaths[user.role] || '/dashboard');
     } catch (error) {
+        if ((error as any)?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
         console.error('Wallet login error:', error);
         return { success: false, message: 'An unexpected error occurred.' };
     }
