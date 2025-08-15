@@ -35,15 +35,17 @@ export async function middleware(req: NextRequest) {
 
   const session = await getSession();
 
+  const rolePaths: Record<string, string> = {
+      [Role.ADMIN]: '/dashboard/admin',
+      [Role.CREATOR]: '/dashboard/creator',
+      [Role.ORGANIZER]: '/dashboard/organizer',
+      [Role.FAN]: '/dashboard/fan',
+  };
+
   // Redirect authenticated users from public pages like login/register
   if (publicRoutes.includes(path) && session) {
-      switch (session.role) {
-        case 'ADMIN': return NextResponse.redirect(new URL('/dashboard/admin', req.nextUrl));
-        case 'CREATOR': return NextResponse.redirect(new URL('/dashboard/creator', req.nextUrl));
-        case 'ORGANIZER': return NextResponse.redirect(new URL('/dashboard/organizer', req.nextUrl));
-        case 'FAN': return NextResponse.redirect(new URL('/dashboard/fan', req.nextUrl));
-        default: return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
-    }
+      const redirectUrl = rolePaths[session.role] || '/dashboard';
+      return NextResponse.redirect(new URL(redirectUrl, req.nextUrl));
   }
 
   // RBAC for protected routes
@@ -54,13 +56,8 @@ export async function middleware(req: NextRequest) {
 
       if (path.startsWith('/dashboard') && !isAuthorized) {
           // Redirect to their own dashboard if they try to access a generic /dashboard or another role's dashboard
-          switch (userRole) {
-            case 'ADMIN': return NextResponse.redirect(new URL('/dashboard/admin', req.nextUrl));
-            case 'CREATOR': return NextResponse.redirect(new URL('/dashboard/creator', req.nextUrl));
-            case 'ORGANIZER': return NextResponse.redirect(new URL('/dashboard/organizer', req.nextUrl));
-            case 'FAN': return NextResponse.redirect(new URL('/dashboard/fan', req.nextUrl));
-            default: return NextResponse.redirect(new URL('/', req.nextUrl)); // Or a generic error page
-          }
+          const redirectUrl = rolePaths[userRole] || '/';
+          return NextResponse.redirect(new URL(redirectUrl, req.nextUrl));
       }
   } else {
       // Protect all dashboard routes if no session
