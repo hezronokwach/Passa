@@ -33,9 +33,9 @@ export default function RegisterPage() {
   });
 
   useEffect(() => {
-    if (state?.success) {
+    if (state?.success && state?.redirect) {
       toast({ title: 'Success!', description: state.message });
-      // Server-side redirect will handle navigation based on role
+      router.push(state.redirect);
     } else if (state && !state.success && state.message) {
       toast({
         title: "Registration Failed",
