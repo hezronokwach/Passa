@@ -266,5 +266,11 @@ export async function logout() {
         console.error('Logout error:', error);
         return { success: false, message: 'Failed to logout' };
     }
-    redirect('/login');
+    // redirect('/login');
+
+    return { 
+      success: true, 
+      message: 'Logout successful!',
+      redirect: '/login' 
+    };
 }
