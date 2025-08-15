@@ -5,7 +5,7 @@ import { Role } from '@prisma/client';
 // In-memory store for rate limiting
 const requestCounts = new Map<string, { count: number; timestamp: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = 10; // 10 requests per window
+const RATE_LIMIT_MAX_REQUESTS = 100; // 100 requests per window
 
 const protectedRoutes: { [key in Role]?: string[] } = {
     ADMIN: ['/dashboard/admin'],
