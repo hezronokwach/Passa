@@ -4,7 +4,6 @@ import { z } from 'zod';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
 import { createSession, deleteSession } from '@/lib/session';
-import { createSession, deleteSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { Role } from '@prisma/client';
 import { generateEmailVerificationToken, generatePasswordResetToken } from '@/lib/auth/utils';
@@ -37,52 +36,84 @@ const walletLoginSchema = z.object({
     challenge: z.string(),
 });
 
-// Actions
 
 export async function signup(prevState: any, formData: FormData) {
   const validatedFields = signupSchema.safeParse(Object.fromEntries(formData));
 
-  console.log(validatedFields);
-
   if (!validatedFields.success) {
-    return { success: false, message: 'Invalid form data.', errors: validatedFields.error.flatten().fieldErrors };
+    return { 
+      success: false, 
+      message: 'Invalid form data.', 
+      errors: validatedFields.error.flatten().fieldErrors 
+    };
   }
 
+  console.log("Validted: ", validatedFields.data)
+
   const { email, password, role } = validatedFields.data;
-  console.log("Fields: ", validatedFields.data);
 
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
+        console.log("Existing user: ", existingUser);
       return { success: false, message: 'User with this email already exists.' };
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const verificationToken = await generateEmailVerificationToken(email);
+    const result = await prisma.$transaction(async (tx) => {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const verificationToken = await generateEmailVerificationToken(email);
 
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        role,
-        verificationToken: verificationToken,
-      },
+      console.log("VerTok: ", verificationToken);
+      
+      const newUser = await tx.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          role,
+          verificationToken: verificationToken,
+        },
+      });
+      console.log("Neuser: ", newUser);
+
+      if (role === Role.CREATOR) {
+        await tx.creatorProfile.create({ 
+          data: { userId: newUser.id, skills: [] } 
+        });
+      } else if (role === Role.ORGANIZER) {
+        await tx.organizerProfile.create({ 
+          data: { userId: newUser.id } 
+        });
+      }
+
+      return newUser;
     });
 
-    // TODO: Send email verification email
-    console.log(`Verification token for ${email}: ${verificationToken}`);
-
-    if (role === Role.CREATOR) {
-        await prisma.creatorProfile.create({ data: { userId: newUser.id, skills: [] } });
-    } else if (role === Role.ORGANIZER) {
-        await prisma.organizerProfile.create({ data: { userId: newUser.id } });
-    }
-
-    return { success: true, message: 'Signup successful. Please check your email to verify your account.' };
+    await createSession(result.id, result.role);
 
   } catch (error) {
     console.error('Signup error:', error);
-    return { success: false, message: 'An unexpected error occurred.' };
+    return { 
+      success: false, 
+      message: `Signup failed: ${(error as Error).message}` 
+    };
+  }
+
+  switch(role) {
+      case Role.ADMIN: 
+          redirect('/dashboard/admin');
+          break;
+      case Role.CREATOR: 
+          redirect('/dashboard/creator');
+          break;
+      case Role.ORGANIZER: 
+          redirect('/dashboard/organizer');
+          break;
+      case Role.FAN: 
+          redirect('/dashboard/fan');
+          break;
+      default: 
+          redirect('/dashboard');
+          return;
   }
 }
 
