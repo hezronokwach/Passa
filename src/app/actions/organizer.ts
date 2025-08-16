@@ -84,7 +84,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
     } = validatedFields.data;
 
   try {
-    const newEvent = await prisma.event.create({
+    await prisma.event.create({
       data: {
         title,
         description,

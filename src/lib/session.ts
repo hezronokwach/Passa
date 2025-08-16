@@ -7,7 +7,7 @@ interface SessionPayload {
   userId: number;
   role: string;
   expires: Date;
-  [key: string]: any; // Index signature to make it compatible with JWTPayload
+  [key: string]: unknown; // Index signature to make it compatible with JWTPayload
 }
 
 const secretKey = process.env.SESSION_SECRET;

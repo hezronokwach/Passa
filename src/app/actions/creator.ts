@@ -82,11 +82,7 @@ export async function updateCreatorProfile(prevState: unknown, formData: FormDat
   }
 }
 
-const portfolioSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  file: z.instanceof(File).refine(file => file.size > 0, "File is required"),
-})
+
 
 export async function addPortfolioItem(prevState: unknown, formData: FormData) {
     const { profileId } = await getAuthenticatedUser();

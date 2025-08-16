@@ -37,7 +37,7 @@ export async function purchaseTicket(input: { eventId: number; ticketId: number 
 
   try {
      // Use a transaction to ensure data integrity
-     const result = await prisma.$transaction(async (tx) => {
+     await prisma.$transaction(async (tx) => {
         const ticketTier = await tx.ticket.findUnique({
             where: { id: ticketId },
         });

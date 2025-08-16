@@ -2,17 +2,7 @@
 
 'use client';
 
-import { TrendingUp } from "lucide-react"
 import { Pie, PieChart, Cell } from "recharts"
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import {
   ChartContainer,
   ChartTooltip,
@@ -30,7 +20,6 @@ interface SubmissionsChartProps {
 }
 
 export function SubmissionsChart({ data }: SubmissionsChartProps) {
-    const totalValue = data.reduce((acc, item) => acc + item.value, 0);
 
   return (
     <div className="flex items-center justify-center py-4">

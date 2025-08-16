@@ -4,7 +4,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { Calendar, MapPin } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 import type { Event } from '@prisma/client';
 import { Button } from '@/components/ui/button';

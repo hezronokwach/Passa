@@ -70,7 +70,6 @@ async function getCreatorData() {
 
     for (const sub of approvedSubmissions) {
         if (sub.attribution && sub.brief.event) {
-            const totalTicketsSoldForEvent = sub.brief.event.tickets.reduce((sum, ticket) => sum + ticket.sold, 0);
             const eventRevenue = sub.brief.event.tickets.reduce((sum, ticket) => sum + (ticket.sold * ticket.price), 0);
             const artistPool = eventRevenue * (sub.brief.event.artistSplit / 100);
             const creatorShare = artistPool * (sub.attribution.sharePercentage / 100);
