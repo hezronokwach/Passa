@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 const DURATION = 3000;
 const PARTICLE_COUNT = 50;
 
-const ConfettiParticle = ({ id }: { id: number }) => {
+const ConfettiParticle = () => {
   const [style, setStyle] = useState({});
 
   useEffect(() => {
@@ -18,7 +18,6 @@ const ConfettiParticle = ({ id }: { id: number }) => {
 
     const x = random(-150, 150); // increased range for wider spread
     const y = random(-150, 150); // increased range for wider spread
-    const rotation = random(0, 360);
     const scale = random(0.5, 1.2);
     const delay = random(0, DURATION * 0.1);
     const duration = random(DURATION * 0.7, DURATION);
@@ -61,7 +60,7 @@ export const Confetti = ({ active }: { active: boolean }) => {
   return (
     <div className="pointer-events-none fixed inset-0 z-[200] overflow-hidden">
       {[...Array(PARTICLE_COUNT)].map((_, i) => (
-        <ConfettiParticle key={i} id={i} />
+        <ConfettiParticle key={i} />
       ))}
       <style>{`
         @keyframes confetti-fall {

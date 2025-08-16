@@ -5,7 +5,7 @@ import React from 'react';
 import { useFormStatus } from 'react-dom';
 import { useActionState } from 'react';
 import { createEvent } from '@/app/actions/organizer';
-import { Header } from '@/components/passa/header';
+import { ClientHeader } from '@/components/passa/client-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,21 @@ import { ArrowLeft, PartyPopper, Info } from 'lucide-react';
 import Link from 'next/link';
 import { Slider } from '@/components/ui/slider';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+type FormErrors = {
+  title?: string[];
+  description?: string[];
+  location?: string[];
+  country?: string[];
+  date?: string[];
+  imageUrl?: string[];
+  ticketPrice?: string[];
+  ticketQuantity?: string[];
+  artistSplit?: string[];
+  venueSplit?: string[];
+  passaSplit?: string[];
+  revenueSplits?: string[];
+};
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -66,7 +81,7 @@ export default function CreateEventPage() {
 
     return (
         <div className="flex min-h-screen w-full flex-col bg-secondary/30">
-            <Header />
+            <ClientHeader />
             <main className="flex-1">
                 <div className="container mx-auto px-4 py-8">
                     <div className="max-w-4xl mx-auto">
@@ -179,7 +194,7 @@ export default function CreateEventPage() {
                                                 </AlertDescription>
                                             </Alert>
                                             
-                                             {state.errors?.revenueSplits && <p className="text-sm text-destructive">{state.errors.revenueSplits[0]}</p>}
+                                             {(state.errors as FormErrors)?.revenueSplits && <p className="text-sm text-destructive">{(state.errors as FormErrors).revenueSplits?.[0]}</p>}
                                         </CardContent>
                                     </Card>
 

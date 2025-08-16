@@ -55,10 +55,10 @@ export interface IBlockchainAuth {
  * This should be replaced with a concrete implementation for a specific blockchain wallet (e.g., Freighter, LOBSTR).
  */
 class UnimplementedBlockchainAuth implements IBlockchainAuth {
-  getChallenge(publicKey: string): Promise<string> {
+  getChallenge(): Promise<string> {
     throw new Error('Method not implemented.');
   }
-  verifySignature(publicKey: string, signature: string, challenge: string): Promise<{ success: boolean; user?: User; }> {
+  verifySignature(): Promise<{ success: boolean; user?: User; }> {
     throw new Error('Method not implemented.');
   }
   connectWallet(): Promise<{ publicKey: string; }> {
@@ -68,9 +68,9 @@ class UnimplementedBlockchainAuth implements IBlockchainAuth {
     throw new Error('Method not implemented.');
   }
   getWalletStatus(): Promise<{ isConnected: boolean; publicKey?: string; }> {
-    throw new_Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
-  validateAddress(address: string): boolean {
+  validateAddress(): boolean {
     throw new Error('Method not implemented.');
   }
 }

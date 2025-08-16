@@ -55,7 +55,7 @@ const TestimonialCarousel = () => {
                     className="absolute inset-0 flex flex-col items-center justify-center px-16 py-12 text-center"
                 >
                     <p className="font-headline text-2xl lg:text-3xl font-medium text-primary-foreground">
-                        "{testimonials[index].quote}"
+                        &ldquo;{testimonials[index].quote}&rdquo;
                     </p>
                     <div className="mt-8 flex items-center gap-4">
                         <Image 

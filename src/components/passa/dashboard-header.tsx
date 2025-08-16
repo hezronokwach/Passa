@@ -1,10 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
 import { ThemeToggle } from './theme-toggle';
-import { useRouter } from 'next/navigation';
 import { UserMenu } from './user-menu';
 
 interface DashboardHeaderProps {
@@ -16,7 +14,6 @@ interface DashboardHeaderProps {
 }
 
 export const DashboardHeader = ({ user }: DashboardHeaderProps) => {
-  const router = useRouter();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">

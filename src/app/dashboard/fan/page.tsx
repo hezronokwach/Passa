@@ -3,7 +3,7 @@
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Ticket, Star, Compass, User, GanttChart } from 'lucide-react';
+import { Ticket, Star, Compass, GanttChart } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
@@ -109,7 +109,7 @@ export default async function FanDashboardPage() {
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{stats.eventsAttended}</div>
-                                <p className="text-xs text-muted-foreground">Events you've been to with Passa</p>
+                                <p className="text-xs text-muted-foreground">Events you&apos;ve been to with Passa</p>
                             </CardContent>
                          </Card>
                     </div>

@@ -8,16 +8,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Ticket, Download } from 'lucide-react';
 import Link from 'next/link';
 import { TicketStub } from '@/components/passa/ticket-stub';
-import type { Event, PurchasedTicket, Ticket as TicketTier } from '@prisma/client';
+import type { Event, PurchasedTicket } from '@prisma/client';
 import prisma from '@/lib/db';
 import { translateEventTitle } from '@/ai/flows/translate-event-title';
 import { getSession } from '@/lib/session';
-
-type PurchasedTicketWithEvent = PurchasedTicket & { 
-    event: Event & { 
-        tickets: TicketTier[],
-    } 
-};
 type TranslatedPurchasedTicket = PurchasedTicket & {
     event: Event & {
         translatedTitle: string;

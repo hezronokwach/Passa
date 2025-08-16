@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { ArrowRight, Facebook, Instagram, Linkedin, Send, Twitter, Loader2, Check } from 'lucide-react';
+import { ArrowRight, Facebook, Instagram, Linkedin, Send, Loader2, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
 import { subscribeToNewsletter } from '@/app/actions/newsletter';
