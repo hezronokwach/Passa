@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Verified, Zap, Search } from 'lucide-react';
-import { Header } from '@/components/passa/header';
+import { ClientHeader } from '@/components/passa/client-header';
 import type { Event } from '@prisma/client';
 import { EventCard } from '@/components/passa/event-card';
 import { translateEventTitle } from '@/ai/flows/translate-event-title';
@@ -360,7 +360,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <Header />
+      <ClientHeader />
       <main className="flex-1">
         <section className="relative w-full overflow-hidden bg-background py-12 md:py-20 lg:py-24">
           <div className="absolute inset-0 z-0 opacity-10 dark:[opacity-20] bg-grid-glow"></div>

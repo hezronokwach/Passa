@@ -1,6 +1,4 @@
 
-'use client';
-
 import { Header } from '@/components/passa/header';
 import { Footer } from '@/components/passa/footer';
 import Image from 'next/image';
