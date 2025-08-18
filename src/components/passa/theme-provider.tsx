@@ -28,8 +28,6 @@ export function ThemeProvider({
   children,
   defaultTheme = "system",
   storageKey = "vite-ui-theme",
-  attribute = "class",
-  enableSystem = true,
 }: ThemeProviderProps) {
   const [theme, setTheme] = React.useState<Theme>(() => {
     if (typeof window === 'undefined') {
@@ -37,7 +35,7 @@ export function ThemeProvider({
     }
     try {
       return (localStorage.getItem(storageKey) as Theme) || defaultTheme
-    } catch (e) {
+    } catch {
       return defaultTheme
     }
   })
@@ -65,7 +63,7 @@ export function ThemeProvider({
     setTheme: (theme: Theme) => {
       try {
         localStorage.setItem(storageKey, theme)
-      } catch (e) {
+      } catch {
         // storage is unavailable
       }
       setTheme(theme)

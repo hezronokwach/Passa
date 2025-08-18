@@ -1,6 +1,4 @@
 
-'use client';
-
 import { Header } from '@/components/passa/header';
 import { Footer } from '@/components/passa/footer';
 import Image from 'next/image';
@@ -64,10 +62,10 @@ export default function AboutPage() {
                      <div className="absolute inset-0 z-0 opacity-10 dark:[opacity-20] bg-grid-glow"></div>
                     <div className="container mx-auto px-4 text-center">
                         <h1 className="font-headline text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
-                            We're Building the Future of African Events.
+                            We&apos;re Building the Future of African Events.
                         </h1>
                         <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-                            Passa is more than a ticketing platform; it's a movement to empower the African creative economy through transparency, security, and fairness.
+                            Passa is more than a ticketing platform; it&apos;s a movement to empower the African creative economy through transparency, security, and fairness.
                         </p>
                     </div>
                 </section>
@@ -161,7 +159,7 @@ export default function AboutPage() {
                         Ready to Join the Revolution?
                         </h2>
                         <p className="mx-auto mt-4 max-w-2xl text-lg opacity-80">
-                        Whether you're a fan, an artist, or a creator, there's a place for you on Passa.
+                        Whether you&apos;re a fan, an artist, or a creator, there&apos;s a place for you on Passa.
                         </p>
                         <Button size="lg" variant="secondary" className="mt-8 font-bold text-primary hover:bg-white/90" asChild>
                              <Link href="/dashboard">Explore All Events</Link>

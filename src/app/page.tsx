@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Verified, Zap, Search } from 'lucide-react';
-import { Header } from '@/components/passa/header';
+import { ClientHeader } from '@/components/passa/client-header';
 import type { Event } from '@prisma/client';
 import { EventCard } from '@/components/passa/event-card';
 import { translateEventTitle } from '@/ai/flows/translate-event-title';
@@ -20,7 +20,6 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { EventCardSkeleton } from '@/components/passa/event-card-skeleton';
 import { Footer } from '@/components/passa/footer';
@@ -217,7 +216,7 @@ export default function Home() {
     const fetchEvents = async () => {
       setLoading(true);
       // Mock data fetching with a delay to show skeleton loaders
-      const mockEvents: any[] = [
+      const mockEvents: TranslatedEvent[] = [
         {
           id: 1,
           title: 'Afrochella Festival',
@@ -231,6 +230,11 @@ export default function Home() {
           venueSplit: 20,
           passaSplit: 10,
           createdAt: new Date(),
+          updatedAt: new Date(),
+          translatedTitle: 'Afrochella Festival',
+          price: 50,
+          currency: 'USD',
+          imageHint: 'music festival',
         },
         {
           id: 2,
@@ -245,6 +249,11 @@ export default function Home() {
           venueSplit: 15,
           passaSplit: 5,
           createdAt: new Date(),
+          updatedAt: new Date(),
+          translatedTitle: 'Sauti Sol Live in Concert',
+          price: 75,
+          currency: 'USD',
+          imageHint: 'live concert',
         },
         {
           id: 3,
@@ -259,6 +268,11 @@ export default function Home() {
           venueSplit: 25,
           passaSplit: 10,
           createdAt: new Date(),
+          updatedAt: new Date(),
+          translatedTitle: 'Amapiano Night with Major League DJz',
+          price: 40,
+          currency: 'USD',
+          imageHint: 'amapiano dj set',
         },
         {
           id: 4,
@@ -273,6 +287,11 @@ export default function Home() {
           venueSplit: 10,
           passaSplit: 5,
           createdAt: new Date(),
+          updatedAt: new Date(),
+          translatedTitle: 'Wizkid: Made in Lagos Tour',
+          price: 100,
+          currency: 'USD',
+          imageHint: 'afrobeats concert',
         },
       ];
 
@@ -341,7 +360,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <Header />
+      <ClientHeader />
       <main className="flex-1">
         <section className="relative w-full overflow-hidden bg-background py-12 md:py-20 lg:py-24">
           <div className="absolute inset-0 z-0 opacity-10 dark:[opacity-20] bg-grid-glow"></div>
@@ -429,7 +448,7 @@ export default function Home() {
             <div className="mb-12 text-center">
               <h2 className="font-headline text-3xl font-bold md:text-4xl">Why The Continent Trusts Passa</h2>
               <p className="mt-4 max-w-xl mx-auto text-muted-foreground">
-                See how we're empowering the African creative economy.
+                See how we&apos;re empowering the African creative economy.
               </p>
             </div>
             <div className="relative min-h-[250px] max-w-3xl mx-auto">
@@ -471,7 +490,7 @@ export default function Home() {
               Ready to Join the Revolution?
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg opacity-80">
-              Whether you're a fan, an artist, or a creator, there's a place for you on Passa.
+              Whether you&apos;re a fan, an artist, or a creator, there&apos;s a place for you on Passa.
             </p>
             <Button size="lg" variant="secondary" className="mt-8 font-bold text-primary hover:bg-white/90" onClick={navigateToLogin}>
               Explore All Events

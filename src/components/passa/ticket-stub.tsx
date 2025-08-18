@@ -29,7 +29,7 @@ export const TicketStub = ({ event, onPurchase, isPurchasing, isSuccess, isPurch
                     </div>
                  )}
                 <div className="mb-4">
-                    <p className="text-sm text-muted-foreground uppercase tracking-wider">You're invited to</p>
+                    <p className="text-sm text-muted-foreground uppercase tracking-wider">You&apos;re invited to</p>
                     <h2 className="text-2xl font-bold font-headline">{event.translatedTitle}</h2>
                 </div>
                 <div className="relative h-48 w-full rounded-md overflow-hidden mb-4 border">

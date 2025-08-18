@@ -4,7 +4,6 @@
  * Diagnostic script to test database connectivity and signup functionality
  */
 
-import { PrismaClient } from '@prisma/client';
 import prisma from '@/lib/db';
 
 const DiagnoseError = (error: string) => {
@@ -84,7 +83,6 @@ async function diagnoseSignupIssue() {
   // Test 5: View users
   console.log('\nTest 2: Find users');
   try {
-    const userCount = await prisma.user.findMany();
     const users = await prisma.user.findMany({
       select: {
         id: true,

@@ -44,7 +44,7 @@ const rolePaths: Record<string, string> = {
 };
 
 
-export async function signup(prevState: any, formData: FormData) {
+export async function signup(prevState: unknown, formData: FormData) {
   try {
     const validatedFields = signupSchema.safeParse(Object.fromEntries(formData));
 
@@ -105,7 +105,7 @@ export async function signup(prevState: any, formData: FormData) {
   }
 }
 
-export async function login(prevState: any, formData: FormData) {
+export async function login(prevState: unknown, formData: FormData) {
     const validatedFields = loginSchema.safeParse(Object.fromEntries(formData));
 
     if (!validatedFields.success) {
@@ -167,7 +167,7 @@ export async function verifyEmail(token: string) {
     }
 }
 
-export async function forgotPassword(prevState: any, formData: FormData) {
+export async function forgotPassword(prevState: unknown, formData: FormData) {
     const validatedFields = forgotPasswordSchema.safeParse(Object.fromEntries(formData));
 
     if (!validatedFields.success) {
@@ -191,7 +191,7 @@ export async function forgotPassword(prevState: any, formData: FormData) {
     }
 }
 
-export async function resetPassword(prevState: any, formData: FormData) {
+export async function resetPassword(prevState: unknown, formData: FormData) {
     const validatedFields = resetPasswordSchema.safeParse(Object.fromEntries(formData));
 
     if (!validatedFields.success) {
@@ -230,7 +230,7 @@ export async function resetPassword(prevState: any, formData: FormData) {
     }
 }
 
-export async function loginWithWallet(prevState: any, formData: FormData) {
+export async function loginWithWallet(prevState: unknown, formData: FormData) {
     try {
         const validatedFields = walletLoginSchema.safeParse(Object.fromEntries(formData));
 
@@ -253,7 +253,7 @@ export async function loginWithWallet(prevState: any, formData: FormData) {
           redirect: rolePaths[user.role] || '/dashboard' 
         };
     } catch (error) {
-        if ((error as any)?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
+        if ((error as Error & { digest?: string })?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
         console.error('Wallet login error:', error);
         return { success: false, message: 'An unexpected error occurred.' };
     }

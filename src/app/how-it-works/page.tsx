@@ -1,10 +1,8 @@
 
-'use client';
-
 import { Header } from '@/components/passa/header';
 import { Footer } from '@/components/passa/footer';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Ticket, Search, CheckCircle, UploadCloud, DollarSign, Palette, PlusCircle, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 

@@ -170,7 +170,7 @@ export default async function OrganizerDashboardPage() {
                 </ul>
                     {events.length === 0 && (
                     <div className="text-center text-muted-foreground py-8">
-                        <p>You haven't created any events yet.</p>
+                        <p>You haven&apos;t created any events yet.</p>
                         <Button className="mt-4" asChild>
                           <Link href="/dashboard/organizer/events/create">
                             Create Your First Event

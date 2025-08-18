@@ -1,12 +1,10 @@
 
-'use client';
-
 import { Header } from '@/components/passa/header';
 import { Footer } from '@/components/passa/footer';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShieldCheck, Zap, BarChart, Users, Search, DollarSign, Palette, Handshake } from 'lucide-react';
+import { ShieldCheck, Zap, BarChart, Search, Palette, Handshake } from 'lucide-react';
 import Link from 'next/link';
 
 export default function FeaturesPage() {
@@ -67,7 +65,7 @@ export default function FeaturesPage() {
                         <div className="mb-12 text-center">
                             <h2 className="font-headline text-3xl font-bold md:text-4xl">The Passa Toolkit</h2>
                             <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
-                                Everything you need, whether you're a fan, creator, or organizer.
+                                Everything you need, whether you&apos;re a fan, creator, or organizer.
                             </p>
                         </div>
                         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -138,7 +136,7 @@ export default function FeaturesPage() {
                             Ready to Build with Us?
                         </h2>
                         <p className="mx-auto mt-4 max-w-2xl text-lg opacity-80">
-                         Join the platform that's designed for fairness and transparency.
+                         Join the platform that&apos;s designed for fairness and transparency.
                         </p>
                         <Button size="lg" variant="secondary" className="mt-8 font-bold text-primary hover:bg-white/90" asChild>
                              <Link href="/register">Get Started</Link>

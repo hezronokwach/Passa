@@ -1,6 +1,4 @@
 
-'use client';
-
 import { Header } from '@/components/passa/header';
 import { Footer } from '@/components/passa/footer';
 import { Button } from '@/components/ui/button';
@@ -24,7 +22,7 @@ export default function ContactPage() {
                             Get in Touch
                         </h1>
                         <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-                            Have a question, a partnership idea, or just want to say hello? We'd love to hear from you.
+                            Have a question, a partnership idea, or just want to say hello? We&apos;d love to hear from you.
                         </p>
                     </div>
                 </section>
