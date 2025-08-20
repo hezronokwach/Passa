@@ -1,6 +1,6 @@
-
 import { Header } from '@/components/passa/header';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -11,6 +11,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { applications } from '@/lib/mock-data';
+import { Eye } from 'lucide-react';
+import Link from 'next/link';
 
 // A helper to determine badge color based on status
 const getStatusVariant = (status: 'Pending' | 'Approved' | 'Rejected') => {
@@ -52,7 +54,8 @@ export default function ApplicationsPage() {
                     <TableHead>Opportunity Title</TableHead>
                     <TableHead>Organizer</TableHead>
                     <TableHead>Date Applied</TableHead>
-                    <TableHead className="text-right">Status</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -61,10 +64,20 @@ export default function ApplicationsPage() {
                       <TableCell className="font-medium">{app.opportunityTitle}</TableCell>
                       <TableCell>{app.organizer}</TableCell>
                       <TableCell>{new Date(app.dateApplied).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell>
                         <Badge variant={getStatusVariant(app.status)}>
                           {app.status}
                         </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {app.status === 'Approved' && (
+                          <Link href={`/dashboard/creator/tickets/${app.id}`}>
+                            <Button variant="outline" size="sm">
+                              <Eye className="mr-2 size-4" />
+                              View Ticket
+                            </Button>
+                          </Link>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
