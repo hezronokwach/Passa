@@ -83,8 +83,9 @@ export async function createEvent(prevState: unknown, formData: FormData) {
       passaSplit,
     } = validatedFields.data;
 
+  let newEvent;
   try {
-    const newEvent = await prisma.event.create({
+    newEvent = await prisma.event.create({
       data: {
         title,
         description,
@@ -109,16 +110,15 @@ export async function createEvent(prevState: unknown, formData: FormData) {
       },
     });
 
-    // Only revalidate and redirect on success
-    revalidatePath('/dashboard');
-    revalidatePath('/dashboard/organizer');
-    // Redirect to the new event's submission page
-    redirect(`/dashboard/organizer/events/${newEvent.id}`);
-
   } catch (error) {
     console.error('Event creation error:', error);
     return { success: false, message: 'An unexpected error occurred while saving to the database.', errors: {} };
   }
+
+  // Revalidation and redirect should happen outside the try/catch block.
+  revalidatePath('/dashboard');
+  revalidatePath('/dashboard/organizer');
+  redirect(`/dashboard/organizer/events/${newEvent.id}`);
 }
 
 const organizerProfileSchema = z.object({

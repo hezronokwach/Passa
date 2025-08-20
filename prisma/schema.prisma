@@ -133,6 +133,7 @@ model CreativeBrief {
   description    String       @db.Text
   budget         Float
   requiredSkills String[]
+  category       String       // Added for filtering
   // Relations
   submissions    Submission[]
   createdAt      DateTime     @default(now())
