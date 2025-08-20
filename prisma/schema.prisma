@@ -30,6 +30,7 @@ model User {
   submissions           Submission[]
   purchasedTickets      PurchasedTicket[]
   attributions          Attribution[]
+  artistInvitations     ArtistInvitation[]
 }
 
 model CreatorProfile {
@@ -79,11 +80,13 @@ model Event {
   venueSplit       Int               @default(20)
   passaSplit       Int               @default(10)
   published        Boolean           @default(false)
+  totalBudget      Float?
   // Relations
   tickets          Ticket[]
   purchasedTickets PurchasedTicket[]
   briefs           CreativeBrief[]
   attributions     Attribution[]
+  artistInvitations ArtistInvitation[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 }
@@ -200,4 +203,27 @@ enum TicketStatus {
 enum ContributionType {
   CREATIVE
   SPONSORSHIP
+}
+
+model ArtistInvitation {
+  id          Int     @id @default(autoincrement())
+  event       Event   @relation(fields: [eventId], references: [id])
+  eventId     Int
+  organizerId Int
+  artistEmail String
+  artistName  String
+  proposedFee Float
+  message     String? @db.Text
+  status      InvitationStatus @default(PENDING)
+  artistComments String? @db.Text
+  artistId    Int?
+  artist      User?   @relation(fields: [artistId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }

@@ -1,12 +1,11 @@
 
 
-'use server';
-
 import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Users, BarChart2, User } from 'lucide-react';
 import Link from 'next/link';
+import { PublishEventButton } from '@/components/passa/publish-event-button';
 import prisma from '@/lib/db';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
@@ -69,6 +68,9 @@ async function getOrganizerData() {
         events: events.map(event => ({
             id: event.id,
             title: event.title,
+            description: event.description,
+            location: event.location,
+            country: event.country,
             date: event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
             submissions: event.briefs.reduce((acc, brief) => acc + brief.submissions.length, 0),
             published: event.published,
@@ -170,9 +172,14 @@ export default async function OrganizerDashboardPage() {
                                         {event.published ? 'Published' : 'Draft'}
                                     </span>
                                     {!event.published && (
-                                        <Button size="sm" variant="default">
-                                            Publish
-                                        </Button>
+                                        <PublishEventButton event={{
+                                            id: event.id,
+                                            title: event.title,
+                                            description: event.description,
+                                            date: event.date,
+                                            location: event.location,
+                                            country: event.country
+                                        }} />
                                     )}
                                     <Link href={`/dashboard/organizer/events/${event.id}`}>
                                         <Button variant="outline" size="sm">Manage</Button>
