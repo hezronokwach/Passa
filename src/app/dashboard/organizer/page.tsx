@@ -101,6 +101,12 @@ export default async function OrganizerDashboardPage() {
               Organization Dashboard
             </h1>
             <div className="flex gap-2">
+                <Link href="/dashboard/organizer/invitations">
+                    <Button variant="outline">
+                        <Users className="mr-2 size-4" />
+                        My Invitations
+                    </Button>
+                </Link>
                  <Link href="/dashboard/organizer/profile">
                     <Button variant="outline">
                         <User className="mr-2 size-4" />
