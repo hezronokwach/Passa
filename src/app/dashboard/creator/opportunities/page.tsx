@@ -5,32 +5,18 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Briefcase, DollarSign, FileText } from 'lucide-react';
 import { OpportunityCard } from '@/components/passa/opportunity-card';
-import prisma from '@/lib/db';
+import { opportunities } from '@/lib/mock-data';
 
+// Use mock data instead of database query for now
 async function getOpportunities() {
-  const briefs = await prisma.creativeBrief.findMany({
-    include: {
-      event: {
-        include: {
-          organizer: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-
-  // Adapt the Prisma model to the shape the OpportunityCard component expects
-  return briefs.map(brief => ({
-    id: brief.id,
-    title: brief.title,
-    description: brief.description,
-    budget: brief.budget,
-    // The component expects `organizer`, but the model has `brief.event.organizer.name`
-    organizer: brief.event.organizer.name ?? 'Unnamed Organizer',
-    // The component expects `skills`, but the model has `requiredSkills`
-    skills: brief.requiredSkills,
+  // Return the mock opportunities data
+  return opportunities.map(opportunity => ({
+    id: opportunity.id,
+    title: opportunity.title,
+    description: opportunity.description,
+    budget: opportunity.budget,
+    organizer: opportunity.organizer,
+    skills: opportunity.skills,
   }));
 }
 
