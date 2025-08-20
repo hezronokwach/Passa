@@ -505,6 +505,11 @@ export default function CreateEventPage() {
                       ))}
                     </div>
                     {state.errors?.tickets && <p className="text-sm text-destructive">{state.errors.tickets[0]}</p>}
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-sm text-muted-foreground">
+                        📝 <strong>Note:</strong> After creating your event, remember to publish it from your dashboard to make it visible to attendees.
+                      </p>
+                    </div>
                     <div className="flex justify-between">
                       <Button type="button" variant="outline" onClick={() => setCurrentStep(1)}>
                         Back

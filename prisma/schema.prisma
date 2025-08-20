@@ -78,6 +78,7 @@ model Event {
   artistSplit      Int               @default(70)
   venueSplit       Int               @default(20)
   passaSplit       Int               @default(10)
+  published        Boolean           @default(false)
   // Relations
   tickets          Ticket[]
   purchasedTickets PurchasedTicket[]

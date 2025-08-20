@@ -107,8 +107,9 @@ function ActionButtons({ submission, eventId }: { submission: Submission, eventI
     );
 }
 
-export default async function EventSubmissionsPage({ params }: { params: { id: string } }) {
-    const eventId = parseInt(params.id, 10);
+export default async function EventSubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const eventId = parseInt(id, 10);
     const event = await getEventData(eventId);
 
     if (!event) {

@@ -71,7 +71,8 @@ async function getOrganizerData() {
             title: event.title,
             date: event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
             submissions: event.briefs.reduce((acc, brief) => acc + brief.submissions.length, 0),
-            status: event.date > new Date() ? 'Upcoming' : 'Live' // Simple status logic
+            published: event.published,
+            status: event.date > new Date() ? 'Upcoming' : 'Live'
         })),
         stats: {
             totalEvents,
@@ -160,10 +161,23 @@ export default async function OrganizerDashboardPage() {
                                 <p className="text-sm text-muted-foreground">{event.date} - <span className="text-primary font-medium">{event.submissions} submissions</span></p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${event.status === 'Live' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{event.status}</span>
-                                <Link href={`/dashboard/organizer/events/${event.id}`}>
-                                    <Button variant="outline">Manage Event</Button>
-                                </Link>
+                                <div className="flex items-center gap-2">
+                                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                                        event.published 
+                                            ? 'bg-green-100 text-green-800' 
+                                            : 'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                        {event.published ? 'Published' : 'Draft'}
+                                    </span>
+                                    {!event.published && (
+                                        <Button size="sm" variant="default">
+                                            Publish
+                                        </Button>
+                                    )}
+                                    <Link href={`/dashboard/organizer/events/${event.id}`}>
+                                        <Button variant="outline" size="sm">Manage</Button>
+                                    </Link>
+                                </div>
                             </div>
                         </li>
                     ))}
