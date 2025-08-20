@@ -84,7 +84,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
     } = validatedFields.data;
 
   try {
-    await prisma.event.create({
+    const newEvent = await prisma.event.create({
       data: {
         title,
         description,
@@ -109,14 +109,16 @@ export async function createEvent(prevState: unknown, formData: FormData) {
       },
     });
 
+    // Only revalidate and redirect on success
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/organizer');
+    // Redirect to the new event's submission page
+    redirect(`/dashboard/organizer/events/${newEvent.id}`);
+
   } catch (error) {
     console.error('Event creation error:', error);
-    return { success: false, message: 'An unexpected error occurred.', errors: {} };
+    return { success: false, message: 'An unexpected error occurred while saving to the database.', errors: {} };
   }
-
-  revalidatePath('/dashboard');
-  revalidatePath('/dashboard/organizer');
-  redirect('/dashboard/organizer');
 }
 
 const organizerProfileSchema = z.object({

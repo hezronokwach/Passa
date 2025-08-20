@@ -1,14 +1,42 @@
-
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Briefcase, DollarSign } from 'lucide-react';
+import { Search, Briefcase, DollarSign, FileText } from 'lucide-react';
 import { OpportunityCard } from '@/components/passa/opportunity-card';
-import { opportunities } from '@/lib/mock-data';
+import prisma from '@/lib/db';
 
-export default function OpportunitiesPage() {
+async function getOpportunities() {
+  const briefs = await prisma.creativeBrief.findMany({
+    include: {
+      event: {
+        include: {
+          organizer: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  // Adapt the Prisma model to the shape the OpportunityCard component expects
+  return briefs.map(brief => ({
+    id: brief.id,
+    title: brief.title,
+    description: brief.description,
+    budget: brief.budget,
+    // The component expects `organizer`, but the model has `brief.event.organizer.name`
+    organizer: brief.event.organizer.name ?? 'Unnamed Organizer',
+    // The component expects `skills`, but the model has `requiredSkills`
+    skills: brief.requiredSkills,
+  }));
+}
+
+export default async function OpportunitiesPage() {
+    const opportunities = await getOpportunities();
+
     return (
         <div className="flex min-h-screen w-full flex-col bg-secondary/30">
             <Header />
@@ -58,11 +86,19 @@ export default function OpportunitiesPage() {
                     </Card>
 
                     {/* Opportunities Grid */}
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {opportunities.map(job => (
-                            <OpportunityCard key={job.id} job={job} />
-                        ))}
-                    </div>
+                    {opportunities.length > 0 ? (
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {opportunities.map(job => (
+                                <OpportunityCard key={job.id} job={job} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center text-muted-foreground py-24">
+                            <FileText className="mx-auto size-16 mb-4" />
+                            <h3 className="font-semibold text-xl">No Opportunities Available</h3>
+                            <p>There are currently no open creative briefs. Please check back later!</p>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

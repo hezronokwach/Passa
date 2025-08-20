@@ -1,7 +1,7 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useActionState } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
@@ -16,8 +16,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from '@/components/ui/use-toast';
-import { Tag, DollarSign, Briefcase } from 'lucide-react';
-import { opportunities, Opportunity } from '@/lib/mock-data';
+import { Tag, DollarSign, Briefcase, PartyPopper } from 'lucide-react';
+import { opportunities, Opportunity } from '@/lib/mock-data'; // We'll still use this for initial display
+import { createSubmission } from '@/app/actions/creator';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 
 // Define the type for a single opportunity to use with useState
 type OpportunityState = Opportunity | null;
@@ -26,6 +30,14 @@ export function OpportunityDetailView({ id }: { id: string }) {
     const { toast } = useToast();
     const [opportunity, setOpportunity] = useState<OpportunityState>(null);
     const [loading, setLoading] = useState(true);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    // Form action state
+    const [state, formAction] = useActionState(createSubmission, {
+        message: '',
+        errors: {},
+        success: false,
+    });
 
     useEffect(() => {
         const foundOpportunity = opportunities.find(op => op.id.toString() === id) || null;
@@ -33,28 +45,27 @@ export function OpportunityDetailView({ id }: { id: string }) {
         setLoading(false);
     }, [id]);
 
-    const handleApplyConfirm = () => {
-      if (!opportunity) return;
-      toast({
-        title: "Application Submitted!",
-        description: `Your application for "${opportunity.title}" has been sent.`,
-      });
-    };
+    // Effect to handle toast notifications based on form state
+    useEffect(() => {
+        if (state.success) {
+            setIsDialogOpen(false); // Close dialog on success
+            toast({
+                title: "Application Submitted!",
+                description: state.message,
+                action: <div className="p-1"><PartyPopper className="text-primary"/></div>
+            });
+        } else if (state.message && !state.success && Object.keys(state.errors || {}).length === 0) {
+            toast({ title: 'Error', description: state.message, variant: 'destructive' });
+        }
+    }, [state, toast]);
+
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center p-8">
-                <p>Loading...</p>
-            </div>
-        );
+        return <div className="flex items-center justify-center p-8"><p>Loading...</p></div>;
     }
 
     if (!opportunity) {
-        return (
-            <div className="flex items-center justify-center p-8">
-                <p>Opportunity not found.</p>
-            </div>
-        );
+        return <div className="flex items-center justify-center p-8"><p>Opportunity not found.</p></div>;
     }
 
     return (
@@ -70,9 +81,7 @@ export function OpportunityDetailView({ id }: { id: string }) {
                 </div>
                 <div className="space-y-6">
                     <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">Details</CardTitle>
-                        </CardHeader>
+                        <CardHeader><CardTitle className="text-lg">Details</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-center gap-2">
                                 <DollarSign className="size-5 text-primary" />
@@ -95,21 +104,38 @@ export function OpportunityDetailView({ id }: { id: string }) {
                             </div>
                         </CardContent>
                     </Card>
-                    <AlertDialog>
+                    <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                       <AlertDialogTrigger asChild>
                         <Button size="lg" className="w-full font-bold">Apply Now</Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action will submit your application for the opportunity titled "{opportunity.title}". You cannot undo this action.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleApplyConfirm}>Confirm Application</AlertDialogAction>
-                        </AlertDialogFooter>
+                        <form action={formAction}>
+                            <input type="hidden" name="briefId" value={opportunity.id} />
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Submit Your Application</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Attach your work and a message for the organizer.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            
+                            <div className="space-y-4 my-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="file">Your Work</Label>
+                                    <Input id="file" name="file" type="file" required />
+                                    {state.errors?.file && <p className="text-sm text-destructive">{state.errors.file[0]}</p>}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="message">Message (Optional)</Label>
+                                    <Textarea id="message" name="message" placeholder="Add a personal note..." />
+                                    {state.errors?.message && <p className="text-sm text-destructive">{state.errors.message[0]}</p>}
+                                </div>
+                            </div>
+
+                            <AlertDialogFooter>
+                              <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
+                              <AlertDialogAction type="submit">Confirm Application</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </form>
                       </AlertDialogContent>
                     </AlertDialog>
                 </div>

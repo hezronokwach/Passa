@@ -84,7 +84,7 @@ model Event {
   briefs           CreativeBrief[]
   attributions     Attribution[]
   createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  updatedAt        DateTime          @default(now()) @updatedAt
 }
 
 model Ticket {
