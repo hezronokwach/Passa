@@ -1,46 +1,87 @@
 
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tag, Search, Briefcase, DollarSign } from 'lucide-react';
-import Link from 'next/link';
+import { Search, Briefcase, DollarSign } from 'lucide-react';
+import { OpportunityCard } from '@/components/passa/opportunity-card';
+import type { Event } from '@prisma/client';
+
+// The OpportunityCard expects a specific data structure. We define it here.
+// This would typically be imported, but we define it here for clarity with hardcoded data.
+interface TranslatedEvent extends Event {
+  translatedTitle: string;
+  price: number;
+  currency: string;
+  imageHint: string;
+}
 
 export default function OpportunitiesPage() {
-    // Mock data - replace with actual data fetching from Prisma
-    const opportunities = [
+    // Mock data shaped to fit the OpportunityCard component
+    const events: TranslatedEvent[] = [
         {
-            id: 1,
-            title: 'Promotional Video for Afrochella',
-            organizer: 'Afrochella Events',
-            budget: 5000,
-            skills: ['Videography', 'Video Editing', 'Storytelling'],
-            description: 'We need a stunning 2-minute promotional video to capture the vibrant energy of the Afrochella festival. The video should highlight key performances, audience reactions, and the overall cultural experience.'
+            id: 'clxysp33s00001234abcd',
+            title: 'Afrochella Festival 2025',
+            translatedTitle: 'Afrochella Festival 2025',
+            description: 'A celebration of African music, culture, and fashion.',
+            imageUrl: '/passa-africantenge.webp',
+            date: new Date('2025-12-28T12:00:00Z'),
+            location: 'Accra, Ghana',
+            organizerId: 'org_123',
+            price: 75,
+            currency: 'USD',
+            imageHint: 'A vibrant, colorful photo of a crowd dancing at a music festival under the sun.',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            venue: 'El Wak Stadium',
+            startTime: '12:00',
+            endTime: '23:00',
+            category: 'Music Festival',
+            status: 'PUBLISHED',
+            capacity: 20000,
         },
         {
-            id: 2,
-            title: 'Social Media Graphics Pack',
-            organizer: 'Sauti Sol Management',
-            budget: 1500,
-            skills: ['Graphic Design', 'Branding', 'Social Media'],
-            description: 'Create a pack of 10 high-quality social media graphics (Instagram posts, stories, Twitter banners) for Sauti Sol\'s upcoming concert. Must adhere to their brand guidelines.'
+            id: 'clxysp33s00011234bcde',
+            title: 'Lagos Art & Culture Expo',
+            translatedTitle: 'Lagos Art & Culture Expo',
+            description: 'Showcasing the best of contemporary and traditional Nigerian art.',
+            imageUrl: '/logo.png', // Placeholder image
+            date: new Date('2025-11-10T10:00:00Z'),
+            location: 'Lagos, Nigeria',
+            organizerId: 'org_456',
+            price: 25,
+            currency: 'USD',
+            imageHint: 'A sophisticated gallery setting with diverse African art on display.',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            venue: 'Eko Convention Centre',
+            startTime: '10:00',
+            endTime: '20:00',
+            category: 'Art Exhibition',
+            status: 'PUBLISHED',
+            capacity: 5000,
         },
         {
-            id: 3,
-            title: 'Blog Post: "The Rise of Amapiano"',
-            organizer: 'Amapiano Night Fest',
-            budget: 500,
-            skills: ['Writing', 'Music Journalism', 'SEO'],
-            description: 'Write an engaging and informative 1500-word blog post about the cultural impact and global rise of the Amapiano music genre. The article will be featured on our event website.'
-        },
-        {
-            id: 4,
-            title: 'Live Event Photographer',
-            organizer: 'Lagos Music Week',
-            budget: 2500,
-            skills: ['Photography', 'Event Photography', 'Photo Editing'],
-            description: 'Capture high-resolution photos of performances, crowd, and behind-the-scenes moments during the 3-day Lagos Music Week. A portfolio of live event work is required.'
+            id: 'clxysp33s00021234bcde',
+            title: 'Cape Town Food & Wine Festival',
+            translatedTitle: 'Cape Town Food & Wine Festival',
+            description: 'Experience the finest culinary delights and wines from the Western Cape.',
+            imageUrl: '/passa-africantenge.webp', // Placeholder image
+            date: new Date('2026-02-20T11:00:00Z'),
+            location: 'Cape Town, South Africa',
+            organizerId: 'org_789',
+            price: 120,
+            currency: 'ZAR',
+            imageHint: 'A close-up shot of a gourmet dish with a glass of wine in a scenic vineyard background.',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            venue: 'Cape Town International Convention Centre',
+            startTime: '11:00',
+            endTime: '21:00',
+            category: 'Food & Drink',
+            status: 'PUBLISHED',
+            capacity: 8000,
         }
     ];
 
@@ -54,7 +95,7 @@ export default function OpportunitiesPage() {
                            Find Your Next Creative Gig
                          </h1>
                          <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
-                            Browse creative briefs from top event organizers and apply your skills to the most exciting events in Africa.
+                            Browse opportunities from top event organizers and apply your skills to the most exciting events in Africa.
                          </p>
                     </div>
 
@@ -71,10 +112,10 @@ export default function OpportunitiesPage() {
                                     <SelectValue placeholder="All Categories" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="video">Video & Animation</SelectItem>
-                                    <SelectItem value="design">Graphic Design</SelectItem>
-                                    <SelectItem value="writing">Writing & Translation</SelectItem>
-                                    <SelectItem value="photo">Photography</SelectItem>
+                                    <SelectItem value="music">Music</SelectItem>
+                                    <SelectItem value="art">Art & Culture</SelectItem>
+                                    <SelectItem value="food">Food & Drink</SelectItem>
+                                    <SelectItem value="tech">Tech & Innovation</SelectItem>
                                 </SelectContent>
                             </Select>
                             <Select>
@@ -83,9 +124,9 @@ export default function OpportunitiesPage() {
                                     <SelectValue placeholder="Any Budget" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="<1000">Under $1,000</SelectItem>
-                                    <SelectItem value="1000-5000">$1,000 - $5,000</SelectItem>
-                                    <SelectItem value=">5000">Over $5,000</SelectItem>
+                                    <SelectItem value="<50">$50 or less</SelectItem>
+                                    <SelectItem value="50-100">$50 - $100</SelectItem>
+                                    <SelectItem value=">100">$100 or more</SelectItem>
                                 </SelectContent>
                             </Select>
                             <Button className="font-bold w-full">Search</Button>
@@ -94,32 +135,8 @@ export default function OpportunitiesPage() {
 
                     {/* Opportunities Grid */}
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {opportunities.map(job => (
-                            <Card key={job.id} className="flex flex-col">
-                                <CardHeader>
-                                    <CardTitle>{job.title}</CardTitle>
-                                    <CardDescription>by {job.organizer}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="flex-grow">
-                                    <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                                        {job.description}
-                                    </p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {job.skills.map(skill => (
-                                            <div key={skill} className="flex items-center gap-1 text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
-                                                <Tag className="size-3"/>
-                                                <span>{skill}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                                <div className="border-t p-4 flex items-center justify-between">
-                                    <p className="text-lg font-bold text-primary">${job.budget}</p>
-                                    <Link href={`/dashboard/creator/opportunities/${job.id}`}>
-                                        <Button>View & Apply</Button>
-                                    </Link>
-                                </div>
-                            </Card>
+                        {events.map(event => (
+                            <OpportunityCard key={event.id} event={event} />
                         ))}
                     </div>
                 </div>
