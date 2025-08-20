@@ -134,6 +134,12 @@ export default async function CreatorDashboardPage() {
                         View My Profile
                     </Button>
                 </Link>
+                <Link href="/dashboard/creator/applications">
+                    <Button variant="outline">
+                        <FileText className="mr-2 size-4" />
+                        My Applications
+                    </Button>
+                </Link>
                 <Link href="/dashboard/creator/opportunities">
                     <Button>
                         <PlusCircle className="mr-2 size-4" />

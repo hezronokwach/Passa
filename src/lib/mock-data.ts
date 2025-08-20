@@ -75,7 +75,7 @@ const events: Event[] = [
 
 export const getEvents = (): Event[] => events;
 
-// --- Adding Opportunities Mock Data ---
+// --- Opportunities Mock Data ---
 
 export interface Opportunity {
   id: number | string;
@@ -119,4 +119,45 @@ export const opportunities: Opportunity[] = [
         skills: ['Photography', 'Event Photography', 'Photo Editing'],
         description: 'Capture high-resolution photos of performances, crowd, and behind-the-scenes moments during the 3-day Lagos Music Week. A portfolio of live event work is required.'
     }
+];
+
+// --- Applications Mock Data ---
+
+export interface Application {
+  id: string;
+  opportunityTitle: string;
+  organizer: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  dateApplied: string;
+}
+
+export const applications: Application[] = [
+  {
+    id: 'app1',
+    opportunityTitle: 'Promotional Video for Afrochella',
+    organizer: 'Afrochella Events',
+    status: 'Approved',
+    dateApplied: '2025-08-15',
+  },
+  {
+    id: 'app2',
+    opportunityTitle: 'Social Media Graphics Pack',
+    organizer: 'Sauti Sol Management',
+    status: 'Pending',
+    dateApplied: '2025-08-18',
+  },
+  {
+    id: 'app3',
+    opportunityTitle: 'Live Event Photographer',
+    organizer: 'Lagos Music Week',
+    status: 'Rejected',
+    dateApplied: '2025-08-12',
+  },
+    {
+    id: 'app4',
+    opportunityTitle: 'Blog Post: "The Rise of Amapiano"',
+    organizer: 'Amapiano Night Fest',
+    status: 'Pending',
+    dateApplied: '2025-08-20',
+  },
 ];
