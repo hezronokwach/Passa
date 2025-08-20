@@ -47,6 +47,22 @@ export async function sendArtistInvitations(prevState: unknown, formData: FormDa
       };
     }
 
+    // Verify event exists and belongs to organizer
+    const event = await prisma.event.findFirst({
+      where: { 
+        id: eventId,
+        organizerId: session.userId 
+      }
+    });
+
+    if (!event) {
+      return {
+        errors: { eventId: ['Event not found or access denied'] },
+        message: 'Event not found',
+        success: false,
+      };
+    }
+
     // Update event with budget
     await prisma.event.update({
       where: { id: eventId },
@@ -65,6 +81,17 @@ export async function sendArtistInvitations(prevState: unknown, formData: FormDa
             proposedFee: parseFloat(artist.fee),
             message: eventMessage,
             artistId: artist.userId || null,
+          }
+        });
+
+        // Create history record
+        await prisma.invitationHistory.create({
+          data: {
+            invitationId: invitation.id,
+            action: 'CREATED',
+            newStatus: 'PENDING',
+            newFee: parseFloat(artist.fee),
+            comments: `Initial invitation sent to ${artist.name}`
           }
         });
 

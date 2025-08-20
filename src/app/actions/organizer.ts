@@ -100,13 +100,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
 
     revalidatePath('/dashboard');
     revalidatePath('/dashboard/organizer');
-    
-    return {
-      success: true,
-      message: `Event "${title}" created successfully with ${ticketTiers.length} ticket tier(s)!`,
-      errors: {},
-      eventId: event.id
-    };
+    redirect('/dashboard/organizer');
 
   } catch (error) {
     console.error('Event creation error:', error);
