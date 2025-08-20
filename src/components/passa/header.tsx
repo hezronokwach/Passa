@@ -5,6 +5,7 @@ import { ThemeToggle } from './theme-toggle';
 import { getSession } from '@/lib/session';
 import { logout } from '@/app/actions/auth';
 import { MobileNav } from './mobile-nav';
+import { NotificationBell } from './notifications';
 
 export const Header = async () => {
   const session = await getSession();
@@ -39,6 +40,7 @@ export const Header = async () => {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          {isAuthenticated && <NotificationBell />}
           <div className="hidden sm:flex items-center gap-2">
             {isAuthenticated ? (
               <>

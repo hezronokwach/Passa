@@ -147,13 +147,13 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
   };
 
   React.useEffect(() => {
-    if (invitationState.success) {
+    if (invitationState?.success) {
       toast({
         title: 'Invitations Sent!',
         description: invitationState.message,
       });
       setCurrentStep(2);
-    } else if (invitationState.message && !invitationState.success) {
+    } else if (invitationState?.message && !invitationState?.success) {
       toast({
         title: 'Error',
         description: invitationState.message,
