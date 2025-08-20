@@ -74,3 +74,49 @@ const events: Event[] = [
 ];
 
 export const getEvents = (): Event[] => events;
+
+// --- Adding Opportunities Mock Data ---
+
+export interface Opportunity {
+  id: number | string;
+  title: string;
+  organizer: string;
+  budget: number;
+  skills: string[];
+  description: string;
+}
+
+export const opportunities: Opportunity[] = [
+    {
+        id: 1,
+        title: 'Promotional Video for Afrochella',
+        organizer: 'Afrochella Events',
+        budget: 5000,
+        skills: ['Videography', 'Video Editing', 'Storytelling'],
+        description: 'We need a stunning 2-minute promotional video to capture the vibrant energy of the Afrochella festival. The video should highlight key performances, audience reactions, and the overall cultural experience. The ideal candidate will have a strong portfolio of event videography and a passion for African music and culture.'
+    },
+    {
+        id: 2,
+        title: 'Social Media Graphics Pack',
+        organizer: 'Sauti Sol Management',
+        budget: 1500,
+        skills: ['Graphic Design', 'Branding', 'Social Media'],
+        description: 'Create a pack of 10 high-quality social media graphics (Instagram posts, stories, Twitter banners) for Sauti Sol\'s upcoming concert. Must adhere to their brand guidelines.'
+    },
+    {
+        id: 3,
+        title: 'Blog Post: "The Rise of Amapiano"',
+        organizer: 'Amapiano Night Fest',
+        budget: 500,
+        skills: ['Writing', 'Music Journalism', 'SEO'],
+        description: 'Write an engaging and informative 1500-word blog post about the cultural impact and global rise of the Amapiano music genre. The article will be featured on our event website.'
+    },
+    {
+        id: 4,
+        title: 'Live Event Photographer',
+        organizer: 'Lagos Music Week',
+        budget: 2500,
+        skills: ['Photography', 'Event Photography', 'Photo Editing'],
+        description: 'Capture high-resolution photos of performances, crowd, and behind-the-scenes moments during the 3-day Lagos Music Week. A portfolio of live event work is required.'
+    }
+];

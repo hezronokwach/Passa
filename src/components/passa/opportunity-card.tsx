@@ -1,65 +1,53 @@
-
 "use client";
 
-import Image from 'next/image';
-import { Calendar, MapPin } from 'lucide-react';
 import Link from 'next/link';
-
-import type { Event } from '@prisma/client';
+import { Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
-} from '../ui/card';
+} from '@/components/ui/card';
 
-// This is the same data structure used by EventCard for consistency.
-// It can be moved to a shared types file later.
-interface TranslatedEvent extends Event {
-  translatedTitle: string;
-  price: number; // Represents budget/payout for the opportunity
-  currency: string;
-  imageHint: string;
+// Define the shape of the data the card expects.
+// This matches the mock data structure from the page.
+interface Opportunity {
+  id: number | string;
+  title: string;
+  organizer: string;
+  budget: number;
+  skills: string[];
+  description: string;
 }
 
-export const OpportunityCard = ({ event }: { event: TranslatedEvent }) => {
+export const OpportunityCard = ({ job }: { job: Opportunity }) => {
   return (
-    <Link href={`/dashboard/creator/opportunities/${event.id}`} className="group block">
-      <Card className="w-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full flex flex-col">
-        <div className="relative h-48 w-full overflow-hidden">
-          <Image
-            src={event.imageUrl}
-            alt={event.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            data-ai-hint={event.imageHint}
-          />
+    <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+      <CardHeader>
+        <CardTitle>{job.title}</CardTitle>
+        <CardDescription>by {job.organizer}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow">
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+          {job.description}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {job.skills.map(skill => (
+            <div key={skill} className="flex items-center gap-1 text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
+              <Tag className="size-3"/>
+              <span>{skill}</span>
+            </div>
+          ))}
         </div>
-        <CardContent className="flex flex-1 flex-col justify-between p-4">
-          <div>
-            <CardTitle className="font-headline text-2xl leading-tight">
-              {event.translatedTitle}
-            </CardTitle>
-            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="size-4" />
-              <span>{new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-            </div>
-            <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="size-4" />
-              <span>{event.location}</span>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center justify-between">
-             <p className="text-xl font-bold text-primary">
-              ${event.price} <span className="text-sm font-normal text-muted-foreground">{event.currency}</span>
-            </p>
-             <Button size="sm" className="font-bold">
-                View & Apply
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+      </CardContent>
+      <div className="border-t p-4 flex items-center justify-between">
+        <p className="text-lg font-bold text-primary">${job.budget}</p>
+        <Link href={`/dashboard/creator/opportunities/${job.id}`}>
+          <Button>View & Apply</Button>
+        </Link>
+      </div>
+    </Card>
   );
 };
