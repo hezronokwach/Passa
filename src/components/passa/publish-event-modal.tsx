@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useActionState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Trash2, Users, DollarSign, Search, User } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { sendArtistInvitations } from '@/app/actions/artist-invitations';
 
 type Event = {
   id: number;
@@ -53,6 +55,12 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
   const [existingArtists, setExistingArtists] = React.useState<ExistingArtist[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
+  
+  const [invitationState, sendInvitations] = useActionState(sendArtistInvitations, {
+    message: '',
+    errors: {},
+    success: false,
+  });
 
   const addArtist = (existingArtist?: ExistingArtist) => {
     const newArtist: Artist = {
@@ -111,7 +119,7 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
   const remainingBudget = (parseFloat(totalBudget) || 0) - totalFees;
   const budgetExceeded = remainingBudget < 0;
 
-  const handleSendInvitations = () => {
+  const handleSendInvitations = (formData: FormData) => {
     if (!totalBudget || artists.length === 0) {
       toast({
         title: 'Missing Information',
@@ -130,14 +138,29 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
       return;
     }
 
-    // TODO: Implement invitation sending
-    toast({
-      title: 'Invitations Sent!',
-      description: `Sent ${artists.length} invitation(s) for ${event.title}`,
-    });
+    formData.set('eventId', event.id.toString());
+    formData.set('totalBudget', totalBudget);
+    formData.set('eventMessage', eventMessage);
+    formData.set('artists', JSON.stringify(artists));
     
-    setCurrentStep(2);
+    sendInvitations(formData);
   };
+
+  React.useEffect(() => {
+    if (invitationState.success) {
+      toast({
+        title: 'Invitations Sent!',
+        description: invitationState.message,
+      });
+      setCurrentStep(2);
+    } else if (invitationState.message && !invitationState.success) {
+      toast({
+        title: 'Error',
+        description: invitationState.message,
+        variant: 'destructive'
+      });
+    }
+  }, [invitationState, toast]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -372,11 +395,13 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
                 </CardContent>
               </Card>
 
-              <div className="flex justify-end">
-                <Button onClick={handleSendInvitations}>
-                  Send Invitations
-                </Button>
-              </div>
+              <form action={handleSendInvitations}>
+                <div className="flex justify-end">
+                  <Button type="submit">
+                    Send Invitations
+                  </Button>
+                </div>
+              </form>
             </>
           )}
 
