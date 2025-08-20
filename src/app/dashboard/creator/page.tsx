@@ -128,6 +128,12 @@ export default async function CreatorDashboardPage() {
               Creator Dashboard
             </h1>
             <div className="flex gap-2">
+                <Link href="/dashboard/creator/invitations">
+                    <Button variant="outline">
+                        <DollarSign className="mr-2 size-4" />
+                        My Invitations
+                    </Button>
+                </Link>
                 <Link href="/dashboard/creator/profile">
                     <Button variant="outline">
                         <Eye className="mr-2 size-4" />
