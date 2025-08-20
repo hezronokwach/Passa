@@ -22,6 +22,7 @@ model User {
   attributions         Attribution[]
   creatorProfile       CreatorProfile?
   eventsOrganized      Event[]
+  notifications        Notification[]
   organizerProfile     OrganizerProfile?
   purchasedTickets     PurchasedTicket[]
   submissions          Submission[]
@@ -161,20 +162,46 @@ model NewsletterSubscription {
 }
 
 model ArtistInvitation {
-  id             Int              @id @default(autoincrement())
+  id             Int                   @id @default(autoincrement())
   eventId        Int
   organizerId    Int
   artistEmail    String
   artistName     String
   proposedFee    Float
   message        String?
-  status         InvitationStatus @default(PENDING)
+  status         InvitationStatus      @default(PENDING)
   artistComments String?
   artistId       Int?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  artist         User?            @relation(fields: [artistId], references: [id])
-  event          Event            @relation(fields: [eventId], references: [id])
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  artist         User?                 @relation(fields: [artistId], references: [id])
+  event          Event                 @relation(fields: [eventId], references: [id])
+  history        InvitationHistory[]
+}
+
+model InvitationHistory {
+  id           Int              @id @default(autoincrement())
+  invitationId Int
+  action       String           // CREATED, UPDATED, ACCEPTED, REJECTED
+  oldStatus    InvitationStatus?
+  newStatus    InvitationStatus?
+  oldFee       Float?
+  newFee       Float?
+  comments     String?
+  createdAt    DateTime         @default(now())
+  invitation   ArtistInvitation @relation(fields: [invitationId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String
+  title     String
+  message   String
+  data      Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 enum Role {
