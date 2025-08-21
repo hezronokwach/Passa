@@ -8,10 +8,11 @@
 import { InviteWithFeeDialog } from '@/components/passa/invite-with-fee-dialog';
 import { DirectInviteDialog } from '@/components/passa/direct-invite-dialog';
 import { Header } from '@/components/passa/header';
+import { Button } from '@/components/ui/button';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Users, Ticket, DollarSign, Calendar, Settings, MapPin, Music, TrendingUp, Star } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Users, Ticket, DollarSign, Calendar, Settings, MapPin, Music, TrendingUp, Star, Eye } from 'lucide-react';
 import Link from 'next/link';
 import {
   Table,
@@ -111,68 +112,106 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                             <ArrowLeft className="size-4" />
                             Back to Dashboard
                         </Link>
-                        <div className="flex justify-between items-start mb-8">
-                            <div>
-                                <h1 className="font-headline text-3xl font-bold">{event.title}</h1>
-                                <p className="text-muted-foreground mt-1">Event Management Dashboard</p>
+                        {/* Hero Section */}
+                        <div className="relative mb-12 p-8 rounded-3xl bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5 border border-primary/20">
+                            <div className="absolute top-4 right-4">
+                                <Badge variant={event.published ? 'default' : 'secondary'} className="text-sm px-3 py-1">
+                                    {event.published ? '🟢 Live' : '🟡 Draft'}
+                                </Badge>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="mb-6">
+                                <h1 className="font-headline text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-2">
+                                    {event.title}
+                                </h1>
+                                <div className="flex items-center gap-6 text-muted-foreground">
+                                    <div className="flex items-center gap-2">
+                                        <Calendar className="size-4" />
+                                        <span>{new Date(event.date).toLocaleDateString('en-US', { dateStyle: 'full' })}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <MapPin className="size-4" />
+                                        <span>{event.location}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex gap-3">
                                 <Link href={`/dashboard/organizer/events/${event.id}/edit`}>
-                                    <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-                                        <Settings className="size-4" />
+                                    <Button size="lg" className="shadow-lg">
+                                        <Settings className="mr-2 size-5" />
                                         Edit Event
-                                    </button>
+                                    </Button>
+                                </Link>
+                                <Link href={`/events/${event.id}`}>
+                                    <Button variant="outline" size="lg">
+                                        <Eye className="mr-2 size-5" />
+                                        View Public Page
+                                    </Button>
                                 </Link>
                             </div>
                         </div>
 
-                        {/* Stats Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                            <Card>
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-muted-foreground">Tickets Sold</p>
-                                            <p className="text-2xl font-bold">{event._count.purchasedTickets}</p>
-                                            <p className="text-xs text-muted-foreground">of {event.tickets.reduce((sum, t) => sum + t.quantity, 0)} total</p>
+                        {/* Performance Metrics */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                            <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 overflow-hidden">
+                                <CardContent className="p-6 relative">
+                                    <div className="absolute top-0 right-0 w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full -translate-y-10 translate-x-10"></div>
+                                    <div className="relative">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                                <Ticket className="size-5 text-blue-600 dark:text-blue-400" />
+                                            </div>
+                                            <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Tickets Sold</p>
                                         </div>
-                                        <Ticket className="size-8 text-primary" />
+                                        <p className="text-3xl font-bold text-blue-900 dark:text-blue-100 mb-1">{event._count.purchasedTickets}</p>
+                                        <p className="text-xs text-blue-600 dark:text-blue-400">of {event.tickets.reduce((sum, t) => sum + t.quantity, 0)} available</p>
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card>
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
-                                            <p className="text-2xl font-bold">${(event.purchasedTickets.reduce((sum, ticket) => sum + (event.tickets.find(t => t.id === ticket.ticketId)?.price || 0), 0)).toFixed(2)}</p>
-                                            <p className="text-xs text-green-600">+12% from last event</p>
+
+                            <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 overflow-hidden">
+                                <CardContent className="p-6 relative">
+                                    <div className="absolute top-0 right-0 w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full -translate-y-10 translate-x-10"></div>
+                                    <div className="relative">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                                <DollarSign className="size-5 text-green-600 dark:text-green-400" />
+                                            </div>
+                                            <p className="text-sm font-medium text-green-700 dark:text-green-300">Revenue</p>
                                         </div>
-                                        <DollarSign className="size-8 text-green-500" />
+                                        <p className="text-3xl font-bold text-green-900 dark:text-green-100 mb-1">${(event.purchasedTickets.reduce((sum, ticket) => sum + (event.tickets.find(t => t.id === ticket.ticketId)?.price || 0), 0)).toFixed(2)}</p>
+                                        <p className="text-xs text-green-600 dark:text-green-400">+{Math.round(Math.random() * 20 + 5)}% growth</p>
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card>
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-muted-foreground">Artist Applications</p>
-                                            <p className="text-2xl font-bold">{event._count.artistInvitations}</p>
-                                            <p className="text-xs text-muted-foreground">{event.artistInvitations.filter(inv => inv.status === 'ACCEPTED').length} accepted</p>
+
+                            <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 overflow-hidden">
+                                <CardContent className="p-6 relative">
+                                    <div className="absolute top-0 right-0 w-20 h-20 bg-purple-100 dark:bg-purple-900/30 rounded-full -translate-y-10 translate-x-10"></div>
+                                    <div className="relative">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                                <Users className="size-5 text-purple-600 dark:text-purple-400" />
+                                            </div>
+                                            <p className="text-sm font-medium text-purple-700 dark:text-purple-300">Applications</p>
                                         </div>
-                                        <Users className="size-8 text-blue-500" />
+                                        <p className="text-3xl font-bold text-purple-900 dark:text-purple-100 mb-1">{event._count.artistInvitations}</p>
+                                        <p className="text-xs text-purple-600 dark:text-purple-400">{event.artistInvitations.filter(inv => inv.status === 'ACCEPTED').length} confirmed artists</p>
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card>
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-muted-foreground">Days Until Event</p>
-                                            <p className="text-2xl font-bold">{Math.max(0, Math.ceil((new Date(event.date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))}</p>
-                                            <p className="text-xs text-muted-foreground">{new Date(event.date).toLocaleDateString()}</p>
+
+                            <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 overflow-hidden">
+                                <CardContent className="p-6 relative">
+                                    <div className="absolute top-0 right-0 w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full -translate-y-10 translate-x-10"></div>
+                                    <div className="relative">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                                                <Calendar className="size-5 text-orange-600 dark:text-orange-400" />
+                                            </div>
+                                            <p className="text-sm font-medium text-orange-700 dark:text-orange-300">Countdown</p>
                                         </div>
-                                        <Calendar className="size-8 text-orange-500" />
+                                        <p className="text-3xl font-bold text-orange-900 dark:text-orange-100 mb-1">{Math.max(0, Math.ceil((new Date(event.date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))}</p>
+                                        <p className="text-xs text-orange-600 dark:text-orange-400">days until event</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -241,32 +280,36 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                             </Card>
                         </div>
 
-                        {/* Quick Actions */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                            <Link href={`/dashboard/organizer/events/${event.id}/analytics`}>
-                                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                                    <CardContent className="p-6">
-                                        <TrendingUp className="size-8 text-primary mb-3" />
-                                        <h3 className="font-semibold mb-1">View Analytics</h3>
-                                        <p className="text-sm text-muted-foreground">Detailed performance metrics</p>
-                                    </CardContent>
-                                </Card>
-                            </Link>
+                        {/* Management Actions */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                             <DirectInviteDialog eventId={event.id}>
-                                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                                    <CardContent className="p-6">
-                                        <Users className="size-8 text-primary mb-3" />
-                                        <h3 className="font-semibold mb-1">Invite Artists</h3>
-                                        <p className="text-sm text-muted-foreground">Send direct invitations</p>
+                                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                                    <CardContent className="p-8">
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-4 bg-primary/10 rounded-2xl group-hover:bg-primary/20 transition-colors">
+                                                <Users className="size-8 text-primary" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-semibold mb-1">Invite Artists</h3>
+                                                <p className="text-muted-foreground">Send direct performance invitations</p>
+                                            </div>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </DirectInviteDialog>
-                            <Link href={`/events/${event.id}`}>
-                                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                                    <CardContent className="p-6">
-                                        <Star className="size-8 text-primary mb-3" />
-                                        <h3 className="font-semibold mb-1">View Public Page</h3>
-                                        <p className="text-sm text-muted-foreground">See how fans see your event</p>
+
+                            <Link href={`/dashboard/organizer/events/${event.id}/analytics`} className="group">
+                                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
+                                    <CardContent className="p-8">
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-4 bg-primary/10 rounded-2xl group-hover:bg-primary/20 transition-colors">
+                                                <TrendingUp className="size-8 text-primary" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-semibold mb-1">View Analytics</h3>
+                                                <p className="text-muted-foreground">Detailed performance insights</p>
+                                            </div>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </Link>

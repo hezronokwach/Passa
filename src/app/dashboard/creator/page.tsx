@@ -40,6 +40,7 @@ async function getCreatorData() {
         include: {
             event: {
                 select: {
+                    id: true,
                     title: true,
                     date: true
                 }
@@ -73,6 +74,7 @@ async function getCreatorData() {
         chartData,
         recentInvitations: invitations.slice(0, 5).map(i => ({
             id: i.id,
+            eventId: i.eventId,
             event: { title: i.event.title },
             status: i.status,
             proposedFee: i.proposedFee,
@@ -270,24 +272,32 @@ export default async function CreatorDashboardPage() {
               </CardHeader>
               <CardContent>
                 {stats.acceptedCount > 0 ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {recentInvitations
                       .filter(inv => inv.status === 'ACCEPTED')
-                      .slice(0, 3)
+                      .slice(0, 4)
                       .map(inv => (
-                      <div key={inv.id} className="flex items-center gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
-                        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-full">
-                          <Music className="size-4 text-green-600 dark:text-green-400" />
+                      <Link key={inv.id} href={`/events/${inv.eventId}`} className="block group">
+                        <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border border-green-200 dark:border-green-800 hover:shadow-md transition-all duration-200 group-hover:scale-[1.02]">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-full group-hover:bg-green-200 dark:group-hover:bg-green-900/50 transition-colors">
+                              <Music className="size-4 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-green-900 dark:text-green-100 group-hover:text-green-800 dark:group-hover:text-green-50">{inv.event.title}</p>
+                              <p className="text-sm text-green-700 dark:text-green-300">{inv.createdAt.toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-green-800 dark:text-green-200">${inv.proposedFee.toFixed(2)}</p>
+                            <p className="text-xs text-green-600 dark:text-green-400">Performance fee</p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-green-900 dark:text-green-100 truncate">{inv.event.title}</p>
-                          <p className="text-sm text-green-700 dark:text-green-300">${inv.proposedFee.toFixed(2)}</p>
-                        </div>
-                      </div>
+                      </Link>
                     ))}
-                    {stats.acceptedCount > 3 && (
+                    {stats.acceptedCount > 4 && (
                       <div className="text-center pt-2">
-                        <p className="text-sm text-muted-foreground">+{stats.acceptedCount - 3} more performances</p>
+                        <p className="text-sm text-muted-foreground">+{stats.acceptedCount - 4} more confirmed gigs</p>
                       </div>
                     )}
                   </div>

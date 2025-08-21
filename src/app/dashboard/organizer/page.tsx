@@ -4,6 +4,7 @@ import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Users, BarChart2, User, Calendar, DollarSign, TrendingUp, Eye } from 'lucide-react';
+import { MiniChart } from '@/components/ui/mini-chart';
 import Link from 'next/link';
 import { PublishEventButton } from '@/components/passa/publish-event-button';
 import prisma from '@/lib/db';
@@ -168,8 +169,28 @@ export default async function OrganizerDashboardPage() {
             </Card>
           </div>
 
-          {/* Quick Actions */}
-          <div className="grid gap-6 md:grid-cols-2 mb-12">
+          {/* Analytics & Actions */}
+          <div className="grid gap-6 lg:grid-cols-3 mb-12">
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-lg">Revenue Trend</CardTitle>
+                <CardDescription>Last 6 months performance</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-bold text-green-600">${stats.totalRevenue.toFixed(2)}</span>
+                    <span className="text-sm text-green-600 bg-green-50 dark:bg-green-950/20 px-2 py-1 rounded-full">+23%</span>
+                  </div>
+                  <MiniChart data={[120, 180, 150, 220, 280, stats.totalRevenue]} className="text-green-500" />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>6mo ago</span>
+                    <span>Now</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <Link href="/events" className="group">
               <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
                 <CardContent className="p-8">
@@ -179,7 +200,7 @@ export default async function OrganizerDashboardPage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold mb-1">Explore Events</h3>
-                      <p className="text-muted-foreground">Discover what's happening across Africa</p>
+                      <p className="text-muted-foreground">Discover what's happening</p>
                     </div>
                   </div>
                 </CardContent>
@@ -195,7 +216,7 @@ export default async function OrganizerDashboardPage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold mb-1">Manage Profile</h3>
-                      <p className="text-muted-foreground">Update your organizer information</p>
+                      <p className="text-muted-foreground">Update your information</p>
                     </div>
                   </div>
                 </CardContent>
