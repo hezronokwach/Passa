@@ -22,7 +22,7 @@ export function ApplyToPerformDialog({ event }: { event: { id: number; title: st
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">Apply to Perform</Button>
+        <Button className="w-full">Apply to Perform</Button>
       </DialogTrigger>
       <DialogContent>
         <form action={formAction}>
