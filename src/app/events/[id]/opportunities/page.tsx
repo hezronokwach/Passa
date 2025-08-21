@@ -7,7 +7,7 @@ interface EventOpportunitiesPageProps {
 }
 
 export default async function EventOpportunitiesPage({ params }: EventOpportunitiesPageProps) {
-  const eventId = parseInt(params.id);
+  const eventId = parseInt((await params).id);
 
   if (isNaN(eventId)) {
     return (
