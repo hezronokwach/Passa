@@ -22,31 +22,30 @@ async function getTicketData(id: string) {
 
   // Adapt the opportunity data to the shape the TicketStub component expects.
   const ticketEventData = {
-    id: opportunity.id.toString(),
+    id: typeof opportunity.id === 'string' ? parseInt(opportunity.id) : opportunity.id,
     title: opportunity.title,
-    translatedTitle: opportunity.title, // Assuming no translation for now
+    translatedTitle: opportunity.title,
     description: opportunity.description,
-    // These fields are not in the opportunity data, so we'll use placeholders.
-    imageUrl: '/passa-africantenge.webp', 
-    date: new Date('2025-10-26T10:00:00Z'), // Placeholder date
-    location: 'Venue To Be Confirmed', // Placeholder location
-    price: opportunity.budget, // Using budget as the "price"
+    imageUrl: '/passa-africantenge.webp',
+    date: new Date('2025-10-26T10:00:00Z'),
+    location: 'Venue To Be Confirmed',
+    price: opportunity.budget,
     currency: 'USD',
     imageHint: 'An image related to the event',
-    // Dummy data for fields required by Prisma types but not used in the stub
-    organizerId: 'org_abc',
+    organizerId: 1,
     createdAt: new Date(),
     updatedAt: new Date(),
     venue: 'TBC',
     startTime: '18:00',
     endTime: '23:00',
     category: 'Special Event',
-    status: 'PUBLISHED',
     capacity: 100,
     artistSplit: 0,
     venueSplit: 0,
     passaSplit: 0,
-    country: 'TBC'
+    country: 'TBC',
+    published: true,
+    totalBudget: null
   };
 
   return ticketEventData;

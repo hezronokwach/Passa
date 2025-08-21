@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 9002",
+    "dev": "next dev -p 9002",
     "dev:fast": "next dev -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
@@ -12,6 +12,9 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "node ./prisma/seed.js"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",

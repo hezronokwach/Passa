@@ -26,6 +26,9 @@ import { Footer } from '@/components/passa/footer';
 
 
 type TranslatedEvent = Event & {
+  totalBudget: number | null;
+  published: boolean;
+  tickets?: { id: number; name: string; eventId: number; price: number; quantity: number; sold: number; }[];
   translatedTitle: string;
   price: number;
   currency: string;
@@ -231,6 +234,8 @@ export default function Home() {
           passaSplit: 10,
           createdAt: new Date(),
           updatedAt: new Date(),
+          published: true,
+          totalBudget: null,
           translatedTitle: 'Afrochella Festival',
           price: 50,
           currency: 'USD',
@@ -250,6 +255,8 @@ export default function Home() {
           passaSplit: 5,
           createdAt: new Date(),
           updatedAt: new Date(),
+          published: true,
+          totalBudget: null,
           translatedTitle: 'Sauti Sol Live in Concert',
           price: 75,
           currency: 'USD',
@@ -269,6 +276,8 @@ export default function Home() {
           passaSplit: 10,
           createdAt: new Date(),
           updatedAt: new Date(),
+          published: true,
+          totalBudget: null,
           translatedTitle: 'Amapiano Night with Major League DJz',
           price: 40,
           currency: 'USD',
@@ -288,6 +297,8 @@ export default function Home() {
           passaSplit: 5,
           createdAt: new Date(),
           updatedAt: new Date(),
+          published: true,
+          totalBudget: null,
           translatedTitle: 'Wizkid: Made in Lagos Tour',
           price: 100,
           currency: 'USD',

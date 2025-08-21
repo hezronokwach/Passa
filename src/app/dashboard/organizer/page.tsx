@@ -1,12 +1,11 @@
 
 
-'use server';
-
 import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Users, BarChart2, User } from 'lucide-react';
 import Link from 'next/link';
+import { PublishEventButton } from '@/components/passa/publish-event-button';
 import prisma from '@/lib/db';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
@@ -69,9 +68,13 @@ async function getOrganizerData() {
         events: events.map(event => ({
             id: event.id,
             title: event.title,
+            description: event.description,
+            location: event.location,
+            country: event.country,
             date: event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
             submissions: event.briefs.reduce((acc, brief) => acc + brief.submissions.length, 0),
-            status: event.date > new Date() ? 'Upcoming' : 'Live' // Simple status logic
+            published: event.published,
+            status: event.date > new Date() ? 'Upcoming' : 'Live'
         })),
         stats: {
             totalEvents,
@@ -98,6 +101,12 @@ export default async function OrganizerDashboardPage() {
               Organization Dashboard
             </h1>
             <div className="flex gap-2">
+                <Link href="/dashboard/organizer/invitations">
+                    <Button variant="outline">
+                        <Users className="mr-2 size-4" />
+                        My Invitations
+                    </Button>
+                </Link>
                  <Link href="/dashboard/organizer/profile">
                     <Button variant="outline">
                         <User className="mr-2 size-4" />
@@ -160,10 +169,28 @@ export default async function OrganizerDashboardPage() {
                                 <p className="text-sm text-muted-foreground">{event.date} - <span className="text-primary font-medium">{event.submissions} submissions</span></p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${event.status === 'Live' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{event.status}</span>
-                                <Link href={`/dashboard/organizer/events/${event.id}`}>
-                                    <Button variant="outline">Manage Event</Button>
-                                </Link>
+                                <div className="flex items-center gap-2">
+                                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                                        event.published 
+                                            ? 'bg-green-100 text-green-800' 
+                                            : 'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                        {event.published ? 'Published' : 'Draft'}
+                                    </span>
+                                    {!event.published && (
+                                        <PublishEventButton event={{
+                                            id: event.id,
+                                            title: event.title,
+                                            description: event.description,
+                                            date: event.date,
+                                            location: event.location,
+                                            country: event.country
+                                        }} />
+                                    )}
+                                    <Link href={`/dashboard/organizer/events/${event.id}`}>
+                                        <Button variant="outline" size="sm">Manage</Button>
+                                    </Link>
+                                </div>
                             </div>
                         </li>
                     ))}

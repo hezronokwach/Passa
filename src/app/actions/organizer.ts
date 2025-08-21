@@ -33,33 +33,28 @@ const eventSchema = z.object({
   location: z.string().min(2, "Location is required."),
   country: z.string().min(2, "Country is required."),
   date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date" }),
-  imageUrl: z.string().url("Please enter a valid image URL."),
-  ticketPrice: z.coerce.number().min(0, "Price must be a positive number."),
-  ticketQuantity: z.coerce.number().int().min(1, "You must offer at least 1 ticket."),
-  artistSplit: z.coerce.number().int().min(0).max(100),
-  venueSplit: z.coerce.number().int().min(0).max(100),
-  passaSplit: z.coerce.number().int().min(0).max(100),
-}).refine(data => data.artistSplit + data.venueSplit + data.passaSplit === 100, {
-    message: "The sum of all splits must be exactly 100.",
-    path: ["revenueSplits"], // Assign error to a custom path
+  time: z.string().min(1, "Time is required."),
+  imageUrl: z.string().url("Please enter a valid image URL.").or(z.string().min(1, "Image is required.")),
+  tickets: z.string().min(1, "At least one ticket tier is required."),
 });
 
 export async function createEvent(prevState: unknown, formData: FormData) {
   const { userId } = await getAuthenticatedUser();
 
-  const validatedFields = eventSchema.safeParse({
+  const formDataObj = {
     title: formData.get('title'),
     description: formData.get('description'),
     location: formData.get('location'),
     country: formData.get('country'),
     date: formData.get('date'),
+    time: formData.get('time'),
     imageUrl: formData.get('imageUrl'),
-    ticketPrice: formData.get('ticketPrice'),
-    ticketQuantity: formData.get('ticketQuantity'),
-    artistSplit: formData.get('artistSplit'),
-    venueSplit: formData.get('venueSplit'),
-    passaSplit: formData.get('passaSplit'),
-  });
+    tickets: formData.get('tickets'),
+  };
+  
+  console.log('Server received form data:', formDataObj);
+
+  const validatedFields = eventSchema.safeParse(formDataObj);
 
   if (!validatedFields.success) {
     return {
@@ -69,56 +64,49 @@ export async function createEvent(prevState: unknown, formData: FormData) {
     };
   }
 
-  const { 
-      title, 
-      description, 
-      location, 
-      country, 
-      date, 
-      imageUrl, 
-      ticketPrice, 
-      ticketQuantity,
-      artistSplit,
-      venueSplit,
-      passaSplit,
-    } = validatedFields.data;
+  const { title, description, location, country, date, time, imageUrl, tickets } = validatedFields.data;
 
-  let newEvent;
   try {
-    newEvent = await prisma.event.create({
+    const ticketTiers = JSON.parse(tickets);
+    const eventDateTime = new Date(`${date}T${time}`);
+
+    if (isNaN(eventDateTime.getTime())) {
+      return {
+        errors: { date: ['Invalid date/time format'] },
+        message: 'Please provide a valid date and time.',
+        success: false,
+      };
+    }
+
+    await prisma.event.create({
       data: {
         title,
         description,
         location,
         country,
-        date: new Date(date),
+        date: eventDateTime,
         imageUrl,
         organizerId: userId,
-        artistSplit,
-        venueSplit,
-        passaSplit,
         tickets: {
-            create: [
-                {
-                    name: 'General Admission',
-                    price: ticketPrice,
-                    quantity: ticketQuantity,
-                    sold: 0,
-                }
-            ]
+          create: ticketTiers.map((tier: { name: string; price: string; quantity: string }) => ({
+            name: tier.name,
+            price: parseFloat(tier.price),
+            quantity: parseInt(tier.quantity),
+            sold: 0,
+          }))
         }
       },
     });
 
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/organizer');
+    
   } catch (error) {
     console.error('Event creation error:', error);
     return { success: false, message: 'An unexpected error occurred while saving to the database.', errors: {} };
   }
-
-  // Revalidation and redirect should happen outside the try/catch block.
-  revalidatePath('/dashboard');
-  revalidatePath('/dashboard/organizer');
-  redirect(`/dashboard/organizer/events/${newEvent.id}`);
+  
+  redirect('/dashboard/organizer');
 }
 
 const organizerProfileSchema = z.object({

@@ -60,7 +60,10 @@ async function getEventDetails(eventId: string): Promise<EventWithDetails | null
 
 function SponsorEventForm({ eventId }: { eventId: number }) {
     return (
-        <form action={createSponsorship.bind(null, undefined)}>
+        <form action={async (formData: FormData) => {
+            'use server';
+            await createSponsorship(undefined, formData);
+        }}>
             <input type="hidden" name="eventId" value={eventId} />
             <Button className="w-full font-bold mt-4" type="submit">
                 <Handshake className="mr-2"/>
@@ -71,8 +74,9 @@ function SponsorEventForm({ eventId }: { eventId: number }) {
 }
 
 
-export default async function EventDetailPage({ params }: { params: { id: string } }) {
-    const event = await getEventDetails(params.id);
+export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const event = await getEventDetails(id);
     const session = await getSession();
 
     if (!event) {

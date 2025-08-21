@@ -1,28 +1,68 @@
 import Link from 'next/link';
-import { Compass, UserCircle2, Ticket, LayoutDashboard } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { logout } from '@/app/actions/auth';
 
-export const MobileNav = () => {
-  const navItems = [
-    { name: 'Discover', href: '/dashboard', icon: Compass },
-    { name: 'My Tickets', href: '/dashboard/fan/tickets', icon: Ticket },
-    { name: 'Dashboard', href: '/dashboard/fan', icon: LayoutDashboard },
-    { name: 'Profile', href: '#', icon: UserCircle2 },
-  ];
+type NavItem = {
+  name: string;
+  href: string;
+};
+
+type MobileNavProps = {
+  isAuthenticated: boolean;
+  dashboardPath: string;
+  navItems: NavItem[];
+};
+
+export const MobileNav = ({ isAuthenticated, dashboardPath, navItems }: MobileNavProps) => {
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/80 p-2 backdrop-blur-sm md:hidden">
-      <div className="grid grid-cols-4 gap-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.name}
-            href={item.href}
-            className="flex flex-col items-center justify-center gap-1 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent/10 hover:text-primary"
-          >
-            <item.icon className="size-6" />
-            <span className="text-xs font-medium">{item.name}</span>
-          </Link>
-        ))}
-      </div>
-    </nav>
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="sm" className="md:hidden">
+          <Menu className="size-5" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+        <nav className="flex flex-col gap-4">
+          {navItems.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className="block px-2 py-1 text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {item.name}
+            </Link>
+          ))}
+          <div className="border-t pt-4 mt-4">
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href={dashboardPath}
+                  className="block px-2 py-1 text-lg font-medium text-muted-foreground transition-colors hover:text-foreground mb-2"
+                >
+                  Dashboard
+                </Link>
+                <form action={logout}>
+                  <Button variant="outline" type="submit" className="w-full">
+                    Sign Out
+                  </Button>
+                </form>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <Button variant="ghost" asChild className="w-full justify-start">
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button asChild className="w-full">
+                  <Link href="/register">Register</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </nav>
+      </SheetContent>
+    </Sheet>
   );
 };
