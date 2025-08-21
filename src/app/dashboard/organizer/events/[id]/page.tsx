@@ -3,10 +3,17 @@
 'use server';
 
 import { updateSubmissionStatus } from '@/app/actions/organizer';
+import { createInvitationFromSubmission } from '@/app/actions/submission-to-invitation';
+import { createBrief } from '@/app/actions/create-brief';
+import { inviteWithFee } from '@/app/actions/invite-with-fee';
+import { InviteWithFeeDialog } from '@/components/passa/invite-with-fee-dialog';
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Download } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Download, Send } from 'lucide-react';
 import Link from 'next/link';
 import {
   Table,
@@ -16,6 +23,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Badge } from '@/components/ui/badge';
 import prisma from '@/lib/db';
 import type { Submission, User, CreativeBrief } from '@prisma/client';
@@ -28,24 +44,19 @@ type BriefWithSubmissions = CreativeBrief & { submissions: SubmissionWithCreator
 
 async function getEventData(eventId: number) {
     const session = await getSession();
-    // Middleware protects this page, so user session is guaranteed to exist.
     const userId = session!.userId;
 
     const event = await prisma.event.findUnique({
-        where: { id: eventId, organizerId: userId }, // Ensure user owns the event
+        where: { id: eventId, organizerId: userId },
         select: {
             id: true,
             title: true,
-            briefs: {
+            artistInvitations: {
                 include: {
-                    submissions: {
-                        include: {
-                            creator: true,
-                        },
-                        orderBy: {
-                            createdAt: 'desc',
-                        }
-                    }
+                    artist: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
                 }
             }
         }
@@ -77,7 +88,7 @@ function StatusBadge({ status }: { status: string }) {
     );
 }
 
-function ActionButtons({ submission, eventId }: { submission: Submission, eventId: number }) {
+function ActionButtons({ submission, eventId, briefTitle }: { submission: Submission & { creator: User }, eventId: number, briefTitle: string }) {
     return (
         <div className="flex items-center justify-end gap-2">
             <Button variant="outline" size="sm" asChild>
@@ -87,6 +98,53 @@ function ActionButtons({ submission, eventId }: { submission: Submission, eventI
             </Button>
             {submission.status === 'PENDING' && (
                 <>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                                <Send className="mr-2 h-4 w-4"/> Send Invitation
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <form action={async (formData: FormData) => {
+                                'use server';
+                                await createInvitationFromSubmission(undefined, formData);
+                            }}>
+                                <input type="hidden" name="submissionId" value={submission.id} />
+                                <DialogHeader>
+                                    <DialogTitle>Send Artist Invitation</DialogTitle>
+                                    <DialogDescription>
+                                        Invite {submission.creator.name || submission.creator.email} to work on &quot;{briefTitle}&quot;
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4 py-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="proposedFee">Proposed Fee ($)</Label>
+                                        <Input
+                                            id="proposedFee"
+                                            name="proposedFee"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            placeholder="Enter fee amount"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="message">Message (Optional)</Label>
+                                        <Textarea
+                                            id="message"
+                                            name="message"
+                                            placeholder="Add a personal message..."
+                                            rows={3}
+                                        />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button type="submit">Send Invitation</Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
                     <form action={async (formData: FormData) => {
                         'use server';
                         await updateSubmissionStatus(undefined, formData);
@@ -138,59 +196,61 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                             <ArrowLeft className="size-4" />
                             Back to Dashboard
                         </Link>
-                        <h1 className="font-headline text-3xl font-bold">Submissions for: {event.title}</h1>
-                        <p className="text-muted-foreground mt-1">Review and manage content submitted by creators.</p>
+                        <div>
+                            <h1 className="font-headline text-3xl font-bold">Artist Applications: {event.title}</h1>
+                            <p className="text-muted-foreground mt-1">Review artists who want to perform at your event.</p>
+                        </div>
 
-                        <div className="mt-8 space-y-8">
-                            {event.briefs.map((brief: BriefWithSubmissions) => (
-                                <Card key={brief.id}>
-                                    <CardHeader>
-                                        <CardTitle>{brief.title}</CardTitle>
-                                        <CardDescription>
-                                            {brief.submissions.length} submission(s) for this creative brief.
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Table>
-                                            <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Creator</TableHead>
-                                                    <TableHead>Message</TableHead>
-                                                    <TableHead className="text-center">Status</TableHead>
-                                                    <TableHead className="text-right">Actions</TableHead>
+                        <div className="mt-8">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Artist Applications</CardTitle>
+                                    <CardDescription>
+                                        {event.artistInvitations.length} artist{event.artistInvitations.length !== 1 ? 's' : ''} applied to perform.
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Artist</TableHead>
+                                                <TableHead>Message</TableHead>
+                                                <TableHead className="text-center">Status</TableHead>
+                                                <TableHead className="text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {event.artistInvitations.map((invitation) => (
+                                                <TableRow key={invitation.id}>
+                                                    <TableCell>
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="font-medium">{invitation.artistName}</span>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="max-w-xs truncate text-muted-foreground">
+                                                        {invitation.message}
+                                                    </TableCell>
+                                                     <TableCell className="text-center">
+                                                        <StatusBadge status={invitation.status} />
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        {invitation.status === 'PENDING' && (
+                                                            <InviteWithFeeDialog invitation={invitation} />
+                                                        )}
+                                                    </TableCell>
                                                 </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {brief.submissions.map((sub: SubmissionWithCreator) => (
-                                                    <TableRow key={sub.id}>
-                                                        <TableCell>
-                                                            <div className="flex items-center gap-3">
-                                                                <span className="font-medium">{sub.creator.name}</span>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="max-w-xs truncate text-muted-foreground">
-                                                            {sub.message}
-                                                        </TableCell>
-                                                         <TableCell className="text-center">
-                                                            <StatusBadge status={sub.status} />
-                                                        </TableCell>
-                                                        <TableCell className="text-right">
-                                                            <ActionButtons submission={sub} eventId={event.id}/>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                        {brief.submissions.length === 0 && (
-                                            <div className="text-center py-12 text-muted-foreground">
-                                                <FileText className="mx-auto size-12 mb-4" />
-                                                <h3 className="font-semibold">No submissions yet</h3>
-                                                <p>Creators will be able to submit their work here.</p>
-                                            </div>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            ))}
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                    {event.artistInvitations.length === 0 && (
+                                        <div className="text-center py-12 text-muted-foreground">
+                                            <FileText className="mx-auto size-12 mb-4" />
+                                            <h3 className="font-semibold">No applications yet</h3>
+                                            <p>Artists will apply to perform at your event here.</p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </div>
