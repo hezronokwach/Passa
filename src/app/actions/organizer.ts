@@ -100,12 +100,13 @@ export async function createEvent(prevState: unknown, formData: FormData) {
 
     revalidatePath('/dashboard');
     revalidatePath('/dashboard/organizer');
-    redirect('/dashboard/organizer');
-
+    
   } catch (error) {
     console.error('Event creation error:', error);
     return { success: false, message: 'An unexpected error occurred while saving to the database.', errors: {} };
   }
+  
+  redirect('/dashboard/organizer');
 }
 
 const organizerProfileSchema = z.object({
