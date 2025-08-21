@@ -4,24 +4,29 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Briefcase, DollarSign, FileText } from 'lucide-react';
-import { OpportunityCard } from '@/components/passa/opportunity-card';
-import { opportunities } from '@/lib/mock-data';
+import { EventCard } from '@/components/passa/event-card';
+import prisma from '@/lib/db';
 
-// Use mock data instead of database query for now
-async function getOpportunities() {
-  // Return the mock opportunities data
-  return opportunities.map(opportunity => ({
-    id: opportunity.id,
-    title: opportunity.title,
-    description: opportunity.description,
-    budget: opportunity.budget,
-    organizer: opportunity.organizer,
-    skills: opportunity.skills,
+async function getEvents() {
+  const events = await prisma.event.findMany({
+    include: {
+      tickets: {
+        take: 1,
+      },
+    },
+  });
+
+  return events.map(event => ({
+    ...event,
+    translatedTitle: event.title,
+    price: event.tickets.length > 0 ? event.tickets[0].price : 0,
+    currency: event.tickets.length > 0 ? event.tickets[0].name : 'USD',
+    imageHint: 'event image',
   }));
 }
 
 export default async function OpportunitiesPage() {
-    const opportunities = await getOpportunities();
+    const events = await getEvents();
 
     return (
         <div className="flex min-h-screen w-full flex-col bg-secondary/30">
@@ -71,18 +76,18 @@ export default async function OpportunitiesPage() {
                         </div>
                     </Card>
 
-                    {/* Opportunities Grid */}
-                    {opportunities.length > 0 ? (
+                    {/* Events Grid */}
+                    {events.length > 0 ? (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            {opportunities.map(job => (
-                                <OpportunityCard key={job.id} job={job} />
+                            {events.map(event => (
+                                <EventCard key={event.id} event={event} />
                             ))}
                         </div>
                     ) : (
                         <div className="text-center text-muted-foreground py-24">
                             <FileText className="mx-auto size-16 mb-4" />
-                            <h3 className="font-semibold text-xl">No Opportunities Available</h3>
-                            <p>There are currently no open creative briefs. Please check back later!</p>
+                            <h3 className="font-semibold text-xl">No Events Available</h3>
+                            <p>There are currently no open events. Please check back later!</p>
                         </div>
                     )}
                 </div>

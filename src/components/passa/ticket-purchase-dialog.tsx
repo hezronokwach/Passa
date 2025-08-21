@@ -5,6 +5,8 @@ import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import type { Event, Ticket } from '@prisma/client';
 import { Confetti } from './confetti';
@@ -81,6 +83,8 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
       <Confetti active={purchaseSuccess} />
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogContent className="max-w-sm p-0 bg-transparent border-0 shadow-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+          <DialogTitle className="sr-only">{event.translatedTitle}</DialogTitle>
+          <DialogDescription className="sr-only">Purchase ticket for {event.translatedTitle}</DialogDescription>
           <TicketStub 
             event={event} 
             onPurchase={handlePurchase}
