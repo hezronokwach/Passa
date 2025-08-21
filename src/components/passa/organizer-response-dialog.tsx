@@ -18,9 +18,9 @@ type InvitationResponse = {
   artistName: string;
   artistEmail: string;
   proposedFee: number;
-  message: string;
+  message: string | null;
   status: string;
-  artistComments: string;
+  artistComments: string | null;
   event: {
     title: string;
   };

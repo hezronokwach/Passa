@@ -4,33 +4,66 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, MapPin, DollarSign, Eye, User } from 'lucide-react';
+import { Calendar, DollarSign, Eye, User } from 'lucide-react';
 import { OrganizerResponseDialog } from './organizer-response-dialog';
 import { useToast } from '@/components/ui/use-toast';
 
-type Invitation = {
+type InvitationResponse = {
   id: number;
   artistName: string;
   artistEmail: string;
   proposedFee: number;
-  message: string;
+  message: string | null;
   status: string;
-  artistComments: string;
-  createdAt: string;
+  artistComments: string | null;
   event: {
     title: string;
-    date: string;
+  };
+  history: Array<{
+    id: number;
+    action: string;
+    oldStatus: string;
+    newStatus: string;
+    oldFee: number;
+    newFee: number;
+    comments: string;
+    createdAt: string;
+  }>;
+};
+
+type OrganizerInvitationListItem = {
+  id: number;
+  artistName: string;
+  artistEmail: string;
+  proposedFee: number;
+  message: string | null;
+  status: string;
+  artistComments: string | null;
+  createdAt: Date;
+  event: {
+    title: string;
+    date: Date;
     location: string;
     country: string;
   };
+  history?: Array<{
+    id: number;
+    action: string;
+    oldStatus: string;
+    newStatus: string;
+    oldFee: number;
+    newFee: number;
+    comments: string;
+    createdAt: string;
+  }>;
 };
 
 interface OrganizerInvitationsClientProps {
-  invitations: Invitation[];
+  invitations: OrganizerInvitationListItem[];
 }
 
 export function OrganizerInvitationsClient({ invitations }: OrganizerInvitationsClientProps) {
-  const [selectedInvitation, setSelectedInvitation] = React.useState<any>(null);
+  const [selectedInvitation, setSelectedInvitation] = React.useState<InvitationResponse | null>(null);
   const { toast } = useToast();
 
   const handleViewDetails = async (invitationId: number) => {
@@ -39,7 +72,7 @@ export function OrganizerInvitationsClient({ invitations }: OrganizerInvitations
         credentials: 'include'
       });
       if (response.ok) {
-        const invitation = await response.json();
+        const invitation: InvitationResponse = await response.json();
         setSelectedInvitation(invitation);
       } else {
         toast({
@@ -48,7 +81,7 @@ export function OrganizerInvitationsClient({ invitations }: OrganizerInvitations
           variant: 'destructive'
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to load invitation details',

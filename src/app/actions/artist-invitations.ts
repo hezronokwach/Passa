@@ -37,7 +37,7 @@ export async function sendArtistInvitations(prevState: unknown, formData: FormDa
 
   try {
     const artistList = JSON.parse(artists);
-    const totalFees = artistList.reduce((sum: number, artist: any) => sum + parseFloat(artist.fee), 0);
+    const totalFees = artistList.reduce((sum: number, artist: { fee: string }) => sum + parseFloat(artist.fee), 0);
 
     if (totalFees > totalBudget) {
       return {
@@ -71,7 +71,7 @@ export async function sendArtistInvitations(prevState: unknown, formData: FormDa
 
     // Create invitations and notifications
     const invitations = await Promise.all(
-      artistList.map(async (artist: any) => {
+      artistList.map(async (artist: { email: string; name: string; fee: string; userId?: number }) => {
         const invitation = await prisma.artistInvitation.create({
           data: {
             eventId,

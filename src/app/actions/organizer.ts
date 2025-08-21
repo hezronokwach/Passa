@@ -78,7 +78,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
       };
     }
 
-    const event = await prisma.event.create({
+    await prisma.event.create({
       data: {
         title,
         description,
@@ -88,7 +88,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
         imageUrl,
         organizerId: userId,
         tickets: {
-          create: ticketTiers.map((tier: any) => ({
+          create: ticketTiers.map((tier: { name: string; price: string; quantity: string }) => ({
             name: tier.name,
             price: parseFloat(tier.price),
             quantity: parseInt(tier.quantity),

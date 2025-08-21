@@ -8,27 +8,52 @@ import { Calendar, MapPin, DollarSign, Eye } from 'lucide-react';
 import { InvitationResponseDialog } from './invitation-response-dialog';
 import { useToast } from '@/components/ui/use-toast';
 
-type Invitation = {
+type InvitationListItem = {
   id: number;
   artistName: string;
   proposedFee: number;
-  message: string;
+  message: string | null;
   status: string;
-  createdAt: string;
+  createdAt: Date;
   event: {
     title: string;
-    date: string;
+    date: Date;
     location: string;
     country: string;
   };
 };
 
+type InvitationDetail = {
+  id: number;
+  artistName: string;
+  proposedFee: number;
+  message: string | null;
+  status: string;
+  event: {
+    title: string;
+    description: string;
+    date: string;
+    location: string;
+    country: string;
+  };
+  history: Array<{
+    id: number;
+    action: string;
+    oldStatus: string;
+    newStatus: string;
+    oldFee: number;
+    newFee: number;
+    comments: string;
+    createdAt: string;
+  }>;
+};
+
 interface InvitationsClientProps {
-  invitations: Invitation[];
+  invitations: InvitationListItem[];
 }
 
 export function InvitationsClient({ invitations }: InvitationsClientProps) {
-  const [selectedInvitation, setSelectedInvitation] = React.useState<any>(null);
+  const [selectedInvitation, setSelectedInvitation] = React.useState<InvitationDetail | null>(null);
   const { toast } = useToast();
 
   const handleViewDetails = async (invitationId: number) => {
@@ -37,7 +62,7 @@ export function InvitationsClient({ invitations }: InvitationsClientProps) {
         credentials: 'include'
       });
       if (response.ok) {
-        const invitation = await response.json();
+        const invitation: InvitationDetail = await response.json();
         setSelectedInvitation(invitation);
       } else {
         toast({
@@ -46,7 +71,7 @@ export function InvitationsClient({ invitations }: InvitationsClientProps) {
           variant: 'destructive'
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to load invitation details',

@@ -9,6 +9,7 @@ import { Button } from '../ui/button';
 import { ArrowRight, Facebook, Instagram, Linkedin, Send, Loader2, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
 import { subscribeToNewsletter } from '@/app/actions/newsletter';
 import { useToast } from '../ui/use-toast';
 import { cn } from '@/lib/utils';
@@ -37,9 +38,10 @@ export const Footer = () => {
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
 
-    const [state, formAction] = React.useActionState(subscribeToNewsletter, {
+    const [state, formAction] = useActionState(subscribeToNewsletter, {
         success: false,
         message: '',
+        errors: {},
     });
 
     React.useEffect(() => {

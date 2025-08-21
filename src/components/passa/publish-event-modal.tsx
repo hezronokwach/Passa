@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Trash2, Users, DollarSign, Search, User } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
@@ -54,7 +54,7 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
   const [eventMessage, setEventMessage] = React.useState('');
   const [existingArtists, setExistingArtists] = React.useState<ExistingArtist[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [isSearching, setIsSearching] = React.useState(false);
+  const [, setIsSearching] = React.useState(false);
   
   const [invitationState, sendInvitations] = useActionState(sendArtistInvitations, {
     message: '',

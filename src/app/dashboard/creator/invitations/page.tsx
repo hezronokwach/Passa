@@ -2,7 +2,7 @@
 
 import { Header } from '@/components/passa/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+
 import { Button } from '@/components/ui/button';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
@@ -61,7 +61,7 @@ export default async function CreatorInvitationsPage() {
             <CardHeader>
               <CardTitle>Event Invitations</CardTitle>
               <CardDescription>
-                All invitations you've received from event organizers
+                All invitations you&apos;ve received from event organizers
               </CardDescription>
             </CardHeader>
             <CardContent>

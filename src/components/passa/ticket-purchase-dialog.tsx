@@ -13,7 +13,14 @@ import { TicketStub } from './ticket-stub';
 import { purchaseTicket } from '@/app/actions/fan';
 
 interface TicketPurchaseDialogProps {
-  event: Event & { tickets: Ticket[], translatedTitle: string, price: number, currency: string };
+  event: Event & { 
+    totalBudget: number | null;
+    published: boolean;
+    tickets?: Ticket[];
+    translatedTitle: string;
+    price: number;
+    currency: string;
+  };
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 }
@@ -27,7 +34,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
     setIsPurchasing(true);
     
     // In a real app, you might have multiple ticket tiers. We'll use the first one.
-    const ticketTier = event.tickets[0];
+    const ticketTier = event.tickets?.[0];
     if (!ticketTier) {
         toast({
             title: "Error",

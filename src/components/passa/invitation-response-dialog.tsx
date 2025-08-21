@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, DollarSign, User, Check, X, History, Clock } from 'lucide-react';
+import { Calendar, MapPin, DollarSign, Check, X, History, Clock } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { respondToInvitation } from '@/app/actions/invitation-response';
 
@@ -16,7 +16,7 @@ type Invitation = {
   id: number;
   artistName: string;
   proposedFee: number;
-  message: string;
+  message: string | null;
   status: string;
   event: {
     title: string;

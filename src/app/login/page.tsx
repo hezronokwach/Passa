@@ -31,6 +31,8 @@ export default function LoginPage() {
     const [state, formAction] = useActionState(login, {
         success: false,
         message: '',
+        role: undefined,
+        errors: {},
     });
 
     useEffect(() => {
@@ -38,7 +40,7 @@ export default function LoginPage() {
             toast({ title: 'Success!', description: state.message });
             
             // Redirect based on role
-            switch (state.role) {
+            switch (state?.role) {
                 case 'ADMIN':
                     router.push('/dashboard/admin');
                     break;

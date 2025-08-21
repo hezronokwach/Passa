@@ -78,8 +78,6 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function ActionButtons({ submission, eventId }: { submission: Submission, eventId: number }) {
-    const updateStatusWithId = updateSubmissionStatus.bind(null, undefined);
-
     return (
         <div className="flex items-center justify-end gap-2">
             <Button variant="outline" size="sm" asChild>
@@ -89,13 +87,19 @@ function ActionButtons({ submission, eventId }: { submission: Submission, eventI
             </Button>
             {submission.status === 'PENDING' && (
                 <>
-                    <form action={updateStatusWithId}>
+                    <form action={async (formData: FormData) => {
+                        'use server';
+                        await updateSubmissionStatus(undefined, formData);
+                    }}>
                         <input type="hidden" name="submissionId" value={submission.id} />
                         <input type="hidden" name="eventId" value={eventId} />
                         <input type="hidden" name="status" value="REJECTED" />
                         <Button type="submit" variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive"><XCircle className="mr-2"/> Reject</Button>
                     </form>
-                    <form action={updateStatusWithId}>
+                    <form action={async (formData: FormData) => {
+                        'use server';
+                        await updateSubmissionStatus(undefined, formData);
+                    }}>
                         <input type="hidden" name="submissionId" value={submission.id} />
                         <input type="hidden" name="eventId" value={eventId} />
                         <input type="hidden" name="status" value="APPROVED" />

@@ -1,6 +1,4 @@
 
-'use client';
-
 import React from 'react';
 import { useFormStatus } from 'react-dom';
 import { useActionState } from 'react';
@@ -25,7 +23,11 @@ function SubmitButton() {
     )
 }
 
-export default function BriefDetailPage({ params: { id } }: { params: { id: string } }) {
+interface BriefDetailPageProps {
+    params: Promise<{ id: string }>;
+}
+
+function BriefDetailClient({ id }: { id: string }) {
     const { toast } = useToast();
     
     // Mock data - In a real app, you would fetch this from the DB using params.id
@@ -41,6 +43,7 @@ export default function BriefDetailPage({ params: { id } }: { params: { id: stri
     const [submissionState, formAction] = useActionState(createSubmission, {
         message: '',
         errors: {},
+        success: false,
     });
 
     React.useEffect(() => {
@@ -58,15 +61,11 @@ export default function BriefDetailPage({ params: { id } }: { params: { id: stri
     const hasSubmitted = submissionState?.success;
 
     return (
-        <div className="flex min-h-screen w-full flex-col bg-secondary/30">
-            <Header />
-            <main className="flex-1">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="max-w-4xl mx-auto">
-                        <Link href="/dashboard/creator/opportunities" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
-                            <ArrowLeft className="size-4" />
-                            Back to Opportunities
-                        </Link>
+        <div className="max-w-4xl mx-auto">
+            <Link href="/dashboard/creator/opportunities" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
+                <ArrowLeft className="size-4" />
+                Back to Opportunities
+            </Link>
                         
                         <div className="grid gap-8 md:grid-cols-3">
                             {/* Left Column - Brief Details */}
@@ -145,8 +144,20 @@ export default function BriefDetailPage({ params: { id } }: { params: { id: stri
                                     </CardContent>
                                 </Card>
                             </div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+    );
+}
+
+export default async function BriefDetailPage({ params }: BriefDetailPageProps) {
+    const { id } = await params;
+    
+    return (
+        <div className="flex min-h-screen w-full flex-col bg-secondary/30">
+            <Header />
+            <main className="flex-1">
+                <div className="container mx-auto px-4 py-8">
+                    <BriefDetailClient id={id} />
                 </div>
             </main>
         </div>

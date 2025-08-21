@@ -19,17 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-
-type FormErrors = {
-  title?: string[];
-  description?: string[];
-  location?: string[];
-  country?: string[];
-  date?: string[];
-  time?: string[];
-  imageUrl?: string[];
-  tickets?: string[];
-};
+import Image from 'next/image';
 
 type TicketTier = {
   id: string;
@@ -379,9 +369,11 @@ export default function CreateEventPage() {
                             </div>
                           ) : (
                             <div className="relative">
-                              <img
+                              <Image
                                 src={imagePreview}
                                 alt="Event preview"
+                                width={600}
+                                height={192}
                                 className="w-full h-48 object-cover rounded-lg"
                               />
                               <Button
@@ -433,7 +425,7 @@ export default function CreateEventPage() {
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
                       <div className="flex flex-wrap gap-2">
-                        {PRESET_TIERS.map((preset) => (
+                        {PRESET_TIERS?.map((preset) => (
                           <Button
                             key={preset.name}
                             type="button"
@@ -456,7 +448,7 @@ export default function CreateEventPage() {
                         </Button>
                       </div>
 
-                      {ticketTiers.map((tier) => (
+                      {ticketTiers?.map((tier) => (
                         <Card key={tier.id}>
                           <CardContent className="pt-6">
                             <div className="grid md:grid-cols-4 gap-4">
@@ -488,7 +480,7 @@ export default function CreateEventPage() {
                                 />
                               </div>
                               <div className="flex items-end">
-                                {ticketTiers.length > 1 && (
+                                {ticketTiers && ticketTiers.length > 1 && (
                                   <Button
                                     type="button"
                                     variant="outline"

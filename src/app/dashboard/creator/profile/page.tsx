@@ -29,7 +29,7 @@ export default async function CreatorProfilePage() {
             <main className="flex-1">
                 <div className="container mx-auto px-4 py-8">
                     <div className="max-w-4xl mx-auto">
-                        <ProfileForm user={user} profile={creatorProfile} portfolioItems={creatorProfile.portfolio} />
+                        <ProfileForm user={user} profile={creatorProfile!} portfolioItems={creatorProfile!.portfolio} />
                     </div>
                 </div>
             </main>

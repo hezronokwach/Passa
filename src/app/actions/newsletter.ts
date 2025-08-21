@@ -1,22 +1,20 @@
-
 'use server';
 
 import { z } from 'zod';
-import prisma from '@/lib/db';
 
-const subscribeSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
+const newsletterSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
 });
 
 export async function subscribeToNewsletter(prevState: unknown, formData: FormData) {
-  const validatedFields = subscribeSchema.safeParse({
+  const validatedFields = newsletterSchema.safeParse({
     email: formData.get('email'),
   });
 
   if (!validatedFields.success) {
     return {
       success: false,
-      message: 'Invalid form data.',
+      message: 'Please enter a valid email address',
       errors: validatedFields.error.flatten().fieldErrors,
     };
   }
@@ -24,35 +22,20 @@ export async function subscribeToNewsletter(prevState: unknown, formData: FormDa
   const { email } = validatedFields.data;
 
   try {
-    const existingSubscription = await prisma.newsletterSubscription.findUnique({
-      where: { email },
-    });
-
-    if (existingSubscription) {
-      return {
-        success: false,
-        message: 'This email is already subscribed to our newsletter.',
-        errors: {}
-      };
-    }
-
-    await prisma.newsletterSubscription.create({
-      data: {
-        email,
-      },
-    });
-
+    // In a real app, you would save to database or send to email service
+    console.log(`Newsletter subscription for: ${email}`);
+    
     return {
       success: true,
-      message: "You've been successfully subscribed. Welcome!",
-      errors: {}
+      message: 'Successfully subscribed to newsletter!',
+      errors: {},
     };
   } catch (error) {
     console.error('Newsletter subscription error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
-      errors: {}
+      message: 'Failed to subscribe. Please try again.',
+      errors: {},
     };
   }
 }

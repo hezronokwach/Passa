@@ -41,7 +41,11 @@ export const ClientHeader = () => {
               <Link href="/register">Register</Link>
             </Button>
           </div>
-          <MobileNav />
+          <MobileNav 
+            isAuthenticated={false} 
+            dashboardPath="/login" 
+            navItems={navItems} 
+          />
         </div>
       </div>
     </header>

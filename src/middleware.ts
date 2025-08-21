@@ -18,7 +18,7 @@ const publicRoutes = ['/login', '/register', '/', '/about', '/contact', '/featur
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const ip = req.ip ?? '127.0.0.1';
+  const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? '127.0.0.1';
 
   // Rate Limiting
   const now = Date.now();

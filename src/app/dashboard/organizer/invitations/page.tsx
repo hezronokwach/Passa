@@ -48,7 +48,7 @@ export default async function OrganizerInvitationsPage() {
                 Artist Invitations
               </h1>
               <p className="text-muted-foreground mt-2">
-                Manage invitations you've sent to artists and view responses
+                Manage invitations you&apos;ve sent to artists and view responses
               </p>
             </div>
             <Link href="/dashboard/organizer">
@@ -60,7 +60,7 @@ export default async function OrganizerInvitationsPage() {
             <CardHeader>
               <CardTitle>Sent Invitations</CardTitle>
               <CardDescription>
-                All invitations you've sent to artists for your events
+                All invitations you&apos;ve sent to artists for your events
               </CardDescription>
             </CardHeader>
             <CardContent>

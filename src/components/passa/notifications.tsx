@@ -1,9 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Bell, Check, X, DollarSign, Calendar, User } from 'lucide-react';
+import { Bell, DollarSign, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -17,15 +16,15 @@ type Notification = {
   title: string;
   message: string;
   read: boolean;
-  data: any;
+  data: { invitationId?: number; eventId?: number; organizerId?: number };
   createdAt: string;
 };
 
 export function NotificationBell() {
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = React.useState(0);
-  const [selectedInvitation, setSelectedInvitation] = React.useState<any>(null);
-  const [selectedOrganizerInvitation, setSelectedOrganizerInvitation] = React.useState<any>(null);
+  const [selectedInvitation, setSelectedInvitation] = React.useState<Record<string, unknown> | null>(null);
+  const [selectedOrganizerInvitation, setSelectedOrganizerInvitation] = React.useState<Record<string, unknown> | null>(null);
   const { toast } = useToast();
 
   const fetchNotifications = async () => {
@@ -41,8 +40,8 @@ export function NotificationBell() {
         // User not authenticated, don't retry
         return;
       }
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
+    } catch {
+      console.error('Failed to fetch notifications');
     }
   };
 
@@ -55,8 +54,8 @@ export function NotificationBell() {
         credentials: 'include'
       });
       fetchNotifications();
-    } catch (error) {
-      console.error('Failed to mark as read:', error);
+    } catch {
+      console.error('Failed to mark as read');
     }
   };
 
@@ -71,7 +70,7 @@ export function NotificationBell() {
           const invitation = await response.json();
           setSelectedInvitation(invitation);
         }
-      } catch (error) {
+      } catch {
         toast({
           title: 'Error',
           description: 'Failed to load invitation details',
@@ -88,7 +87,7 @@ export function NotificationBell() {
           const invitation = await response.json();
           setSelectedOrganizerInvitation(invitation);
         }
-      } catch (error) {
+      } catch {
         toast({
           title: 'Error',
           description: 'Failed to load invitation details',
@@ -178,7 +177,7 @@ export function NotificationBell() {
 
       {selectedInvitation && (
         <InvitationResponseDialog
-          invitation={selectedInvitation}
+          invitation={selectedInvitation as never}
           open={!!selectedInvitation}
           onOpenChange={(open) => !open && setSelectedInvitation(null)}
           onResponse={() => {
@@ -190,7 +189,7 @@ export function NotificationBell() {
 
       {selectedOrganizerInvitation && (
         <OrganizerResponseDialog
-          invitation={selectedOrganizerInvitation}
+          invitation={selectedOrganizerInvitation as never}
           open={!!selectedOrganizerInvitation}
           onOpenChange={(open) => !open && setSelectedOrganizerInvitation(null)}
           onResponse={() => {
