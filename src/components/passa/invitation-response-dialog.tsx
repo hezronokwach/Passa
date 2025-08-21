@@ -88,7 +88,7 @@ export function InvitationResponseDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Artist Invitation</DialogTitle>
           <DialogDescription>
@@ -96,7 +96,7 @@ export function InvitationResponseDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 pb-4">
           {/* Event Details */}
           <Card>
             <CardHeader>
