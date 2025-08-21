@@ -1,34 +1,14 @@
 import { Header } from '@/components/passa/header';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Eye, Mail, UserCheck } from 'lucide-react';
+import { Mail, UserCheck } from 'lucide-react';
 import Link from 'next/link';
 import prisma from '@/lib/db';
 import { getSession } from '@/lib/session';
 import { ApplicationsClient } from '@/components/passa/applications-client';
 
-const getStatusVariant = (status: string) => {
-  switch (status) {
-    case 'ACCEPTED':
-      return 'default';
-    case 'PENDING':
-      return 'secondary';
-    case 'REJECTED':
-      return 'destructive';
-    default:
-      return 'outline';
-  }
-};
+
 
 async function getArtistActivity() {
   const session = await getSession();
@@ -101,7 +81,7 @@ export default async function ApplicationsPage() {
                     <div className="text-center py-12 text-muted-foreground">
                       <Mail className="mx-auto h-12 w-12 mb-4" />
                       <h3 className="font-semibold text-lg">No Invitations Yet</h3>
-                      <p>You haven't received any performance invitations from organizers.</p>
+                      <p>You haven&apos;t received any performance invitations from organizers.</p>
                     </div>
                   )}
                 </CardContent>
@@ -120,7 +100,7 @@ export default async function ApplicationsPage() {
                     <div className="text-center py-12 text-muted-foreground">
                       <UserCheck className="mx-auto h-12 w-12 mb-4" />
                       <h3 className="font-semibold text-lg">No Applications Yet</h3>
-                      <p>You haven't applied to perform at any events yet.</p>
+                      <p>You haven&apos;t applied to perform at any events yet.</p>
                       <Link href="/dashboard/creator/opportunities">
                         <Button className="mt-4">
                           Browse Events

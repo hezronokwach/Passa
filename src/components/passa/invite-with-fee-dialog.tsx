@@ -10,7 +10,7 @@ import { inviteWithFee } from '@/app/actions/invite-with-fee';
 
 export function InviteWithFeeDialog({ invitation }: { invitation: { id: number; artistName: string } }) {
   const [open, setOpen] = useState(false);
-  const [state, formAction, pending] = useActionState(async (prevState: unknown, formData: FormData) => {
+  const [, formAction, pending] = useActionState(async (prevState: unknown, formData: FormData) => {
     const result = await inviteWithFee(formData);
     setOpen(false);
     return result;

@@ -9,7 +9,7 @@ import { applyToPerform } from '@/app/actions/apply-to-perform';
 
 export function ApplyToPerformDialog({ event }: { event: { id: number; title: string } }) {
   const [open, setOpen] = useState(false);
-  const [state, formAction, pending] = useActionState(async (prevState: unknown, formData: FormData) => {
+  const [, formAction, pending] = useActionState(async (prevState: unknown, formData: FormData) => {
     const result = await applyToPerform(formData);
     setOpen(false);
     return result;

@@ -4,9 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, Briefcase, DollarSign, FileText, Calendar, MapPin, Tag } from 'lucide-react';
+import { Search, Briefcase, DollarSign, FileText, Calendar, MapPin } from 'lucide-react';
 import prisma from '@/lib/db';
-import Link from 'next/link';
 import { ApplyToPerformDialog } from '@/components/passa/apply-to-perform-dialog';
 import { getSession } from '@/lib/session';
 

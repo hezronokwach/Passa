@@ -2,18 +2,15 @@
 
 'use server';
 
-import { updateSubmissionStatus } from '@/app/actions/organizer';
-import { createInvitationFromSubmission } from '@/app/actions/submission-to-invitation';
-import { createBrief } from '@/app/actions/create-brief';
-import { inviteWithFee } from '@/app/actions/invite-with-fee';
+
+
+
 import { InviteWithFeeDialog } from '@/components/passa/invite-with-fee-dialog';
 import { Header } from '@/components/passa/header';
-import { Button } from '@/components/ui/button';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Download, Send } from 'lucide-react';
+
+import { ArrowLeft, CheckCircle, Clock, XCircle, FileText } from 'lucide-react';
 import Link from 'next/link';
 import {
   Table,
@@ -23,24 +20,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+
 import { Badge } from '@/components/ui/badge';
 import prisma from '@/lib/db';
-import type { Submission, User, CreativeBrief } from '@prisma/client';
-import React from 'react';
+
 import { getSession } from '@/lib/session';
 
 
-type SubmissionWithCreator = Submission & { creator: User };
-type BriefWithSubmissions = CreativeBrief & { submissions: SubmissionWithCreator[] };
+
 
 async function getEventData(eventId: number) {
     const session = await getSession();
@@ -88,86 +75,7 @@ function StatusBadge({ status }: { status: string }) {
     );
 }
 
-function ActionButtons({ submission, eventId, briefTitle }: { submission: Submission & { creator: User }, eventId: number, briefTitle: string }) {
-    return (
-        <div className="flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm" asChild>
-                <a href={submission.fileUrl} download target="_blank" rel="noopener noreferrer">
-                    <Download className="mr-2"/> Download
-                </a>
-            </Button>
-            {submission.status === 'PENDING' && (
-                <>
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                                <Send className="mr-2 h-4 w-4"/> Send Invitation
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <form action={async (formData: FormData) => {
-                                'use server';
-                                await createInvitationFromSubmission(undefined, formData);
-                            }}>
-                                <input type="hidden" name="submissionId" value={submission.id} />
-                                <DialogHeader>
-                                    <DialogTitle>Send Artist Invitation</DialogTitle>
-                                    <DialogDescription>
-                                        Invite {submission.creator.name || submission.creator.email} to work on &quot;{briefTitle}&quot;
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="space-y-4 py-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="proposedFee">Proposed Fee ($)</Label>
-                                        <Input
-                                            id="proposedFee"
-                                            name="proposedFee"
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
-                                            placeholder="Enter fee amount"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="message">Message (Optional)</Label>
-                                        <Textarea
-                                            id="message"
-                                            name="message"
-                                            placeholder="Add a personal message..."
-                                            rows={3}
-                                        />
-                                    </div>
-                                </div>
-                                <DialogFooter>
-                                    <Button type="submit">Send Invitation</Button>
-                                </DialogFooter>
-                            </form>
-                        </DialogContent>
-                    </Dialog>
-                    <form action={async (formData: FormData) => {
-                        'use server';
-                        await updateSubmissionStatus(undefined, formData);
-                    }}>
-                        <input type="hidden" name="submissionId" value={submission.id} />
-                        <input type="hidden" name="eventId" value={eventId} />
-                        <input type="hidden" name="status" value="REJECTED" />
-                        <Button type="submit" variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive"><XCircle className="mr-2"/> Reject</Button>
-                    </form>
-                    <form action={async (formData: FormData) => {
-                        'use server';
-                        await updateSubmissionStatus(undefined, formData);
-                    }}>
-                        <input type="hidden" name="submissionId" value={submission.id} />
-                        <input type="hidden" name="eventId" value={eventId} />
-                        <input type="hidden" name="status" value="APPROVED" />
-                        <Button type="submit" size="sm" className="bg-green-600 hover:bg-green-700"><CheckCircle className="mr-2"/> Approve</Button>
-                    </form>
-                </>
-            )}
-        </div>
-    );
-}
+
 
 export default async function EventSubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

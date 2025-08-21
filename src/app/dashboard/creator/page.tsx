@@ -5,7 +5,7 @@
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, Eye, FileText, CheckCircle, Clock, XCircle, FolderKanban, DollarSign, BarChart3 } from 'lucide-react';
+import { PlusCircle, Eye, FileText, CheckCircle, Clock, XCircle, DollarSign, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
@@ -30,7 +30,7 @@ async function getCreatorData() {
         };
     }
     
-    const creatorProfile = await prisma.creatorProfile.findUnique({
+    await prisma.creatorProfile.findUnique({
         where: { userId: session.userId },
         include: { _count: { select: { portfolio: true } } }
     });

@@ -44,7 +44,7 @@ export function NotificationBell() {
     return false;
   };
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = React.useCallback(async () => {
     const authenticated = await checkAuth();
     if (!authenticated) {
       setNotifications([]);
@@ -64,7 +64,7 @@ export function NotificationBell() {
     } catch {
       // Silently fail
     }
-  };
+  }, []);
 
   const markAsRead = async (notificationId: number) => {
     try {
@@ -126,7 +126,7 @@ export function NotificationBell() {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [fetchNotifications]);
 
   if (isAuthenticated === null) {
     // Still checking authentication, render placeholder
