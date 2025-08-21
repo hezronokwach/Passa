@@ -7,7 +7,7 @@ import { Ticket, Star, Compass, GanttChart, User } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
-import { MobileNav } from '@/components/passa/mobile-nav';
+
 import { getSession } from '@/lib/session';
 
 
@@ -244,7 +244,6 @@ export default async function FanDashboardPage() {
 
                 </div>
             </main>
-            <MobileNav />
         </div>
     )
 }

@@ -16,6 +16,9 @@ import { TicketPurchaseDialog } from './ticket-purchase-dialog';
 import Link from 'next/link';
 
 interface TranslatedEvent extends Event {
+  totalBudget: number | null;
+  published: boolean;
+  tickets?: { id: number; name: string; eventId: number; price: number; quantity: number; sold: number; }[];
   translatedTitle: string;
   price: number;
   currency: string;
@@ -24,7 +27,7 @@ interface TranslatedEvent extends Event {
 
 export const EventCard = ({ event }: { event: TranslatedEvent }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [imageError, setImageError] = useState(false);
+
   const router = useRouter();
   
   const handleViewOpportunitiesClick = (e: React.MouseEvent<HTMLButtonElement>) => {

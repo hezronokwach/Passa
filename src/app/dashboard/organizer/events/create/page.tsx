@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -12,201 +11,510 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { ArrowLeft, PartyPopper, Info } from 'lucide-react';
+import { ArrowLeft, PartyPopper, Calendar, Clock, Plus, Trash2, Upload, X } from 'lucide-react';
 import Link from 'next/link';
-import { Slider } from '@/components/ui/slider';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import Image from 'next/image';
 
-type FormErrors = {
-  title?: string[];
-  description?: string[];
-  location?: string[];
-  country?: string[];
-  date?: string[];
-  imageUrl?: string[];
-  ticketPrice?: string[];
-  ticketQuantity?: string[];
-  artistSplit?: string[];
-  venueSplit?: string[];
-  passaSplit?: string[];
-  revenueSplits?: string[];
+type TicketTier = {
+  id: string;
+  name: string;
+  price: string;
+  quantity: string;
 };
 
+const PRESET_TIERS = [
+  { name: 'Free', price: '0' },
+  { name: 'Early Bird', price: '25' },
+  { name: 'General Admission', price: '50' },
+  { name: 'VIP', price: '100' },
+  { name: 'VVIP', price: '200' },
+];
+
 function SubmitButton() {
-    const { pending } = useFormStatus();
-    return (
-        <Button type="submit" disabled={pending} className="w-full md:w-auto">
-            {pending ? 'Creating Event...' : 'Create Event'}
-        </Button>
-    )
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={pending} className="w-full md:w-auto">
+      {pending ? 'Creating Event...' : 'Create Event'}
+    </Button>
+  );
 }
 
 export default function CreateEventPage() {
-    const { toast } = useToast();
+  const { toast } = useToast();
+  const [currentStep, setCurrentStep] = React.useState(1);
+  const [selectedDate, setSelectedDate] = React.useState<Date>();
+  const [selectedTime, setSelectedTime] = React.useState('');
+  const [dateTimeInput, setDateTimeInput] = React.useState('');
+  const [ticketTiers, setTicketTiers] = React.useState<TicketTier[]>([
+    { id: '1', name: 'General Admission', price: '50', quantity: '100' }
+  ]);
+  const [step1Data, setStep1Data] = React.useState({
+    title: '',
+    description: '',
+    location: '',
+    country: '',
+    imageUrl: ''
+  });
+  const [uploadedImage, setUploadedImage] = React.useState<File | null>(null);
+  const [imagePreview, setImagePreview] = React.useState<string>('');
 
-    const [splits, setSplits] = React.useState({
-        artist: 70,
-        venue: 20,
-        passa: 10,
-    });
+  const [state, formAction] = useActionState(createEvent, {
+    message: '',
+    errors: {},
+    success: false,
+  });
 
-    const handleSliderChange = (newValues: number[]) => {
-        const [artist, venue] = newValues;
-        const passa = 100 - artist - venue;
+  React.useEffect(() => {
+    if (state.success) {
+      toast({
+        title: 'Event Created!',
+        description: state.message,
+        action: <div className="p-1"><PartyPopper className="text-primary"/></div>
+      });
+      // Redirect after showing success message
+      setTimeout(() => {
+        window.location.href = '/dashboard/organizer';
+      }, 2000);
+    } else if (state.message && !state.success && Object.keys(state.errors).length === 0) {
+      toast({ title: 'Error', description: state.message, variant: 'destructive' });
+    }
+  }, [state, toast]);
 
-        if (passa >= 0) {
-            setSplits({ artist, venue, passa });
-        }
+  const addTicketTier = (preset?: { name: string; price: string }) => {
+    const newTier: TicketTier = {
+      id: Date.now().toString(),
+      name: preset?.name || 'Custom Tier',
+      price: preset?.price || '0',
+      quantity: '100'
     };
+    setTicketTiers([...ticketTiers, newTier]);
+  };
 
+  const removeTicketTier = (id: string) => {
+    setTicketTiers(ticketTiers.filter(tier => tier.id !== id));
+  };
 
-    const [state, formAction] = useActionState(createEvent, {
-        message: '',
-        errors: {},
-        success: false,
-    });
+  const updateTicketTier = (id: string, field: keyof TicketTier, value: string) => {
+    setTicketTiers(ticketTiers.map(tier => 
+      tier.id === id ? { ...tier, [field]: value } : tier
+    ));
+  };
 
-    React.useEffect(() => {
-        if (state.success) {
-            toast({
-                title: 'Event Created!',
-                description: state.message,
-                action: <div className="p-1"><PartyPopper className="text-primary"/></div>
-            });
-            // The redirect will happen from the server action, so no need for router.push
-        } else if (state.message && !state.success && Object.keys(state.errors).length === 0) {
-            toast({ title: 'Error', description: state.message, variant: 'destructive' });
-        }
-    }, [state, toast]);
+  const isStep1Valid = () => {
+    const hasValidDate = selectedDate || (dateTimeInput && dateTimeInput.includes('T'));
+    const hasValidTime = selectedTime.length > 0;
+    const hasValidImage = step1Data.imageUrl.length > 0 || uploadedImage;
+    
+    return step1Data.title.length >= 3 && 
+           step1Data.description.length >= 10 && 
+           step1Data.location.length >= 2 && 
+           step1Data.country.length >= 2 && 
+           hasValidDate &&
+           hasValidTime &&
+           hasValidImage;
+  };
 
-    return (
-        <div className="flex min-h-screen w-full flex-col bg-secondary/30">
-            <ClientHeader />
-            <main className="flex-1">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="max-w-4xl mx-auto">
-                        <Link href="/dashboard/organizer" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
-                            <ArrowLeft className="size-4" />
-                            Back to Dashboard
-                        </Link>
-                        
-                        <form action={formAction}>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="font-headline text-3xl">Create a New Event</CardTitle>
-                                    <CardDescription>Fill out the details below to get your event published on Passa.</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="title">Event Title</Label>
-                                        <Input id="title" name="title" placeholder="e.g., Afrochella Festival" />
-                                        {state.errors?.title && <p className="text-sm text-destructive">{state.errors.title[0]}</p>}
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="description">Event Description</Label>
-                                        <Textarea id="description" name="description" placeholder="Tell everyone what makes your event special..." />
-                                        {state.errors?.description && <p className="text-sm text-destructive">{state.errors.description[0]}</p>}
-                                    </div>
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="location">Location</Label>
-                                            <Input id="location" name="location" placeholder="e.g., Nairobi" />
-                                            {state.errors?.location && <p className="text-sm text-destructive">{state.errors.location[0]}</p>}
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="country">Country</Label>
-                                            <Input id="country" name="country" placeholder="e.g., Kenya" />
-                                            {state.errors?.country && <p className="text-sm text-destructive">{state.errors.country[0]}</p>}
-                                        </div>
-                                    </div>
-                                     <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="date">Date & Time</Label>
-                                            <Input id="date" name="date" type="datetime-local" />
-                                            {state.errors?.date && <p className="text-sm text-destructive">{state.errors.date[0]}</p>}
-                                        </div>
-                                         <div className="space-y-2">
-                                            <Label htmlFor="imageUrl">Event Image URL</Label>
-                                            <Input id="imageUrl" name="imageUrl" placeholder="https://placehold.co/600x400.png" />
-                                            {state.errors?.imageUrl && <p className="text-sm text-destructive">{state.errors.imageUrl[0]}</p>}
-                                        </div>
-                                    </div>
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>Ticket Setup</CardTitle>
-                                            <CardDescription>Define the price and quantity for your first ticket tier.</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="grid md:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="ticketPrice">Price (USD)</Label>
-                                                <Input id="ticketPrice" name="ticketPrice" type="number" step="0.01" placeholder="50.00" />
-                                                {state.errors?.ticketPrice && <p className="text-sm text-destructive">{state.errors.ticketPrice[0]}</p>}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="ticketQuantity">Quantity</Label>
-                                                <Input id="ticketQuantity" name="ticketQuantity" type="number" placeholder="1000" />
-                                                 {state.errors?.ticketQuantity && <p className="text-sm text-destructive">{state.errors.ticketQuantity[0]}</p>}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+  const handleStep1Next = () => {
+    if (isStep1Valid()) {
+      setCurrentStep(2);
+    } else {
+      toast({
+        title: 'Incomplete Information',
+        description: 'Please fill in all required fields before proceeding.',
+        variant: 'destructive'
+      });
+    }
+  };
 
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>Revenue Splits</CardTitle>
-                                            <CardDescription>Define how revenue from ticket sales will be distributed.</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
-                                            <input type="hidden" name="artistSplit" value={splits.artist} />
-                                            <input type="hidden" name="venueSplit" value={splits.venue} />
-                                            <input type="hidden" name="passaSplit" value={splits.passa} />
-                                            
-                                            <div className="space-y-2">
-                                                <div className="flex justify-between">
-                                                    <Label>Artist / Creator Split</Label>
-                                                    <span className="font-bold text-primary">{splits.artist}%</span>
-                                                </div>
-                                                <Slider
-                                                    value={[splits.artist]}
-                                                    max={100 - splits.venue}
-                                                    step={1}
-                                                    onValueChange={(v) => handleSliderChange([v[0], splits.venue])}
-                                                />
-                                            </div>
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadedImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-                                             <div className="space-y-2">
-                                                <div className="flex justify-between">
-                                                    <Label>Venue / Ops Split</Label>
-                                                    <span className="font-bold text-primary">{splits.venue}%</span>
-                                                </div>
-                                                <Slider
-                                                    value={[splits.venue]}
-                                                    max={100 - splits.artist}
-                                                    step={1}
-                                                    onValueChange={(v) => handleSliderChange([splits.artist, v[0]])}
-                                                />
-                                            </div>
+  const removeImage = () => {
+    setUploadedImage(null);
+    setImagePreview('');
+    setStep1Data({...step1Data, imageUrl: ''});
+  };
 
-                                             <Alert>
-                                                <Info className="h-4 w-4" />
-                                                <AlertTitle className="font-semibold">Platform Fee</AlertTitle>
-                                                <AlertDescription>
-                                                    Passa takes a fixed <span className="font-bold">{splits.passa}%</span> fee to cover operational costs. The remaining splits must sum to {100 - splits.passa}%.
-                                                </AlertDescription>
-                                            </Alert>
-                                            
-                                             {(state.errors as FormErrors)?.revenueSplits && <p className="text-sm text-destructive">{(state.errors as FormErrors).revenueSplits?.[0]}</p>}
-                                        </CardContent>
-                                    </Card>
+  const handleSubmit = async (formData: FormData) => {
+    // Add step 1 data
+    formData.set('title', step1Data.title);
+    formData.set('description', step1Data.description);
+    formData.set('location', step1Data.location);
+    formData.set('country', step1Data.country);
+    formData.set('imageUrl', step1Data.imageUrl || `https://placehold.co/600x400.png?text=${encodeURIComponent(step1Data.title)}`);
 
-                                    <div className="flex justify-end">
-                                        <SubmitButton />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </form>
-                    </div>
+    // Handle date/time
+    if (dateTimeInput && dateTimeInput.includes('T')) {
+      const [dateStr] = dateTimeInput.split('T');
+      formData.set('date', dateStr);
+    } else if (selectedDate) {
+      formData.set('date', format(selectedDate, 'yyyy-MM-dd'));
+    }
+    formData.set('time', selectedTime);
+
+    // Handle image upload
+    if (uploadedImage) {
+      formData.set('imageUrl', `https://placehold.co/600x400.png?text=${encodeURIComponent(step1Data.title)}`);
+    }
+
+    formData.set('tickets', JSON.stringify(ticketTiers));
+    formAction(formData);
+  };
+
+  return (
+    <div className="flex min-h-screen w-full flex-col bg-secondary/30">
+      <ClientHeader />
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <Link href="/dashboard/organizer" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
+              <ArrowLeft className="size-4" />
+              Back to Dashboard
+            </Link>
+            
+            <div className="mb-8">
+              <div className="flex items-center space-x-4">
+                <div className={cn(
+                  "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium",
+                  currentStep >= 1 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                )}>
+                  1
                 </div>
-            </main>
+                <div className={cn(
+                  "h-px flex-1",
+                  currentStep > 1 ? "bg-primary" : "bg-muted"
+                )} />
+                <div className={cn(
+                  "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium",
+                  currentStep >= 2 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                )}>
+                  2
+                </div>
+              </div>
+              <div className="flex justify-between mt-2">
+                <span className="text-sm font-medium">Event Details</span>
+                <span className="text-sm font-medium">Ticket Setup</span>
+              </div>
+            </div>
+
+            <form action={handleSubmit}>
+              {currentStep === 1 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="font-headline text-3xl">Event Details</CardTitle>
+                    <CardDescription>Tell us about your event</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Event Title</Label>
+                      <Input 
+                        id="title" 
+                        name="title" 
+                        placeholder="e.g., Afrochella Festival" 
+                        value={step1Data.title}
+                        onChange={(e) => setStep1Data({...step1Data, title: e.target.value})}
+                      />
+                      {state.errors?.title && <p className="text-sm text-destructive">{state.errors.title[0]}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Event Description</Label>
+                      <Textarea 
+                        id="description" 
+                        name="description" 
+                        placeholder="Tell everyone what makes your event special..." 
+                        value={step1Data.description}
+                        onChange={(e) => setStep1Data({...step1Data, description: e.target.value})}
+                      />
+                      {state.errors?.description && <p className="text-sm text-destructive">{state.errors.description[0]}</p>}
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="location">Location</Label>
+                        <Input 
+                          id="location" 
+                          name="location" 
+                          placeholder="e.g., Nairobi" 
+                          value={step1Data.location}
+                          onChange={(e) => setStep1Data({...step1Data, location: e.target.value})}
+                        />
+                        {state.errors?.location && <p className="text-sm text-destructive">{state.errors.location[0]}</p>}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="country">Country</Label>
+                        <Input 
+                          id="country" 
+                          name="country" 
+                          placeholder="e.g., Kenya" 
+                          value={step1Data.country}
+                          onChange={(e) => setStep1Data({...step1Data, country: e.target.value})}
+                        />
+                        {state.errors?.country && <p className="text-sm text-destructive">{state.errors.country[0]}</p>}
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>Event Date</Label>
+                        <Tabs defaultValue="picker" className="w-full">
+                          <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="picker">Date Picker</TabsTrigger>
+                            <TabsTrigger value="manual">Manual Input</TabsTrigger>
+                          </TabsList>
+                          <TabsContent value="picker">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !selectedDate && "text-muted-foreground"
+                                  )}
+                                >
+                                  <Calendar className="mr-2 h-4 w-4" />
+                                  {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <CalendarComponent
+                                  mode="single"
+                                  selected={selectedDate}
+                                  onSelect={setSelectedDate}
+                                  disabled={(date) => date < new Date()}
+                                  initialFocus
+                                  className="rounded-md border"
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </TabsContent>
+                          <TabsContent value="manual">
+                            <Input
+                              type="date"
+                              value={dateTimeInput ? dateTimeInput.split('T')[0] : ''}
+                              onChange={(e) => {
+                                const dateValue = e.target.value;
+                                const timeValue = dateTimeInput ? dateTimeInput.split('T')[1] || '09:00' : '09:00';
+                                setDateTimeInput(`${dateValue}T${timeValue}`);
+                              }}
+                              min={format(new Date(), "yyyy-MM-dd")}
+                            />
+                          </TabsContent>
+                        </Tabs>
+                        {state.errors?.date && <p className="text-sm text-destructive">{state.errors.date[0]}</p>}
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Event Time</Label>
+                        <Select value={selectedTime} onValueChange={setSelectedTime}>
+                          <SelectTrigger>
+                            <Clock className="mr-2 h-4 w-4" />
+                            <SelectValue placeholder="Select time" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 24 }, (_, i) => {
+                              const hour = i.toString().padStart(2, '0');
+                              return (
+                                <SelectItem key={`${hour}:00`} value={`${hour}:00`}>
+                                  {i === 0 ? '12:00 AM' : i < 12 ? `${i}:00 AM` : i === 12 ? '12:00 PM' : `${i - 12}:00 PM`}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
+                        {state.errors?.time && <p className="text-sm text-destructive">{state.errors.time[0]}</p>}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Event Image</Label>
+                      <Tabs defaultValue="upload" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                          <TabsTrigger value="upload">Upload Image</TabsTrigger>
+                          <TabsTrigger value="url">Image URL</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="upload" className="space-y-4">
+                          {!imagePreview ? (
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6">
+                              <div className="text-center">
+                                <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                                <div className="mt-4">
+                                  <Label htmlFor="image-upload" className="cursor-pointer">
+                                    <span className="mt-2 block text-sm font-medium text-foreground">
+                                      Click to upload an image
+                                    </span>
+                                    <span className="mt-1 block text-xs text-muted-foreground">
+                                      PNG, JPG, GIF up to 10MB
+                                    </span>
+                                  </Label>
+                                  <Input
+                                    id="image-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    className="hidden"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="relative">
+                              <Image
+                                src={imagePreview}
+                                alt="Event preview"
+                                width={600}
+                                height={192}
+                                className="w-full h-48 object-cover rounded-lg"
+                              />
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                className="absolute top-2 right-2"
+                                onClick={removeImage}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </TabsContent>
+                        <TabsContent value="url">
+                          <div className="space-y-2">
+                            <Label htmlFor="imageUrl">Image URL</Label>
+                            <Input 
+                              id="imageUrl" 
+                              name="imageUrl" 
+                              placeholder="https://placehold.co/600x400.png" 
+                              value={step1Data.imageUrl}
+                              onChange={(e) => setStep1Data({...step1Data, imageUrl: e.target.value})}
+                            />
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+                      {state.errors?.imageUrl && <p className="text-sm text-destructive">{state.errors.imageUrl[0]}</p>}
+                    </div>
+                    <div className="flex justify-end">
+                      <Button 
+                        type="button" 
+                        onClick={handleStep1Next}
+                        disabled={!isStep1Valid()}
+                      >
+                        Next: Ticket Setup
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {currentStep === 2 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="font-headline text-3xl">Ticket Setup</CardTitle>
+                    <CardDescription>Configure your ticket tiers and pricing</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap gap-2">
+                        {PRESET_TIERS?.map((preset) => (
+                          <Button
+                            key={preset.name}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addTicketTier(preset)}
+                          >
+                            <Plus className="mr-1 h-3 w-3" />
+                            Add {preset.name}
+                          </Button>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addTicketTier()}
+                        >
+                          <Plus className="mr-1 h-3 w-3" />
+                          Custom Tier
+                        </Button>
+                      </div>
+
+                      {ticketTiers?.map((tier) => (
+                        <Card key={tier.id}>
+                          <CardContent className="pt-6">
+                            <div className="grid md:grid-cols-4 gap-4">
+                              <div className="space-y-2">
+                                <Label>Tier Name</Label>
+                                <Input
+                                  value={tier.name}
+                                  onChange={(e) => updateTicketTier(tier.id, 'name', e.target.value)}
+                                  placeholder="Tier name"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Price (USD)</Label>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={tier.price}
+                                  onChange={(e) => updateTicketTier(tier.id, 'price', e.target.value)}
+                                  placeholder="0.00"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Quantity</Label>
+                                <Input
+                                  type="number"
+                                  value={tier.quantity}
+                                  onChange={(e) => updateTicketTier(tier.id, 'quantity', e.target.value)}
+                                  placeholder="100"
+                                />
+                              </div>
+                              <div className="flex items-end">
+                                {ticketTiers && ticketTiers.length > 1 && (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => removeTicketTier(tier.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                    {state.errors?.tickets && <p className="text-sm text-destructive">{state.errors.tickets[0]}</p>}
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-sm text-muted-foreground">
+                        📝 <strong>Note:</strong> After creating your event, remember to publish it from your dashboard to make it visible to attendees.
+                      </p>
+                    </div>
+                    <div className="flex justify-between">
+                      <Button type="button" variant="outline" onClick={() => setCurrentStep(1)}>
+                        Back
+                      </Button>
+                      <SubmitButton />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </form>
+          </div>
         </div>
-    );
+      </main>
+    </div>
+  );
 }

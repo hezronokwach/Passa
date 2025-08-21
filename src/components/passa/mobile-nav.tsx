@@ -1,20 +1,49 @@
 import Link from 'next/link';
-import { Compass, UserCircle2, Ticket, LayoutDashboard, Star } from 'lucide-react';
+import { Compass, UserCircle2, Ticket, Star, Calendar, Users, Briefcase, PlusCircle } from 'lucide-react';
 import { getSession } from '@/lib/session';
 
 export const MobileNav = async () => {
   const session = await getSession();
   const userRole = session?.role;
 
-  const defaultNavItems = [
-    { name: 'Discover', href: '/dashboard', icon: Compass },
-    { name: 'Tickets', href: '/dashboard/fan/tickets', icon: Ticket },
-    { name: 'Artists', href: '/dashboard/fan/artists', icon: Star },
-    { name: 'Profile', href: '/dashboard/fan/profile', icon: UserCircle2 },
-  ];
+  // Don't show mobile nav if user is not authenticated
+  if (!session) {
+    return null;
+  }
 
-  // Adjust navigation based on user role if needed
-  const navItems = defaultNavItems;
+  const getNavItems = () => {
+    switch (userRole) {
+      case 'FAN':
+        return [
+          { name: 'Dashboard', href: '/dashboard/fan', icon: Compass },
+          { name: 'Tickets', href: '/dashboard/fan/tickets', icon: Ticket },
+          { name: 'Artists', href: '/dashboard/fan/artists', icon: Star },
+          { name: 'Profile', href: '/dashboard/fan/profile', icon: UserCircle2 },
+        ];
+      case 'ORGANIZER':
+        return [
+          { name: 'Dashboard', href: '/dashboard/organizer', icon: Compass },
+          { name: 'Events', href: '/dashboard/organizer/events', icon: Calendar },
+          { name: 'Create', href: '/dashboard/organizer/events/create', icon: PlusCircle },
+          { name: 'Profile', href: '/dashboard/organizer/profile', icon: UserCircle2 },
+        ];
+      case 'CREATOR':
+        return [
+          { name: 'Dashboard', href: '/dashboard/creator', icon: Compass },
+          { name: 'Opportunities', href: '/dashboard/creator/opportunities', icon: Briefcase },
+          { name: 'Applications', href: '/dashboard/creator/applications', icon: Users },
+          { name: 'Profile', href: '/dashboard/creator/profile', icon: UserCircle2 },
+        ];
+      default:
+        return [
+          { name: 'Dashboard', href: '/dashboard', icon: Compass },
+          { name: 'Events', href: '/events', icon: Calendar },
+          { name: 'Profile', href: '/dashboard/fan/profile', icon: UserCircle2 },
+        ];
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/90 p-2 backdrop-blur-sm md:hidden">

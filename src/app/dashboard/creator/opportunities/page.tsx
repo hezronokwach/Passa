@@ -1,32 +1,55 @@
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Briefcase, DollarSign, FileText } from 'lucide-react';
-import { EventCard } from '@/components/passa/event-card';
+import { Badge } from '@/components/ui/badge';
+import { Search, Briefcase, DollarSign, FileText, Calendar, MapPin } from 'lucide-react';
 import prisma from '@/lib/db';
+import { ApplyToPerformDialog } from '@/components/passa/apply-to-perform-dialog';
+import { getSession } from '@/lib/session';
 
-async function getEvents() {
+async function getOpportunities() {
+  const session = await getSession();
+  const userId = session?.userId;
+
   const events = await prisma.event.findMany({
-    include: {
-      tickets: {
-        take: 1,
-      },
+    where: {
+      published: true,
+      date: {
+        gte: new Date()
+      }
     },
+    include: {
+      organizer: {
+        select: {
+          name: true
+        }
+      },
+      artistInvitations: userId ? {
+        where: {
+          artistId: userId
+        },
+        select: {
+          status: true
+        }
+      } : false,
+      _count: {
+        select: {
+          artistInvitations: true
+        }
+      }
+    },
+    orderBy: {
+      date: 'asc'
+    }
   });
 
-  return events.map(event => ({
-    ...event,
-    translatedTitle: event.title,
-    price: event.tickets.length > 0 ? event.tickets[0].price : 0,
-    currency: event.tickets.length > 0 ? event.tickets[0].name : 'USD',
-    imageHint: 'event image',
-  }));
+  return events;
 }
 
 export default async function OpportunitiesPage() {
-    const events = await getEvents();
+    const events = await getOpportunities();
 
     return (
         <div className="flex min-h-screen w-full flex-col bg-secondary/30">
@@ -35,10 +58,10 @@ export default async function OpportunitiesPage() {
                 <div className="container mx-auto px-4 py-8">
                     <div className="text-center mb-12">
                          <h1 className="font-headline text-4xl font-bold md:text-5xl">
-                           Find Your Next Creative Gig
+                           Find Events to Perform At
                          </h1>
                          <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
-                            Browse creative briefs from top event organizers and apply your skills to the most exciting events in Africa.
+                            Browse upcoming events and apply to perform at the most exciting events in Africa.
                          </p>
                     </div>
 
@@ -80,14 +103,53 @@ export default async function OpportunitiesPage() {
                     {events.length > 0 ? (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {events.map(event => (
-                                <EventCard key={event.id} event={event} />
+                                <Card key={event.id} className="hover:shadow-lg transition-shadow">
+                                    <CardHeader>
+                                        <div className="flex items-start justify-between">
+                                            <Badge variant="secondary">Performance</Badge>
+                                            <div className="text-right">
+                                                <p className="text-xs text-muted-foreground">Apply to Perform</p>
+                                            </div>
+                                        </div>
+                                        <CardTitle className="text-xl">{event.title}</CardTitle>
+                                        <CardDescription className="line-clamp-2">{event.description}</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                <Calendar className="h-4 w-4" />
+                                                <span>{new Date(event.date).toLocaleDateString()}</span>
+                                                <MapPin className="h-4 w-4 ml-2" />
+                                                <span>{event.location}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <span className="font-medium">Organizer:</span>
+                                                <span>{event.organizer.name}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between pt-2">
+                                                <span className="text-sm text-muted-foreground">
+                                                    {event._count.artistInvitations} artist{event._count.artistInvitations !== 1 ? 's' : ''} invited
+                                                </span>
+                                                {event.artistInvitations && event.artistInvitations.length > 0 ? (
+                                                    <Button size="sm" variant="outline" disabled>
+                                                        {event.artistInvitations[0].status === 'PENDING' ? 'Applied' :
+                                                         event.artistInvitations[0].status === 'ACCEPTED' ? 'Accepted' :
+                                                         'Rejected'}
+                                                    </Button>
+                                                ) : (
+                                                    <ApplyToPerformDialog event={event} />
+                                                )}
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
                             ))}
                         </div>
                     ) : (
                         <div className="text-center text-muted-foreground py-24">
                             <FileText className="mx-auto size-16 mb-4" />
                             <h3 className="font-semibold text-xl">No Events Available</h3>
-                            <p>There are currently no open events. Please check back later!</p>
+                            <p>There are currently no upcoming events. Please check back later!</p>
                         </div>
                     )}
                 </div>

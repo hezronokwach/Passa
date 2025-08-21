@@ -138,6 +138,7 @@ export async function login(prevState: unknown, formData: FormData) {
         return { 
           success: true, 
           message: 'Login successful!',
+          role: user.role,
           redirect: rolePaths[user.role] || '/dashboard' 
         };
 
@@ -264,9 +265,6 @@ export async function logout() {
         await deleteSession();
     } catch (error) {
         console.error('Logout error:', error);
-        // Optionally, you could return a specific error state here
-        // if you want to handle it on the client side.
-        return { success: false, message: 'Failed to logout' };
     }
     redirect('/login');
 }
