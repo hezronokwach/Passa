@@ -5,18 +5,19 @@
 import prisma from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/passa/header';
-import Image from 'next/image';
-import { Calendar, MapPin, Users, Ticket, Percent, User, Handshake } from 'lucide-react';
+import { Users, Handshake, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TicketPurchaseDialogWrapper } from './ticket-purchase-dialog-wrapper';
+import Link from 'next/link';
 import { createSponsorship } from '@/app/actions/organizer';
 import { translateEventTitle } from '@/ai/flows/translate-event-title';
-import type { Event, OrganizerProfile, Attribution, User as UserType, Ticket as TicketTier } from '@prisma/client';
+import type { Event, OrganizerProfile, Attribution, User as UserType, Ticket as TicketTier, ArtistInvitation } from '@prisma/client';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getSession } from '@/lib/session';
+import { EventDetails } from '@/components/events/event-details';
+import { TicketPurchase } from '@/components/events/ticket-purchase';
 
 type SponsorWithProfile = Attribution & { user: UserType & { organizerProfile: OrganizerProfile | null }};
 
@@ -24,6 +25,7 @@ type EventWithDetails = Event & {
     tickets: TicketTier[],
     organizer: { name: string | null, organizerProfile: OrganizerProfile | null },
     attributions: SponsorWithProfile[],
+    artistInvitations: ArtistInvitation[],
 }
 
 async function getEventDetails(eventId: string): Promise<EventWithDetails | null> {
@@ -50,6 +52,11 @@ async function getEventDetails(eventId: string): Promise<EventWithDetails | null
                             organizerProfile: true
                         }
                     }
+                }
+            },
+            artistInvitations: {
+                where: {
+                    artistId: { not: null }
                 }
             }
         }
@@ -91,95 +98,91 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     const price = event.tickets[0]?.price ?? 0;
     const isAlreadySponsor = event.attributions.some(attr => attr.userId === session?.userId);
     const canSponsor = session?.role === 'ORGANIZER' && session?.userId !== event.organizerId;
+    const isOwnEvent = session?.userId === event.organizerId;
+    const hasApplied = event.artistInvitations.some(inv => inv.artistId === session?.userId);
+    const userInvitation = event.artistInvitations.find(inv => inv.artistId === session?.userId);
+    const applicationStatus = userInvitation?.status;
 
     return (
         <div className="flex min-h-screen w-full flex-col bg-secondary/30">
             <Header />
             <main className="flex-1">
                 <div className="container mx-auto px-4 py-8">
+                    {/* Breadcrumb */}
+                    <Link href="/events" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
+                        <ArrowLeft className="size-4" />
+                        Back to Events
+                    </Link>
                     <div className="grid lg:grid-cols-3 gap-8">
                         {/* Main Content */}
-                        <div className="lg:col-span-2 space-y-8">
-                            <Card className="overflow-hidden">
-                                <div className="relative h-64 md:h-96 w-full">
-                                    <Image
-                                        src={event.imageUrl}
-                                        alt={event.title}
-                                        fill
-                                        className="object-cover"
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                        data-ai-hint="music festival"
-                                    />
-                                    <div className="absolute bottom-4 right-4">
-                                        {isAlreadySponsor && <Badge variant="secondary" className="text-base py-2 px-4 bg-background/80 backdrop-blur-sm">You are a sponsor!</Badge>}
-                                    </div>
-                                </div>
-                                <CardHeader>
-                                    <h1 className="font-headline text-4xl md:text-5xl font-bold">{translatedTitle}</h1>
-                                    <div className="flex flex-wrap gap-x-6 gap-y-2 items-center text-muted-foreground mt-2">
-                                        <div className="flex items-center gap-2">
-                                            <Calendar className="size-4" />
-                                            <span>{new Date(event.date).toLocaleDateString('en-US', { dateStyle: 'full' })}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <MapPin className="size-4" />
-                                            <span>{event.location}</span>
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <h2 className="font-headline text-2xl font-semibold mb-4">About this event</h2>
-                                    <p className="text-muted-foreground whitespace-pre-line">{event.description}</p>
-                                </CardContent>
-                            </Card>
-                            
-                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <User className="text-primary"/>
-                                        About the Organizer
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <h3 className="text-xl font-semibold">{event.organizer.organizerProfile?.companyName || event.organizer.name}</h3>
-                                    <p className="text-muted-foreground mt-2">{event.organizer.organizerProfile?.bio}</p>
-                                </CardContent>
-                            </Card>
+                        <div className="lg:col-span-2">
+                            <EventDetails 
+                                event={{
+                                    ...event,
+                                    translatedTitle
+                                }}
+                                isAlreadySponsor={isAlreadySponsor}
+                            />
                         </div>
                         
                         {/* Sidebar */}
                         <div className="lg:col-span-1 space-y-8">
-                            <Card className="sticky top-24">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 font-headline text-2xl">
-                                        <Ticket className="size-6 text-primary"/>
-                                        Get Your Ticket
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="text-4xl font-bold text-center">
-                                        ${price} <span className="text-lg font-normal text-muted-foreground">USD</span>
-                                    </div>
-
-                                    <TicketPurchaseDialogWrapper event={{...event, price, translatedTitle, currency: 'USD' }} />
-
-                                    <div className="space-y-2 pt-4">
-                                        <p className="text-sm font-semibold flex items-center gap-2"><Percent className="text-accent" /> Revenue Splits</p>
-                                        <div className="flex justify-between text-muted-foreground text-sm">
-                                            <span>Artist / Creator</span>
-                                            <span className="font-medium text-foreground">{event.artistSplit}%</span>
+                            {/* Organizer Management Section */}
+                            {isOwnEvent && session?.role === 'ORGANIZER' && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Event Management</CardTitle>
+                                        <CardDescription>Manage your event</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                        <Button asChild className="w-full">
+                                            <a href={`/dashboard/organizer/events/${event.id}`}>Manage Event Dashboard</a>
+                                        </Button>
+                                        <div className="text-sm text-muted-foreground space-y-1">
+                                            <p>• Review artist applications</p>
+                                            <p>• Send invitations</p>
+                                            <p>• View analytics</p>
+                                            <p>• Edit event details</p>
                                         </div>
-                                        <div className="flex justify-between text-muted-foreground text-sm">
-                                            <span>Venue / Ops</span>
-                                            <span className="font-medium text-foreground">{event.venueSplit}%</span>
+                                    </CardContent>
+                                </Card>
+                            )}
+                            
+                            {/* Creator Invitation Details */}
+                            {session?.role === 'CREATOR' && userInvitation && userInvitation.status === 'ACCEPTED' && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="text-green-600">🎉 You're Performing!</CardTitle>
+                                        <CardDescription>Congratulations! You've been accepted to perform at this event.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between">
+                                                <span className="text-muted-foreground">Performance Fee:</span>
+                                                <span className="font-semibold">${userInvitation.proposedFee}</span>
+                                            </div>
+                                            {userInvitation.artistComments && (
+                                                <div>
+                                                    <span className="text-muted-foreground text-sm">Your Comments:</span>
+                                                    <p className="text-sm mt-1">{userInvitation.artistComments}</p>
+                                                </div>
+                                            )}
                                         </div>
-                                         <div className="flex justify-between text-muted-foreground text-sm">
-                                            <span>Passa Platform</span>
-                                            <span className="font-medium text-foreground">{event.passaSplit}%</span>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
+                            )}
+                            
+                            <TicketPurchase
+                                event={{
+                                    ...event,
+                                    price,
+                                    translatedTitle
+                                }}
+                                session={session}
+                                hasApplied={hasApplied}
+                                applicationStatus={applicationStatus}
+                                isOwnEvent={isOwnEvent}
+                            />
 
                              <Card>
                                 <CardHeader>
@@ -190,30 +193,51 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                      <CardDescription>This event is proudly supported by:</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    {event.attributions.length > 0 ? (
-                                        <div className="flex flex-wrap gap-4">
+                                    <div className="flex flex-wrap gap-4">
                                         <TooltipProvider>
-                                            {event.attributions.map(attr => (
-                                                <Tooltip key={attr.id}>
-                                                    <TooltipTrigger asChild>
-                                                        <a href={attr.user.organizerProfile?.website || '#'} target="_blank" rel="noopener noreferrer">
-                                                            <Avatar className="h-12 w-12 border-2 border-primary/50">
-                                                                <AvatarImage src={`https://logo.clearbit.com/${attr.user.organizerProfile?.website}`} alt={attr.user.organizerProfile?.companyName || 'Sponsor'} />
-                                                                <AvatarFallback>{(attr.user.organizerProfile?.companyName || 'S').charAt(0)}</AvatarFallback>
-                                                            </Avatar>
-                                                        </a>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>{attr.user.organizerProfile?.companyName}</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            ))}
-                                            </TooltipProvider>
-                                        </div>
-                                    ) : (
-                                        <p className="text-sm text-muted-foreground">Be the first to sponsor this event!</p>
-                                    )}
-                                    {canSponsor && !isAlreadySponsor && <SponsorEventForm eventId={event.id} />}
+                                            {/* Constant Sponsors */}
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Avatar className="h-12 w-12 border-2 border-primary/50">
+                                                        <AvatarFallback className="bg-blue-100 text-blue-600">MT</AvatarFallback>
+                                                    </Avatar>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>MTN Africa</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Avatar className="h-12 w-12 border-2 border-primary/50">
+                                                        <AvatarFallback className="bg-green-100 text-green-600">SF</AvatarFallback>
+                                                    </Avatar>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Safaricom</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Avatar className="h-12 w-12 border-2 border-primary/50">
+                                                        <AvatarFallback className="bg-red-100 text-red-600">AB</AvatarFallback>
+                                                    </Avatar>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Absa Bank</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Avatar className="h-12 w-12 border-2 border-primary/50">
+                                                        <AvatarFallback className="bg-purple-100 text-purple-600">EC</AvatarFallback>
+                                                    </Avatar>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Ecobank</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
                                 </CardContent>
                             </Card>
                         </div>
