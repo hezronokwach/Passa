@@ -32,7 +32,7 @@ export async function applyToPerform(formData: FormData) {
 
     const event = await prisma.event.findUnique({
       where: { id: eventId },
-      select: { organizerId: true }
+      select: { organizerId: true, title: true }
     });
 
     if (!event) {
