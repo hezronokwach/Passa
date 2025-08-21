@@ -112,16 +112,14 @@ export default function CreateEventPage() {
   };
 
   const isStep1Valid = () => {
-    const hasValidDate = selectedDate || (dateTimeInput && dateTimeInput.includes('T'));
-    const hasValidTime = selectedTime.length > 0;
+    const hasValidDateTime = dateTimeInput && dateTimeInput.includes('T');
     const hasValidImage = step1Data.imageUrl.length > 0 || uploadedImage;
     
     return step1Data.title.length >= 3 && 
            step1Data.description.length >= 10 && 
            step1Data.location.length >= 2 && 
            step1Data.country.length >= 2 && 
-           hasValidDate &&
-           hasValidTime &&
+           hasValidDateTime &&
            hasValidImage;
   };
 
@@ -164,13 +162,9 @@ export default function CreateEventPage() {
     formData.set('imageUrl', step1Data.imageUrl || `https://placehold.co/600x400.png?text=${encodeURIComponent(step1Data.title)}`);
 
     // Handle date/time
-    if (dateTimeInput && dateTimeInput.includes('T')) {
-      const [dateStr] = dateTimeInput.split('T');
-      formData.set('date', dateStr);
-    } else if (selectedDate) {
-      formData.set('date', format(selectedDate, 'yyyy-MM-dd'));
+    if (dateTimeInput) {
+      formData.set('date', dateTimeInput);
     }
-    formData.set('time', selectedTime);
 
     // Handle image upload
     if (uploadedImage) {
@@ -283,73 +277,17 @@ export default function CreateEventPage() {
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label>Event Date <span className="text-red-500">*</span></Label>
-                        <Tabs defaultValue="picker" className="w-full">
-                          <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="picker">Date Picker</TabsTrigger>
-                            <TabsTrigger value="manual">Manual Input</TabsTrigger>
-                          </TabsList>
-                          <TabsContent value="picker">
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  className={cn(
-                                    "w-full justify-start text-left font-normal",
-                                    !selectedDate && "text-muted-foreground"
-                                  )}
-                                >
-                                  <Calendar className="mr-2 h-4 w-4" />
-                                  {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <CalendarComponent
-                                  mode="single"
-                                  selected={selectedDate}
-                                  onSelect={setSelectedDate}
-                                  disabled={(date) => date < new Date()}
-                                  initialFocus
-                                  className="rounded-md border"
-                                />
-                              </PopoverContent>
-                            </Popover>
-                          </TabsContent>
-                          <TabsContent value="manual">
-                            <Input
-                              type="date"
-                              value={dateTimeInput ? dateTimeInput.split('T')[0] : ''}
-                              onChange={(e) => {
-                                const dateValue = e.target.value;
-                                const timeValue = dateTimeInput ? dateTimeInput.split('T')[1] || '09:00' : '09:00';
-                                setDateTimeInput(`${dateValue}T${timeValue}`);
-                              }}
-                              min={format(new Date(), "yyyy-MM-dd")}
-                            />
-                          </TabsContent>
-                        </Tabs>
+                        <Label htmlFor="eventDate">Event Date & Time <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="eventDate"
+                          type="datetime-local"
+                          value={dateTimeInput}
+                          onChange={(e) => setDateTimeInput(e.target.value)}
+                          min={new Date().toISOString().slice(0, 16)}
+                        />
                         {state.errors?.date && <p className="text-sm text-destructive">{state.errors.date[0]}</p>}
                       </div>
-                      <div className="space-y-2">
-                        <Label>Event Time <span className="text-red-500">*</span></Label>
-                        <Select value={selectedTime} onValueChange={setSelectedTime}>
-                          <SelectTrigger>
-                            <Clock className="mr-2 h-4 w-4" />
-                            <SelectValue placeholder="Select time" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Array.from({ length: 24 }, (_, i) => {
-                              const hour = i.toString().padStart(2, '0');
-                              return (
-                                <SelectItem key={`${hour}:00`} value={`${hour}:00`}>
-                                  {i === 0 ? '12:00 AM' : i < 12 ? `${i}:00 AM` : i === 12 ? '12:00 PM' : `${i - 12}:00 PM`}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                        {state.errors?.time && <p className="text-sm text-destructive">{state.errors.time[0]}</p>}
-                      </div>
+
                     </div>
                     <div className="space-y-2">
                       <Label>Event Image <span className="text-red-500">*</span></Label>
