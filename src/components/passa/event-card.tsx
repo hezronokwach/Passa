@@ -27,7 +27,7 @@ interface TranslatedEvent extends Event {
 
 export const EventCard = ({ event }: { event: TranslatedEvent }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const [imageError] = useState(false);
   const router = useRouter();
   
   const handleViewOpportunitiesClick = (e: React.MouseEvent<HTMLButtonElement>) => {

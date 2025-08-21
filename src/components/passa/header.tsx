@@ -40,7 +40,7 @@ export const Header = async () => {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          {isAuthenticated && <NotificationBell />}
+          <NotificationBell />
           <div className="hidden sm:flex items-center gap-2">
             {isAuthenticated ? (
               <>
