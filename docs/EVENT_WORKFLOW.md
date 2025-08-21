@@ -1,5 +1,6 @@
 # Event Creation & Artist Negotiation Workflow
 
+
 ## Overview
 
 Passa implements a comprehensive event management system with artist invitation, negotiation, and automatic publishing workflows. This document outlines the complete process from event creation to live publication.
