@@ -44,15 +44,15 @@ async function getArtistActivity() {
 export default async function ApplicationsPage() {
   const { invitations, applications } = await getArtistActivity();
   return (
-    <div className="flex min-h-screen w-full flex-col bg-secondary/30">
+    <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center mb-12">
-            <h1 className="font-headline text-4xl font-bold md:text-5xl">
-              My Performance Activity
+          <div className="mb-12">
+            <h1 className="font-headline text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
+              Performance Activity
             </h1>
-            <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
+            <p className="text-xl text-muted-foreground max-w-2xl">
               Track invitations received and applications sent for performance opportunities.
             </p>
           </div>
@@ -70,18 +70,26 @@ export default async function ApplicationsPage() {
             </TabsList>
 
             <TabsContent value="invitations">
-              <Card>
+              <Card className="border-0 shadow-lg">
                 <CardHeader>
-                  <CardTitle>Invitations from Organizers</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="size-5 text-primary" />
+                    Invitations from Organizers
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {invitations.length > 0 ? (
                     <ApplicationsClient invitations={invitations} type="invitations" />
                   ) : (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <Mail className="mx-auto h-12 w-12 mb-4" />
-                      <h3 className="font-semibold text-lg">No Invitations Yet</h3>
-                      <p>You haven&apos;t received any performance invitations from organizers.</p>
+                    <div className="text-center py-16">
+                      <div className="p-4 bg-muted/50 rounded-full w-fit mx-auto mb-6">
+                        <Mail className="size-12 text-muted-foreground" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">No Invitations Yet</h3>
+                      <p className="text-muted-foreground mb-6">You haven't received any performance invitations from organizers.</p>
+                      <Button asChild>
+                        <Link href="/events">Browse Events</Link>
+                      </Button>
                     </div>
                   )}
                 </CardContent>
@@ -89,23 +97,28 @@ export default async function ApplicationsPage() {
             </TabsContent>
 
             <TabsContent value="applications">
-              <Card>
+              <Card className="border-0 shadow-lg">
                 <CardHeader>
-                  <CardTitle>Your Applications</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <UserCheck className="size-5 text-primary" />
+                    Your Applications
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {applications.length > 0 ? (
                     <ApplicationsClient invitations={applications} type="applications" />
                   ) : (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <UserCheck className="mx-auto h-12 w-12 mb-4" />
-                      <h3 className="font-semibold text-lg">No Applications Yet</h3>
-                      <p>You haven&apos;t applied to perform at any events yet.</p>
-                      <Link href="/dashboard/creator/opportunities">
-                        <Button className="mt-4">
+                    <div className="text-center py-16">
+                      <div className="p-4 bg-muted/50 rounded-full w-fit mx-auto mb-6">
+                        <UserCheck className="size-12 text-muted-foreground" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">No Applications Yet</h3>
+                      <p className="text-muted-foreground mb-6">You haven't applied to perform at any events yet.</p>
+                      <Button asChild>
+                        <Link href="/events">
                           Browse Events
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                     </div>
                   )}
                 </CardContent>

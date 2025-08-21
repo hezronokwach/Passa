@@ -4,7 +4,8 @@ import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Users, BarChart2, User, Calendar, DollarSign, TrendingUp, Eye } from 'lucide-react';
-import { MiniChart } from '@/components/ui/mini-chart';
+import { Badge } from '@/components/ui/badge';
+
 import Link from 'next/link';
 import { PublishEventButton } from '@/components/passa/publish-event-button';
 import prisma from '@/lib/db';
@@ -169,38 +170,50 @@ export default async function OrganizerDashboardPage() {
             </Card>
           </div>
 
-          {/* Analytics & Actions */}
-          <div className="grid gap-6 lg:grid-cols-3 mb-12">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-lg">Revenue Trend</CardTitle>
-                <CardDescription>Last 6 months performance</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-green-600">${stats.totalRevenue.toFixed(2)}</span>
-                    <span className="text-sm text-green-600 bg-green-50 dark:bg-green-950/20 px-2 py-1 rounded-full">+23%</span>
-                  </div>
-                  <MiniChart data={[120, 180, 150, 220, 280, stats.totalRevenue]} className="text-green-500" />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>6mo ago</span>
-                    <span>Now</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Link href="/events" className="group">
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
-                <CardContent className="p-8">
-                  <div className="flex items-center gap-4">
-                    <div className="p-4 bg-primary/10 rounded-2xl group-hover:bg-primary/20 transition-colors">
-                      <Eye className="size-8 text-primary" />
+          {/* Quick Actions */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-12">
+            <Link href="/dashboard/organizer/events/create" className="group">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] bg-gradient-to-br from-primary/5 to-primary/10">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
+                      <PlusCircle className="size-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold mb-1">Explore Events</h3>
-                      <p className="text-muted-foreground">Discover what's happening</p>
+                      <h3 className="font-semibold">Create Event</h3>
+                      <p className="text-sm text-muted-foreground">Start planning</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/events" className="group">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                      <Eye className="size-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Explore Events</h3>
+                      <p className="text-sm text-muted-foreground">See what's trending</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard/organizer/invitations" className="group">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50 transition-colors">
+                      <Users className="size-6 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Invitations</h3>
+                      <p className="text-sm text-muted-foreground">Manage artists</p>
                     </div>
                   </div>
                 </CardContent>
@@ -208,15 +221,15 @@ export default async function OrganizerDashboardPage() {
             </Link>
 
             <Link href="/dashboard/organizer/profile" className="group">
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
-                <CardContent className="p-8">
-                  <div className="flex items-center gap-4">
-                    <div className="p-4 bg-primary/10 rounded-2xl group-hover:bg-primary/20 transition-colors">
-                      <User className="size-8 text-primary" />
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl group-hover:bg-purple-200 dark:group-hover:bg-purple-900/50 transition-colors">
+                      <User className="size-6 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold mb-1">Manage Profile</h3>
-                      <p className="text-muted-foreground">Update your information</p>
+                      <h3 className="font-semibold">Profile</h3>
+                      <p className="text-sm text-muted-foreground">Update details</p>
                     </div>
                   </div>
                 </CardContent>
@@ -224,58 +237,72 @@ export default async function OrganizerDashboardPage() {
             </Link>
           </div>
 
-          <Card>
-            <CardHeader>
-                <CardTitle>My Events</CardTitle>
-                <CardDescription>Manage your events and review creative submissions.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ul className="space-y-4">
-                    {events.map(event => (
-                        <li key={event.id} className="flex items-center justify-between p-4 rounded-md border hover:bg-muted">
-                            <div>
-                                <p className="font-bold">{event.title}</p>
-                                <p className="text-sm text-muted-foreground">{event.date} - <span className="text-primary font-medium">{event.location}</span></p>
+          {/* Recent Events - Show only top 3 */}
+          {events.length > 0 && (
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Recent Events</CardTitle>
+                    <CardDescription>Your latest event activities</CardDescription>
+                  </div>
+                  {events.length > 3 && (
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/dashboard/organizer/events">View All</Link>
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {events.slice(0, 3).map(event => (
+                    <Link key={event.id} href={`/dashboard/organizer/events/${event.id}`} className="block">
+                      <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors group">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-semibold group-hover:text-primary transition-colors">{event.title}</h4>
+                            <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                              <span>{event.date}</span>
+                              <span>•</span>
+                              <span>{event.location}</span>
+                              <span>•</span>
+                              <span>{event.applications} applications</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <div className="flex items-center gap-2">
-                                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                                        event.published 
-                                            ? 'bg-green-100 text-green-800' 
-                                            : 'bg-yellow-100 text-yellow-800'
-                                    }`}>
-                                        {event.published ? 'Published' : 'Draft'}
-                                    </span>
-                                    {!event.published && (
-                                        <PublishEventButton event={{
-                                            id: event.id,
-                                            title: event.title,
-                                            description: event.description,
-                                            date: event.date,
-                                            location: event.location,
-                                            country: event.country
-                                        }} />
-                                    )}
-                                    <Link href={`/dashboard/organizer/events/${event.id}`}>
-                                        <Button variant="outline" size="sm">Manage</Button>
-                                    </Link>
-                                </div>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-                    {events.length === 0 && (
-                    <div className="text-center text-muted-foreground py-8">
-                        <p>You haven&apos;t created any events yet.</p>
-                        <Button className="mt-4" asChild>
-                          <Link href="/dashboard/organizer/events/create">
-                            Create Your First Event
-                          </Link>
-                        </Button>
-                    </div>
-                    )}
-            </CardContent>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant={event.published ? 'default' : 'secondary'}>
+                              {event.published ? 'Live' : 'Draft'}
+                            </Badge>
+                            <Badge variant="outline">{event.status}</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
             </Card>
+          )}
+
+          {events.length === 0 && (
+            <Card className="border-0 shadow-lg">
+              <CardContent className="text-center py-12">
+                <div className="max-w-md mx-auto">
+                  <div className="p-4 bg-primary/10 rounded-full w-fit mx-auto mb-4">
+                    <Calendar className="size-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">No Events Yet</h3>
+                  <p className="text-muted-foreground mb-6">Start creating amazing events and building your audience</p>
+                  <Button size="lg" asChild>
+                    <Link href="/dashboard/organizer/events/create">
+                      <PlusCircle className="mr-2 size-5" />
+                      Create Your First Event
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>
