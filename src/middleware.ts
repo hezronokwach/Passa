@@ -14,7 +14,7 @@ const protectedRoutes: { [key in Role]?: string[] } = {
     FAN: ['/dashboard/fan'],
 };
 
-const publicRoutes = ['/login', '/register', '/', '/about', '/contact', '/features', '/how-it-works', '/events'];
+
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;

@@ -2,7 +2,7 @@
 
 import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, TrendingUp, Users, DollarSign, Eye, BarChart3, Target, Clock } from 'lucide-react';
+import { ArrowLeft, Users, DollarSign, Eye, BarChart3, Target } from 'lucide-react';
 import Link from 'next/link';
 import prisma from '@/lib/db';
 import { getSession } from '@/lib/session';

@@ -3,11 +3,11 @@
 import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, Users, BarChart2, User, Calendar, DollarSign, TrendingUp, Eye } from 'lucide-react';
+import { PlusCircle, Users, User, Calendar, TrendingUp, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 import Link from 'next/link';
-import { PublishEventButton } from '@/components/passa/publish-event-button';
+
 import prisma from '@/lib/db';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
@@ -197,7 +197,7 @@ export default async function OrganizerDashboardPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold">Explore Events</h3>
-                      <p className="text-sm text-muted-foreground">See what's trending</p>
+                      <p className="text-sm text-muted-foreground">See what&apos;s trending</p>
                     </div>
                   </div>
                 </CardContent>

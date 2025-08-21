@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Users, Ticket, DollarSign, Calendar, Settings, MapPin, Music, TrendingUp, Star, Eye } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Users, Ticket, DollarSign, Calendar, Settings, MapPin, Music, TrendingUp, Eye } from 'lucide-react';
 import Link from 'next/link';
 import {
   Table,

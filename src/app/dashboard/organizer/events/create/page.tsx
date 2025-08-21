@@ -11,14 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { ArrowLeft, PartyPopper, Calendar, Clock, Plus, Trash2, Upload, X } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Upload, X } from 'lucide-react';
 import Link from 'next/link';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
 import Image from 'next/image';
 
 type TicketTier = {
@@ -48,8 +44,7 @@ function SubmitButton() {
 export default function CreateEventPage() {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = React.useState(1);
-  const [selectedDate, setSelectedDate] = React.useState<Date>();
-  const [selectedTime, setSelectedTime] = React.useState('');
+
   const [dateTimeInput, setDateTimeInput] = React.useState('');
   const [ticketTiers, setTicketTiers] = React.useState<TicketTier[]>([
     { id: '1', name: 'General Admission', price: '50', quantity: '100' }

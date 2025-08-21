@@ -86,7 +86,7 @@ export default async function ApplicationsPage() {
                         <Mail className="size-12 text-muted-foreground" />
                       </div>
                       <h3 className="text-xl font-semibold mb-2">No Invitations Yet</h3>
-                      <p className="text-muted-foreground mb-6">You haven't received any performance invitations from organizers.</p>
+                      <p className="text-muted-foreground mb-6">You haven&apos;t received any performance invitations from organizers.</p>
                       <Button asChild>
                         <Link href="/events">Browse Events</Link>
                       </Button>
@@ -113,7 +113,7 @@ export default async function ApplicationsPage() {
                         <UserCheck className="size-12 text-muted-foreground" />
                       </div>
                       <h3 className="text-xl font-semibold mb-2">No Applications Yet</h3>
-                      <p className="text-muted-foreground mb-6">You haven't applied to perform at any events yet.</p>
+                      <p className="text-muted-foreground mb-6">You haven&apos;t applied to perform at any events yet.</p>
                       <Button asChild>
                         <Link href="/events">
                           Browse Events

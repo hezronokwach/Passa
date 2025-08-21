@@ -14,7 +14,7 @@ type TicketPurchaseProps = {
     artistSplit: number;
     venueSplit: number;
     passaSplit: number;
-    tickets: any[];
+    tickets: Array<{ id: number; name: string; price: number; quantity: number; sold: number }>;
     imageUrl: string;
     date: Date;
     location: string;
@@ -25,7 +25,7 @@ type TicketPurchaseProps = {
     updatedAt: Date;
     published: boolean;
     totalBudget: number | null;
-    artistInvitations: any[];
+    artistInvitations: Array<{ id: number; artistId: number | null; status: 'PENDING' | 'ACCEPTED' | 'REJECTED'; proposedFee: number; artistComments: string | null }>;
   };
   session: {
     userId: number;
@@ -43,7 +43,7 @@ export function TicketPurchase({
   applicationStatus, 
   isOwnEvent 
 }: TicketPurchaseProps) {
-  const price = event.price;
+
 
   return (
     <Card className="sticky top-24">

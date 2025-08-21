@@ -5,15 +5,14 @@
 import prisma from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/passa/header';
-import { Users, Handshake, ArrowLeft } from 'lucide-react';
+import { Users, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { createSponsorship } from '@/app/actions/organizer';
+
 import { translateEventTitle } from '@/ai/flows/translate-event-title';
 import type { Event, OrganizerProfile, Attribution, User as UserType, Ticket as TicketTier, ArtistInvitation } from '@prisma/client';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getSession } from '@/lib/session';
 import { EventDetails } from '@/components/events/event-details';
@@ -65,20 +64,7 @@ async function getEventDetails(eventId: string): Promise<EventWithDetails | null
 }
 
 
-function SponsorEventForm({ eventId }: { eventId: number }) {
-    return (
-        <form action={async (formData: FormData) => {
-            'use server';
-            await createSponsorship(undefined, formData);
-        }}>
-            <input type="hidden" name="eventId" value={eventId} />
-            <Button className="w-full font-bold mt-4" type="submit">
-                <Handshake className="mr-2"/>
-                Sponsor this Event
-            </Button>
-        </form>
-    );
-}
+// Removed unused SponsorEventForm to satisfy linting
 
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -97,7 +83,6 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     
     const price = event.tickets[0]?.price ?? 0;
     const isAlreadySponsor = event.attributions.some(attr => attr.userId === session?.userId);
-    const canSponsor = session?.role === 'ORGANIZER' && session?.userId !== event.organizerId;
     const isOwnEvent = session?.userId === event.organizerId;
     const hasApplied = event.artistInvitations.some(inv => inv.artistId === session?.userId);
     const userInvitation = event.artistInvitations.find(inv => inv.artistId === session?.userId);

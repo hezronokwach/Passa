@@ -77,7 +77,7 @@ export default async function EventsPage() {
                   <Calendar className="size-12 text-muted-foreground" />
                 </div>
                 <h3 className="text-2xl font-semibold mb-2">No Events Yet</h3>
-                <p className="text-muted-foreground mb-6">Be the first to discover amazing events when they're published.</p>
+                <p className="text-muted-foreground mb-6">Be the first to discover amazing events when they&apos;re published.</p>
                 {session?.role === 'ORGANIZER' && (
                   <Button asChild>
                     <Link href="/dashboard/organizer/events/create">

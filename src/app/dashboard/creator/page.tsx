@@ -5,12 +5,11 @@
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, Eye, FileText, CheckCircle, Clock, XCircle, DollarSign, BarChart3, Calendar, Music, TrendingUp, Zap, Award } from 'lucide-react';
+import { Eye, CheckCircle, Clock, XCircle, DollarSign, Music, Zap, Award, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { getSession } from '@/lib/session';
 
@@ -24,7 +23,6 @@ async function getCreatorData() {
                 pendingCount: 0,
                 totalEarnings: 0,
             },
-            chartData: [],
             recentInvitations: [],
             error: 'No session found'
         };
@@ -53,16 +51,10 @@ async function getCreatorData() {
     const acceptedInvitations = invitations.filter(i => i.status === 'ACCEPTED');
     const acceptedCount = acceptedInvitations.length;
     const pendingCount = invitations.filter(i => i.status === 'PENDING').length;
-    const rejectedCount = invitations.filter(i => i.status === 'REJECTED').length;
-
     // Calculate potential earnings from accepted invitations
     const totalEarnings = acceptedInvitations.reduce((sum, inv) => sum + inv.proposedFee, 0);
 
-    const chartData = [
-        { name: 'Accepted', value: acceptedCount, fill: 'hsl(var(--primary))' },
-        { name: 'Pending', value: pendingCount, fill: 'hsl(var(--accent))' },
-        { name: 'Rejected', value: rejectedCount, fill: 'hsl(var(--destructive))' }
-    ];
+
 
     return {
         stats: {
@@ -71,7 +63,7 @@ async function getCreatorData() {
             pendingCount,
             totalEarnings,
         },
-        chartData,
+
         recentInvitations: invitations.slice(0, 5).map(i => ({
             id: i.id,
             eventId: i.eventId,
@@ -93,7 +85,7 @@ const getStatusIcon = (status: string) => {
 
 
 export default async function CreatorDashboardPage() {
-  const { stats, chartData, recentInvitations, error } = await getCreatorData();
+  const { stats, recentInvitations, error } = await getCreatorData();
   
   if (error) {
     return redirect('/login');
