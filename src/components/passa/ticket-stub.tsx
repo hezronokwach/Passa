@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { Button } from '../ui/button';
 import { Barcode } from './barcode';
-import { CheckCircle, Ticket } from 'lucide-react';
+import { CheckCircle, Ticket, QrCode } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Event } from '@prisma/client';
 
@@ -12,9 +12,10 @@ interface TicketStubProps {
     isPurchasing?: boolean;
     isSuccess?: boolean;
     isPurchased?: boolean;
+    qrCode?: string; // Add QR code as a prop
 }
 
-export const TicketStub = ({ event, onPurchase, isPurchasing, isSuccess, isPurchased = false }: TicketStubProps) => {
+export const TicketStub = ({ event, onPurchase, isPurchasing, isSuccess, isPurchased = false, qrCode }: TicketStubProps) => {
     return (
         <div className={cn(
             "bg-card text-card-foreground rounded-lg shadow-lg overflow-hidden font-sans transition-all duration-500",
@@ -29,7 +30,7 @@ export const TicketStub = ({ event, onPurchase, isPurchasing, isSuccess, isPurch
                     </div>
                  )}
                 <div className="mb-4">
-                    <p className="text-sm text-muted-foreground uppercase tracking-wider">You&apos;re invited to</p>
+                    <p className="text-sm text-muted-foreground uppercase tracking-wider">You're invited to</p>
                     <h2 className="text-2xl font-bold font-headline">{event.translatedTitle}</h2>
                 </div>
                 <div className="relative h-48 w-full rounded-md overflow-hidden mb-4 border">
@@ -52,6 +53,19 @@ export const TicketStub = ({ event, onPurchase, isPurchasing, isSuccess, isPurch
                         <p className="font-bold text-lg text-primary">${event.price}</p>
                     </div>
                 </div>
+                
+                {/* QR Code Display */}
+                {qrCode && (
+                    <div className="mt-4 flex flex-col items-center">
+                        <p className="text-sm text-muted-foreground mb-2">Your Ticket QR Code</p>
+                        <div className="bg-white p-2 rounded-lg">
+                            <img src={qrCode} alt="Ticket QR Code" className="w-32 h-32" />
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2 text-center">
+                            Show this QR code at the entrance for entry
+                        </p>
+                    </div>
+                )}
             </div>
             <div className="border-t-2 border-dashed border-border" />
             <div className="p-4 bg-muted/50 flex items-center justify-between gap-4">
@@ -63,9 +77,13 @@ export const TicketStub = ({ event, onPurchase, isPurchasing, isSuccess, isPurch
                     onClick={onPurchase}
                     disabled={isPurchasing || isSuccess || isPurchased}
                 >
-                    {isPurchased ? 'View Ticket' : isPurchasing ? 'Processing...' : (
+                    {isPurchased ? (
                         <>
-                        <Ticket className="mr-2"/> Buy Ticket
+                            <QrCode className="mr-2" /> View Ticket
+                        </>
+                    ) : isPurchasing ? 'Processing...' : (
+                        <>
+                            <Ticket className="mr-2"/> Buy Ticket
                         </>
                     )}
                 </Button>

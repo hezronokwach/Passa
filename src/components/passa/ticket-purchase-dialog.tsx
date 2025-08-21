@@ -13,6 +13,7 @@ import { Confetti } from './confetti';
 import { useToast } from '@/components/ui/use-toast';
 import { TicketStub } from './ticket-stub';
 import { purchaseTicket } from '@/app/actions/fan';
+import { TicketQRCodeGenerator } from '@/lib/services/qr-code-examples';
 
 interface TicketPurchaseDialogProps {
   event: Event & { tickets: Ticket[], translatedTitle: string, price: number, currency: string };
@@ -23,6 +24,7 @@ interface TicketPurchaseDialogProps {
 export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchaseDialogProps) {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const [qrCode, setQrCode] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handlePurchase = async () => {
@@ -49,6 +51,26 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
         });
         setPurchaseSuccess(true);
         
+        // Generate QR code for the purchased ticket
+        // In a real implementation, you would get the actual ticket data from the result
+        // For now, we'll simulate with mock data
+        try {
+          // This is a placeholder - in reality, you'd get the actual purchased ticket data
+          const mockTicket = {
+            id: Date.now(), // Mock ID
+            eventId: event.id,
+            ownerId: 1, // Mock owner ID
+            createdAt: new Date(),
+            status: 'ACTIVE',
+            ticketId: ticketTier.id,
+          };
+          
+          const qrCodeData = await TicketQRCodeGenerator.generate(mockTicket);
+          setQrCode(qrCodeData);
+        } catch (error) {
+          console.error('Error generating QR code:', error);
+        }
+        
         // Reset state and close dialog after animation
         setTimeout(() => {
             setIsOpen(false);
@@ -56,6 +78,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
             setTimeout(() => {
                 setPurchaseSuccess(false);
                 setIsPurchasing(false);
+                setQrCode(null);
             }, 500);
         }, 3000);
     } else {
@@ -75,6 +98,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
     // Reset success state if dialog is closed manually
     if (!open) {
         setPurchaseSuccess(false);
+        setQrCode(null);
     }
   }
 
@@ -90,6 +114,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
             onPurchase={handlePurchase}
             isPurchasing={isPurchasing}
             isSuccess={purchaseSuccess}
+            qrCode={qrCode || undefined}
           />
         </DialogContent>
       </Dialog>

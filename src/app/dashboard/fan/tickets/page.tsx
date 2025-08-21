@@ -5,20 +5,24 @@
 import React from 'react';
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Ticket, Download } from 'lucide-react';
+import { ArrowLeft, Ticket, Download, QrCode } from 'lucide-react';
 import Link from 'next/link';
 import { TicketStub } from '@/components/passa/ticket-stub';
 import type { Event, PurchasedTicket } from '@prisma/client';
 import prisma from '@/lib/db';
 import { translateEventTitle } from '@/ai/flows/translate-event-title';
 import { getSession } from '@/lib/session';
+import { generateTicketQRCode } from '@/app/actions/qr-code';
+import { MobileNav } from '@/components/passa/mobile-nav';
+
 type TranslatedPurchasedTicket = PurchasedTicket & {
     event: Event & {
         translatedTitle: string;
         price: number;
         currency: string;
         imageHint: string;
-    }
+    };
+    qrCode?: string;
 };
 
 async function getAuthenticatedFanId() {
@@ -53,6 +57,14 @@ async function getFanTickets(): Promise<TranslatedPurchasedTicket[]> {
             });
 
             const ticketTier = ticket.event.tickets.find(t => t.id === ticket.ticketId);
+            
+            // Generate QR code for the ticket
+            let qrCode: string | undefined;
+            try {
+                qrCode = await generateTicketQRCode(ticket);
+            } catch (error) {
+                console.error('Error generating QR code for ticket:', error);
+            }
 
             return {
                 ...ticket,
@@ -62,7 +74,8 @@ async function getFanTickets(): Promise<TranslatedPurchasedTicket[]> {
                     price: ticketTier?.price ?? 0,
                     currency: 'USD',
                     imageHint: 'music festival',
-                }
+                },
+                qrCode
             };
         })
     );
@@ -78,7 +91,7 @@ export default async function MyTicketsPage() {
     return (
         <div className="flex min-h-screen w-full flex-col bg-secondary/30">
             <Header />
-            <main className="flex-1">
+            <main className="flex-1 pb-20 md:pb-0">
                  <div className="container mx-auto px-4 py-8">
                     <div className="max-w-4xl mx-auto">
                         <Link href="/dashboard/fan" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
@@ -103,6 +116,7 @@ export default async function MyTicketsPage() {
                                         <TicketStub 
                                             event={ticket.event}
                                             isPurchased={true}
+                                            qrCode={ticket.qrCode}
                                         />
                                     </div>
                                 ))}
@@ -113,13 +127,14 @@ export default async function MyTicketsPage() {
                                 <h2 className="text-2xl font-bold">You have no tickets yet.</h2>
                                 <p className="text-muted-foreground mt-2">When you purchase a ticket, it will appear here.</p>
                                 <Button className="mt-6" asChild>
-                                    <Link href="/dashboard">Discover Events</Link>
+                                    <Link href="/events">Discover Events</Link>
                                 </Button>
                             </div>
                         )}
                     </div>
                 </div>
             </main>
+            <MobileNav />
         </div>
     );
 }
