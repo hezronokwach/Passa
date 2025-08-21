@@ -118,16 +118,17 @@ model Transaction {
 }
 
 model CreativeBrief {
-  id             Int          @id @default(autoincrement())
+  id             Int                @id @default(autoincrement())
   eventId        Int
   title          String
   description    String
   budget         Float
   requiredSkills String[]
-  category       String       // Added for filtering
-  createdAt      DateTime     @default(now())
-  event          Event        @relation(fields: [eventId], references: [id])
+  category       String
+  createdAt      DateTime           @default(now())
+  event          Event              @relation(fields: [eventId], references: [id])
   submissions    Submission[]
+  invitations    ArtistInvitation[] @relation("BriefToInvitation")
 }
 
 model Submission {
@@ -173,10 +174,12 @@ model ArtistInvitation {
   status         InvitationStatus      @default(PENDING)
   artistComments String?
   artistId       Int?
+  sourceBriefId  Int?
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
   artist         User?                 @relation(fields: [artistId], references: [id])
   event          Event                 @relation(fields: [eventId], references: [id])
+  sourceBrief    CreativeBrief?        @relation("BriefToInvitation", fields: [sourceBriefId], references: [id])
   history        InvitationHistory[]
 }
 
