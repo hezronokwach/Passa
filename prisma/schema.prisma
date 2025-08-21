@@ -84,7 +84,7 @@ model Event {
   briefs           CreativeBrief[]
   attributions     Attribution[]
   createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  updatedAt        DateTime          @default(now()) @updatedAt
 }
 
 model Ticket {
@@ -133,6 +133,7 @@ model CreativeBrief {
   description    String       @db.Text
   budget         Float
   requiredSkills String[]
+  category       String       // Added for filtering
   // Relations
   submissions    Submission[]
   createdAt      DateTime     @default(now())
