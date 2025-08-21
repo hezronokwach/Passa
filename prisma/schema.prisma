@@ -61,7 +61,7 @@ model OrganizerProfile {
 model Event {
   id                Int                @id @default(autoincrement())
   title             String
-  description       String
+  description       String            @db.Text
   date              DateTime
   location          String
   country           String
@@ -124,6 +124,7 @@ model CreativeBrief {
   description    String
   budget         Float
   requiredSkills String[]
+  category       String       // Added for filtering
   createdAt      DateTime     @default(now())
   event          Event        @relation(fields: [eventId], references: [id])
   submissions    Submission[]

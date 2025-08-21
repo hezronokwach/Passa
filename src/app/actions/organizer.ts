@@ -104,7 +104,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
 
   } catch (error) {
     console.error('Event creation error:', error);
-    return { success: false, message: 'An unexpected error occurred.', errors: {} };
+    return { success: false, message: 'An unexpected error occurred while saving to the database.', errors: {} };
   }
 }
 
