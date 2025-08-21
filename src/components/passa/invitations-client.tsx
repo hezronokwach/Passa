@@ -15,6 +15,7 @@ type InvitationListItem = {
   message: string | null;
   status: string;
   createdAt: Date;
+  sourceBriefId: number | null;
   event: {
     title: string;
     date: Date;
@@ -99,7 +100,7 @@ export function InvitationsClient({ invitations }: InvitationsClientProps) {
                 <div>
                   <p className="font-medium">{invitation.event.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    Invited {new Date(invitation.createdAt).toLocaleDateString()}
+                    {invitation.sourceBriefId ? 'From application' : 'Direct invitation'} • {new Date(invitation.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </TableCell>

@@ -25,9 +25,33 @@ export function NotificationBell() {
   const [unreadCount, setUnreadCount] = React.useState(0);
   const [selectedInvitation, setSelectedInvitation] = React.useState<Record<string, unknown> | null>(null);
   const [selectedOrganizerInvitation, setSelectedOrganizerInvitation] = React.useState<Record<string, unknown> | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = React.useState<boolean | null>(null);
   const { toast } = useToast();
 
+  const checkAuth = async () => {
+    try {
+      const response = await fetch('/api/auth/check', {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setIsAuthenticated(data.authenticated);
+        return data.authenticated;
+      }
+    } catch {
+      setIsAuthenticated(false);
+    }
+    return false;
+  };
+
   const fetchNotifications = async () => {
+    const authenticated = await checkAuth();
+    if (!authenticated) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
+
     try {
       const response = await fetch('/api/notifications', {
         credentials: 'include'
@@ -36,12 +60,9 @@ export function NotificationBell() {
         const data = await response.json();
         setNotifications(data);
         setUnreadCount(data.filter((n: Notification) => !n.read).length);
-      } else if (response.status === 401) {
-        // User not authenticated, don't retry
-        return;
       }
     } catch {
-      console.error('Failed to fetch notifications');
+      // Silently fail
     }
   };
 
@@ -99,15 +120,26 @@ export function NotificationBell() {
   };
 
   React.useEffect(() => {
-    // Only fetch if component is mounted and visible
-    const timeoutId = setTimeout(fetchNotifications, 100);
+    fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
     
     return () => {
-      clearTimeout(timeoutId);
       clearInterval(interval);
     };
   }, []);
+
+  if (isAuthenticated === null) {
+    // Still checking authentication, render placeholder
+    return (
+      <Button variant="ghost" size="sm" className="relative opacity-50">
+        <Bell className="h-5 w-5" />
+      </Button>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <>
