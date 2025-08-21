@@ -104,12 +104,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     const applicationStatus = userInvitation?.status;
 
     return (
-        <div className="flex min-h-screen w-full flex-col bg-secondary/30">
+        <div className="flex min-h-screen w-full flex-col bg-background">
             <Header />
             <main className="flex-1">
                 <div className="container mx-auto px-4 py-8">
                     {/* Breadcrumb */}
-                    <Link href="/events" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
+                    <Link href="/events" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
                         <ArrowLeft className="size-4" />
                         Back to Events
                     </Link>
@@ -126,47 +126,112 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                         </div>
                         
                         {/* Sidebar */}
-                        <div className="lg:col-span-1 space-y-8">
+                        <div className="lg:col-span-1 space-y-6">
                             {/* Organizer Management Section */}
                             {isOwnEvent && session?.role === 'ORGANIZER' && (
-                                <Card>
+                                <Card className="border-0 shadow-lg bg-gradient-to-br from-primary/5 to-primary/10">
                                     <CardHeader>
-                                        <CardTitle>Event Management</CardTitle>
-                                        <CardDescription>Manage your event</CardDescription>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <div className="p-2 bg-primary/10 rounded-lg">
+                                                <Users className="size-5 text-primary" />
+                                            </div>
+                                            Event Management
+                                        </CardTitle>
+                                        <CardDescription>Control your event from here</CardDescription>
                                     </CardHeader>
-                                    <CardContent className="space-y-3">
-                                        <Button asChild className="w-full">
-                                            <a href={`/dashboard/organizer/events/${event.id}`}>Manage Event Dashboard</a>
+                                    <CardContent className="space-y-4">
+                                        <Button asChild className="w-full shadow-sm">
+                                            <Link href={`/dashboard/organizer/events/${event.id}`}>
+                                                Open Dashboard
+                                            </Link>
                                         </Button>
-                                        <div className="text-sm text-muted-foreground space-y-1">
-                                            <p>• Review artist applications</p>
-                                            <p>• Send invitations</p>
-                                            <p>• View analytics</p>
-                                            <p>• Edit event details</p>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <Button variant="outline" size="sm" asChild>
+                                                <Link href={`/dashboard/organizer/events/${event.id}/edit`}>Edit</Link>
+                                            </Button>
+                                            <Button variant="outline" size="sm" asChild>
+                                                <Link href={`/dashboard/organizer/events/${event.id}/analytics`}>Analytics</Link>
+                                            </Button>
+                                        </div>
+                                        <div className="p-3 bg-background/50 rounded-lg">
+                                            <p className="text-sm font-medium mb-2">Quick Stats</p>
+                                            <div className="space-y-1 text-xs text-muted-foreground">
+                                                <p>• {event.artistInvitations.length} applications received</p>
+                                                <p>• {event.tickets.reduce((sum, t) => sum + t.sold, 0)} tickets sold</p>
+                                                <p>• Event status: {new Date(event.date) > new Date() ? 'Upcoming' : 'Past'}</p>
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
                             )}
                             
-                            {/* Creator Invitation Details */}
-                            {session?.role === 'CREATOR' && userInvitation && userInvitation.status === 'ACCEPTED' && (
-                                <Card>
+                            {/* Creator Performance Status */}
+                            {session?.role === 'CREATOR' && userInvitation && (
+                                <Card className={`border-0 shadow-lg ${
+                                    userInvitation.status === 'ACCEPTED' 
+                                        ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20'
+                                        : userInvitation.status === 'PENDING'
+                                        ? 'bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20'
+                                        : 'bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20'
+                                }`}>
                                     <CardHeader>
-                                        <CardTitle className="text-green-600">🎉 You're Performing!</CardTitle>
-                                        <CardDescription>Congratulations! You've been accepted to perform at this event.</CardDescription>
+                                        <CardTitle className={`flex items-center gap-2 ${
+                                            userInvitation.status === 'ACCEPTED' ? 'text-green-700 dark:text-green-300' :
+                                            userInvitation.status === 'PENDING' ? 'text-yellow-700 dark:text-yellow-300' :
+                                            'text-red-700 dark:text-red-300'
+                                        }`}>
+                                            {userInvitation.status === 'ACCEPTED' && '🎉 You\'re Performing!'}
+                                            {userInvitation.status === 'PENDING' && '⏳ Application Pending'}
+                                            {userInvitation.status === 'REJECTED' && '❌ Application Declined'}
+                                        </CardTitle>
+                                        <CardDescription>
+                                            {userInvitation.status === 'ACCEPTED' && 'Congratulations! You\'ve been selected to perform.'}
+                                            {userInvitation.status === 'PENDING' && 'Your application is being reviewed by the organizer.'}
+                                            {userInvitation.status === 'REJECTED' && 'Unfortunately, your application was not selected.'}
+                                        </CardDescription>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between">
-                                                <span className="text-muted-foreground">Performance Fee:</span>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm text-muted-foreground">Performance Fee:</span>
                                                 <span className="font-semibold">${userInvitation.proposedFee}</span>
                                             </div>
                                             {userInvitation.artistComments && (
-                                                <div>
-                                                    <span className="text-muted-foreground text-sm">Your Comments:</span>
-                                                    <p className="text-sm mt-1">{userInvitation.artistComments}</p>
+                                                <div className="p-3 bg-background/50 rounded-lg">
+                                                    <p className="text-sm font-medium mb-1">Your Application:</p>
+                                                    <p className="text-sm text-muted-foreground">{userInvitation.artistComments}</p>
                                                 </div>
                                             )}
+                                            {userInvitation.status === 'ACCEPTED' && (
+                                                <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                                    <p className="text-sm font-medium text-green-800 dark:text-green-200">Next Steps:</p>
+                                                    <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                                                        The organizer will contact you with performance details and logistics.
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+                            
+                            {/* Fan Welcome Message */}
+                            {session?.role === 'FAN' && (
+                                <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                                <Users className="size-5 text-blue-600 dark:text-blue-400" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold text-blue-900 dark:text-blue-100">Ready to Attend?</h3>
+                                                <p className="text-sm text-blue-700 dark:text-blue-300">Secure your spot at this amazing event</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+                                            <p>✓ Instant ticket confirmation</p>
+                                            <p>✓ Mobile-friendly tickets</p>
+                                            <p>✓ Secure payment processing</p>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -184,10 +249,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                 isOwnEvent={isOwnEvent}
                             />
 
-                             <Card>
+                             <Card className="border-0 shadow-lg">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Users className="text-primary"/>
+                                        <Users className="text-primary size-5"/>
                                         Event Sponsors
                                     </CardTitle>
                                      <CardDescription>This event is proudly supported by:</CardDescription>
@@ -198,8 +263,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                             {/* Constant Sponsors */}
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <Avatar className="h-12 w-12 border-2 border-primary/50">
-                                                        <AvatarFallback className="bg-blue-100 text-blue-600">MT</AvatarFallback>
+                                                    <Avatar className="h-12 w-12 border-2 border-primary/20 hover:border-primary/50 transition-colors cursor-pointer">
+                                                        <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">MT</AvatarFallback>
                                                     </Avatar>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
@@ -208,8 +273,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                             </Tooltip>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <Avatar className="h-12 w-12 border-2 border-primary/50">
-                                                        <AvatarFallback className="bg-green-100 text-green-600">SF</AvatarFallback>
+                                                    <Avatar className="h-12 w-12 border-2 border-primary/20 hover:border-primary/50 transition-colors cursor-pointer">
+                                                        <AvatarFallback className="bg-green-100 text-green-600 font-semibold">SF</AvatarFallback>
                                                     </Avatar>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
@@ -218,8 +283,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                             </Tooltip>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <Avatar className="h-12 w-12 border-2 border-primary/50">
-                                                        <AvatarFallback className="bg-red-100 text-red-600">AB</AvatarFallback>
+                                                    <Avatar className="h-12 w-12 border-2 border-primary/20 hover:border-primary/50 transition-colors cursor-pointer">
+                                                        <AvatarFallback className="bg-red-100 text-red-600 font-semibold">AB</AvatarFallback>
                                                     </Avatar>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
@@ -228,8 +293,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                             </Tooltip>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <Avatar className="h-12 w-12 border-2 border-primary/50">
-                                                        <AvatarFallback className="bg-purple-100 text-purple-600">EC</AvatarFallback>
+                                                    <Avatar className="h-12 w-12 border-2 border-primary/20 hover:border-primary/50 transition-colors cursor-pointer">
+                                                        <AvatarFallback className="bg-purple-100 text-purple-600 font-semibold">EC</AvatarFallback>
                                                     </Avatar>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
