@@ -31,28 +31,18 @@ export default function LoginPage() {
     const [state, formAction] = useActionState(login, {
         success: false,
         message: '',
+        errors: {},
+        redirect: undefined, // Add redirect to the initial state
     });
 
     useEffect(() => {
         if (state?.success) {
             toast({ title: 'Success!', description: state.message });
             
-            // Redirect based on role
-            switch (state.role) {
-                case 'ADMIN':
-                    router.push('/dashboard/admin');
-                    break;
-                case 'CREATOR':
-                    router.push('/dashboard/creator');
-                    break;
-                case 'ORGANIZER':
-                    router.push('/dashboard/organizer');
-                    break;
-                case 'FAN':
-                    router.push('/dashboard/fan');
-                    break;
-                default:
-                    router.push('/dashboard');
+            if (state.redirect) {
+                router.push(state.redirect);
+            } else {
+                router.push('/dashboard'); // Fallback redirect
             }
         } else if (!state.success && state.message) {
             toast({

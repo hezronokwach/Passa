@@ -41,6 +41,7 @@ export default function BriefDetailPage({ params: { id } }: { params: { id: stri
     const [submissionState, formAction] = useActionState(createSubmission, {
         message: '',
         errors: {},
+        success: false,
     });
 
     React.useEffect(() => {

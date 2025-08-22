@@ -21,6 +21,8 @@ import prisma from '@/lib/db';
 import type { Submission, User, CreativeBrief } from '@prisma/client';
 import React from 'react';
 import { getSession } from '@/lib/session';
+import { useActionState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 
 type SubmissionWithCreator = Submission & { creator: User };
@@ -78,7 +80,18 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function ActionButtons({ submission, eventId }: { submission: Submission, eventId: number }) {
-    const updateStatusWithId = updateSubmissionStatus.bind(null, undefined);
+    const { toast } = useToast();
+    const [state, formAction] = useActionState(updateSubmissionStatus, { success: false, message: '' });
+
+    React.useEffect(() => {
+        if (state.message) {
+            toast({
+                title: state.success ? 'Success!' : 'Error',
+                description: state.message,
+                variant: state.success ? 'default' : 'destructive',
+            });
+        }
+    }, [state, toast]);
 
     return (
         <div className="flex items-center justify-end gap-2">
@@ -89,13 +102,13 @@ function ActionButtons({ submission, eventId }: { submission: Submission, eventI
             </Button>
             {submission.status === 'PENDING' && (
                 <>
-                    <form action={updateStatusWithId}>
+                    <form action={formAction}>
                         <input type="hidden" name="submissionId" value={submission.id} />
                         <input type="hidden" name="eventId" value={eventId} />
                         <input type="hidden" name="status" value="REJECTED" />
                         <Button type="submit" variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive"><XCircle className="mr-2"/> Reject</Button>
                     </form>
-                    <form action={updateStatusWithId}>
+                    <form action={formAction}>
                         <input type="hidden" name="submissionId" value={submission.id} />
                         <input type="hidden" name="eventId" value={eventId} />
                         <input type="hidden" name="status" value="APPROVED" />

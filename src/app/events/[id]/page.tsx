@@ -2,6 +2,7 @@
 
 'use server';
 
+import React from 'react';
 import prisma from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/passa/header';
@@ -17,6 +18,8 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getSession } from '@/lib/session';
+import { useActionState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 type SponsorWithProfile = Attribution & { user: UserType & { organizerProfile: OrganizerProfile | null }};
 
@@ -59,8 +62,21 @@ async function getEventDetails(eventId: string): Promise<EventWithDetails | null
 
 
 function SponsorEventForm({ eventId }: { eventId: number }) {
+    const { toast } = useToast();
+    const [state, formAction] = useActionState(createSponsorship, { success: false, message: '' });
+
+    React.useEffect(() => {
+        if (state.message) {
+            toast({
+                title: state.success ? 'Success!' : 'Error',
+                description: state.message,
+                variant: state.success ? 'default' : 'destructive',
+            });
+        }
+    }, [state, toast]);
+
     return (
-        <form action={createSponsorship.bind(null, undefined)}>
+        <form action={formAction}>
             <input type="hidden" name="eventId" value={eventId} />
             <Button className="w-full font-bold mt-4" type="submit">
                 <Handshake className="mr-2"/>
