@@ -16,6 +16,7 @@ import { ArrowLeft, PartyPopper, Info } from 'lucide-react';
 import Link from 'next/link';
 import { Slider } from '@/components/ui/slider';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { CurrencySelector } from '@/components/passa/currency-selector';
 
 type FormErrors = {
   title?: string[];
@@ -43,6 +44,7 @@ function SubmitButton() {
 
 export default function CreateEventPage() {
     const { toast } = useToast();
+    const [currency, setCurrency] = React.useState('KES');
 
     const [splits, setSplits] = React.useState({
         artist: 70,
@@ -118,6 +120,11 @@ export default function CreateEventPage() {
                                             <Input id="country" name="country" placeholder="e.g., Kenya" />
                                             {state.errors?.country && <p className="text-sm text-destructive">{state.errors.country[0]}</p>}
                                         </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="currency">Currency</Label>
+                                            <CurrencySelector onCurrencyChange={setCurrency} defaultValue="KES" />
+                                            <input type="hidden" name="currency" value={currency} />
+                                        </div>
                                     </div>
                                      <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
@@ -138,7 +145,7 @@ export default function CreateEventPage() {
                                         </CardHeader>
                                         <CardContent className="grid md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
-                                                <Label htmlFor="ticketPrice">Price (USD)</Label>
+                                                <Label htmlFor="ticketPrice">Price ({currency})</Label>
                                                 <Input id="ticketPrice" name="ticketPrice" type="number" step="0.01" placeholder="50.00" />
                                                 {state.errors?.ticketPrice && <p className="text-sm text-destructive">{state.errors.ticketPrice[0]}</p>}
                                             </div>
