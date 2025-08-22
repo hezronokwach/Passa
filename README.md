@@ -21,7 +21,7 @@ Passa is a cutting-edge event ticketing platform built for the African continent
 - **Frontend**: Next.js, React, TypeScript, Tailwind CSS, ShadCN UI
 - **Backend**: Next.js Server Actions, Prisma
 - **Database**: PostgreSQL
-- **Generative AI**: Firebase Genkit (for features like title translation)
+
 - **Blockchain**: (Handled externally)
 
 ## Getting Started
@@ -34,11 +34,9 @@ Passa is a cutting-edge event ticketing platform built for the African continent
     - Copy the `.env.example` file to `.env`.
     - Update the `DATABASE_URL` variable with your PostgreSQL database connection string.
     - Set the `SESSION_SECRET` to a secure random string.
-    - Add your Google Gemini API key to `GEMINI_API_KEY` if you want to use AI features.
     ```
     DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
     SESSION_SECRET="your-super-secret-session-key"
-    GEMINI_API_KEY="your-gemini-api-key"
     ```
 3.  **Set up the database**:
     You can either run our setup script:

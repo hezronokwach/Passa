@@ -14,7 +14,7 @@ import { ArrowRight, Verified, Zap, Search } from 'lucide-react';
 import { ClientHeader } from '@/components/passa/client-header';
 import type { Event } from '@prisma/client';
 import { EventCard } from '@/components/passa/event-card';
-import { translateEventTitle } from '@/ai/flows/translate-event-title';
+
 import { Badge } from '@/components/ui/badge';
 import React from 'react';
 import Link from 'next/link';
@@ -306,32 +306,13 @@ export default function Home() {
         },
       ];
 
-      const translatedEvents: TranslatedEvent[] = await Promise.all(
-        mockEvents.map(async (event) => {
-          try {
-            const { translatedTitle } = await translateEventTitle({
-              title: event.title,
-              country: event.country,
-            });
-            return { 
-                ...event, 
-                translatedTitle,
-                price: 50, // Mock price
-                currency: 'USD',
-                imageHint: 'music festival',
-            };
-          } catch (error) {
-            console.error('Translation failed for event:', event.title, error);
-            return { 
-                ...event, 
-                translatedTitle: event.title,
-                price: 50, // Mock price
-                currency: 'USD',
-                imageHint: 'music festival',
-            };
-          }
-        })
-      );
+      const translatedEvents: TranslatedEvent[] = mockEvents.map((event) => ({
+        ...event,
+        translatedTitle: event.title,
+        price: 50,
+        currency: 'USD',
+        imageHint: 'music festival',
+      }));
       
       // Simulate network delay
       setTimeout(() => {

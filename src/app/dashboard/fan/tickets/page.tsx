@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { TicketStub } from '@/components/passa/ticket-stub';
 import type { Event, PurchasedTicket } from '@prisma/client';
 import prisma from '@/lib/db';
-import { translateEventTitle } from '@/ai/flows/translate-event-title';
+
 import { getSession } from '@/lib/session';
 import { generateTicketQRCode } from '@/app/actions/qr-code';
 import { MobileNav } from '@/components/passa/mobile-nav';
@@ -56,11 +56,6 @@ async function getFanTickets(): Promise<TranslatedPurchasedTicket[]> {
 
     const translatedTickets: TranslatedPurchasedTicket[] = await Promise.all(
         purchasedTickets.map(async (ticket) => {
-            const { translatedTitle } = await translateEventTitle({
-                title: ticket.event.title,
-                country: ticket.event.country,
-            });
-
             const ticketTier = ticket.event.tickets.find(t => t.id === ticket.ticketId);
             
             // Generate QR code for the ticket
@@ -75,9 +70,9 @@ async function getFanTickets(): Promise<TranslatedPurchasedTicket[]> {
                 ...ticket,
                 event: {
                     ...ticket.event,
-                    translatedTitle,
+                    translatedTitle: ticket.event.title,
                     price: ticketTier?.price ?? 0,
-                    currency: ticket.event.currency,
+                    currency: 'USD',
                     imageHint: 'music festival',
                 },
                 qrCode

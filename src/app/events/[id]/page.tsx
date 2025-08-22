@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
 
-import { translateEventTitle } from '@/ai/flows/translate-event-title';
+
 import type { Event, OrganizerProfile, Attribution, User as UserType, Ticket as TicketTier, ArtistInvitation } from '@prisma/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -85,7 +85,6 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         notFound();
     }
     
-    // Skip translation for now to avoid AI calls
     const translatedTitle = event.title;
     
     const price = event.tickets[0]?.price ?? 0;
