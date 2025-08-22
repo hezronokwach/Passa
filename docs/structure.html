@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passa Codebase Structure Analysis</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; background-color: #f4f4f4; color: #333; }
+        h1 { color: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f1f1; }
+        .note { background-color: #fff3cd; border-left: 5px solid #ffeeba; padding: 10px; margin-top: 20px; }
+        code { background-color: #e9e9e9; padding: 2px 4px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Passa Codebase Structure Analysis and Refactoring Proposal</h1>
+    <p>This document outlines the current purpose of key files in the Passa codebase and proposes a refactored structure aligned with modern Next.js conventions, including explicit route grouping and separation of backend concerns.</p>
+
+    <div class="note">
+        <h3>Refactoring Goals:</h3>
+        <ul>
+            <li><strong>Route Grouping:</strong> Organize routes by user role (e.g., <code>(dashboard)/creator</code>) and application area (e.g., <code>(main)</code> for public pages, <code>(auth)</code> for authentication).</li>
+            <li><strong>Backend Separation:</strong> Consolidate server-side logic (API routes, server actions, AI flows, database interactions) into a dedicated <code>src/backend</code> directory for clearer separation of concerns.</li>
+            <li><strong>Maintainability:</strong> Improve overall code organization for better scalability and understanding.</li>
+        </ul>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Current Relative Path</th>
+                <th>Purpose</th>
+                <th>Proposed New Relative Path (if applicable)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>.env.example</code></td>
+                <td>Example environment variables for local development.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>.eslintrc.json</code></td>
+                <td>ESLint configuration for code linting.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>.gitignore</code></td>
+                <td>Specifies intentionally untracked files to ignore by Git.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>.modified</code></td>
+                <td>Likely a temporary or custom marker file.</td>
+                <td>No change (root level, or remove if temporary)</td>
+            </tr>
+            <tr>
+                <td><code>apphosting.yaml</code></td>
+                <td>Configuration for application hosting (e.g., Google Cloud App Engine).</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>components.json</code></td>
+                <td>Configuration for UI components, possibly Shadcn UI.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>next.config.ts</code></td>
+                <td>Next.js configuration file.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>package-lock.json</code></td>
+                <td>Records the exact dependency tree for reproducible builds.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>package.json</code></td>
+                <td>Project metadata and script definitions.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>postcss.config.mjs</code></td>
+                <td>PostCSS configuration for CSS processing.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>POSTGRES_SETUP.md</code></td>
+                <td>Documentation for setting up PostgreSQL.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>README.md</code></td>
+                <td>Project README file.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>setup.sh</code></td>
+                <td>Shell script for project setup.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>simple-setup.sh</code></td>
+                <td>Simplified shell script for project setup.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>tailwind.config.ts</code></td>
+                <td>Tailwind CSS configuration file.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>tsconfig.json</code></td>
+                <td>TypeScript configuration file.</td>
+                <td>No change (root level)</td>
+            </tr>
+            <tr>
+                <td><code>prisma/schema.prisma</code></td>
+                <td>Defines the database schema for Prisma ORM.</td>
+                <td><code>src/backend/db/schema.prisma</code> (co-locate with backend DB logic)</td>
+            </tr>
+            <tr>
+                <td><code>prisma/migrations/...</code></td>
+                <td>Prisma database migration files.</td>
+                <td><code>src/backend/db/migrations/...</code> (co-locate with backend DB logic)</td>
+            </tr>
+            <tr>
+                <td><code>public/logo.png</code></td>
+                <td>Application logo image.</td>
+                <td>No change (<code>public/</code> is for static assets)</td>
+            </tr>
+            <tr>
+                <td><code>public/passa-africantenge.webp</code></td>
+                <td>Application branding image.</td>
+                <td>No change (<code>public/</code> is for static assets)</td>
+            </tr>
+            <tr>
+                <td><code>src/middleware.ts</code></td>
+                <td>Next.js middleware for handling requests before they are completed.</td>
+                <td>No change (root of <code>src/</code>)</td>
+            </tr>
+            <tr>
+                <td><code>src/ai/dev.ts</code></td>
+                <td>Development-specific AI configuration or utilities.</td>
+                <td><code>src/backend/ai/dev.ts</code></td>
+            </tr>
+            <tr>
+                <td><code>src/ai/genkit.ts</code></td>
+                <td>Genkit AI framework configuration or main entry.</td>
+                <td><code>src/backend/ai/genkit.ts</code></td>
+            </tr>
+            <tr>
+                <td><code>src/ai/flows/translate-event-title.ts</code></td>
+                <td>AI flow for translating event titles.</td>
+                <td><code>src/backend/ai/flows/translate-event-title.ts</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/favicon.ico</code></td>
+                <td>Favicon for the application.</td>
+                <td>No change (Next.js convention for app router)</td>
+            </tr>
+            <tr>
+                <td><code>src/app/globals.css</code></td>
+                <td>Global CSS styles for the application.</td>
+                <td>No change (Next.js convention for app router)</td>
+            </tr>
+            <tr>
+                <td><code>src/app/layout.tsx</code></td>
+                <td>Root layout for the entire application.</td>
+                <td>No change (Next.js convention for app router)</td>
+            </tr>
+            <tr>
+                <td><code>src/app/page.tsx</code></td>
+                <td>Main landing page of the application.</td>
+                <td><code>src/app/(main)/page.tsx</code> (explicitly part of main public routes)</td>
+            </tr>
+            <tr>
+                <td><code>src/app/passa-africantenge.webp</code></td>
+                <td>Application branding image (duplicate of public?).</td>
+                <td>Move to <code>public/</code> or remove if duplicate.</td>
+            </tr>
+            <tr>
+                <td><code>src/app/a1diagnose/page.tsx</code></td>
+                <td>Page for A1 Diagnose feature.</td>
+                <td><code>src/app/(main)/a1diagnose/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/about/page.tsx</code></td>
+                <td>About Us page.</td>
+                <td><code>src/app/(main)/about/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/actions/auth.ts</code></td>
+                <td>Server actions related to authentication.</td>
+                <td><code>src/backend/actions/auth.ts</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/actions/creator.ts</code></td>
+                <td>Server actions related to creator functionalities.</td>
+                <td><code>src/backend/actions/creator.ts</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/actions/fan.ts</code></td>
+                <td>Server actions related to fan functionalities.</td>
+                <td><code>src/backend/actions/fan.ts</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/actions/newsletter.ts</code></td>
+                <td>Server actions related to newsletter management.</td>
+                <td><code>src/backend/actions/newsletter.ts</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/actions/organizer.ts</code></td>
+                <td>Server actions related to organizer functionalities.</td>
+                <td><code>src/backend/actions/organizer.ts</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/api/auth/check/route.ts</code></td>
+                <td>API route for checking authentication status.</td>
+                <td><code>src/backend/api/auth/check/route.ts</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/contact/page.tsx</code></td>
+                <td>Contact Us page.</td>
+                <td><code>src/app/(main)/contact/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/page.tsx</code></td>
+                <td>Main dashboard entry page (likely redirects or shows general info).</td>
+                <td><code>src/app/(dashboard)/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/admin/page.tsx</code></td>
+                <td>Admin dashboard page.</td>
+                <td><code>src/app/(dashboard)/admin/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/creator/page.tsx</code></td>
+                <td>Creator dashboard overview page.</td>
+                <td><code>src/app/(dashboard)/creator/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/creator/submissions-chart.tsx</code></td>
+                <td>Component for displaying creator submissions chart.</td>
+                <td><code>src/app/(dashboard)/creator/submissions-chart.tsx</code> (or move to <code>src/components/passa/creator/</code> if reusable)</td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/creator/applications/page.tsx</code></td>
+                <td>Creator's applications page.</td>
+                <td><code>src/app/(dashboard)/creator/applications/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/creator/opportunities/page.tsx</code></td>
+                <td>Creator's opportunities listing page.</td>
+                <td><code>src/app/(dashboard)/creator/opportunities/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/creator/opportunities/[id]/opportunity-detail-view.tsx</code></td>
+                <td>Component for displaying a single opportunity's details.</td>
+                <td><code>src/app/(dashboard)/creator/opportunities/[id]/opportunity-detail-view.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/creator/opportunities/[id]/page.tsx</code></td>
+                <td>Creator's single opportunity detail page.</td>
+                <td><code>src/app/(dashboard)/creator/opportunities/[id]/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/creator/profile/page.tsx</code></td>
+                <td>Creator's profile page.</td>
+                <td><code>src/app/(dashboard)/creator/profile/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/creator/profile/profile-form.tsx</code></td>
+                <td>Form component for creator profile editing.</td>
+                <td><code>src/app/(dashboard)/creator/profile/profile-form.tsx</code> (or move to <code>src/components/passa/creator/</code> if reusable)</td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/creator/tickets/[id]/page.tsx</code></td>
+                <td>Creator's single ticket detail page.</td>
+                <td><code>src/app/(dashboard)/creator/tickets/[id]/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/fan/page.tsx</code></td>
+                <td>Fan dashboard overview page.</td>
+                <td><code>src/app/(dashboard)/fan/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/fan/tickets/page.tsx</code></td>
+                <td>Fan's tickets listing page.</td>
+                <td><code>src/app/(dashboard)/fan/tickets/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/organizer/page.tsx</code></td>
+                <td>Organizer dashboard overview page.</td>
+                <td><code>src/app/(dashboard)/organizer/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/organizer/events/[id]/page.tsx</code></td>
+                <td>Organizer's single event detail page.</td>
+                <td><code>src/app/(dashboard)/organizer/events/[id]/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/organizer/events/create/page.tsx</code></td>
+                <td>Organizer's event creation page.</td>
+                <td><code>src/app/(dashboard)/organizer/events/create/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/organizer/profile/page.tsx</code></td>
+                <td>Organizer's profile page.</td>
+                <td><code>src/app/(dashboard)/organizer/profile/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/dashboard/organizer/profile/profile-form.tsx</code></td>
+                <td>Form component for organizer profile editing.</td>
+                <td><code>src/app/(dashboard)/organizer/profile/profile-form.tsx</code> (or move to <code>src/components/passa/organizer/</code> if reusable)</td>
+            </tr>
+            <tr>
+                <td><code>src/app/events/[id]/page.tsx</code></td>
+                <td>Public event detail page.</td>
+                <td><code>src/app/(main)/events/[id]/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/events/[id]/ticket-purchase-dialog-wrapper.tsx</code></td>
+                <td>Wrapper for the ticket purchase dialog on event page.</td>
+                <td><code>src/app/(main)/events/[id]/ticket-purchase-dialog-wrapper.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/events/[id]/opportunities/page.tsx</code></td>
+                <td>Opportunities related to a specific event.</td>
+                <td><code>src/app/(main)/events/[id]/opportunities/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/features/page.tsx</code></td>
+                <td>Features page.</td>
+                <td><code>src/app/(main)/features/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/how-it-works/page.tsx</code></td>
+                <td>How It Works page.</td>
+                <td><code>src/app/(main)/how-it-works/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/login/page.tsx</code></td>
+                <td>User login page.</td>
+                <td><code>src/app/(auth)/login/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/app/register/page.tsx</code></td>
+                <td>User registration page.</td>
+                <td><code>src/app/(auth)/register/page.tsx</code></td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/auth-layout.tsx</code></td>
+                <td>Layout component for authentication pages.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/barcode.tsx</code></td>
+                <td>Barcode display component.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/client-header.tsx</code></td>
+                <td>Header component for client-side pages.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/confetti.tsx</code></td>
+                <td>Confetti animation component.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/dashboard-header.tsx</code></td>
+                <td>Header component for dashboard pages.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/event-card-skeleton.tsx</code></td>
+                <td>Skeleton loader for event cards.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/event-card.tsx</code></td>
+                <td>Component for displaying event information.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/footer.tsx</code></td>
+                <td>Footer component.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/header.tsx</code></td>
+                <td>Main application header component.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/logo.tsx</code></td>
+                <td>Application logo component.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/mobile-nav.tsx</code></td>
+                <td>Mobile navigation component.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/opportunity-card.tsx</code></td>
+                <td>Component for displaying opportunity information.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/theme-provider.tsx</code></td>
+                <td>Context provider for theme management.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/theme-toggle.tsx</code></td>
+                <td>Component for toggling application theme.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/ticket-purchase-dialog.tsx</code></td>
+                <td>Dialog component for purchasing tickets.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/ticket-stub.tsx</code></td>
+                <td>Component for displaying a ticket stub.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/passa/user-menu.tsx</code></td>
+                <td>User menu/dropdown component.</td>
+                <td>No change (specific to Passa UI)</td>
+            </tr>
+            <tr>
+                <td><code>src/components/ui/...</code></td>
+                <td>Shadcn UI components (e.g., <code>button.tsx</code>, <code>dialog.tsx</code>).</td>
+                <td>No change (standard UI library components)</td>
+            </tr>
+            <tr>
+                <td><code>src/favicon_io(2)/...</code></td>
+                <td>Favicon assets (likely a duplicate or alternative set).</td>
+                <td>Consolidate with <code>public/</code> or <code>src/app/favicon.ico</code>.</td>
+            </tr>
+            <tr>
+                <td><code>src/hooks/use-mobile.tsx</code></td>
+                <td>Custom hook for detecting mobile viewports.</td>
+                <td>No change (client-side utility hook)</td>
+            </tr>
+            <tr>
+                <td><code>src/hooks/use-toast.ts</code></td>
+                <td>Custom hook for displaying toast notifications.</td>
+                <td>No change (client-side utility hook)</td>
+            </tr>
+            <tr>
+                <td><code>src/lib/db.ts</code></td>
+                <td>Database connection and utility functions.</td>
+                <td><code>src/backend/db/client.ts</code> (backend database client)</td>
+            </tr>
+            <tr>
+                <td><code>src/lib/mock-data.ts</code></td>
+                <td>Mock data for development or testing.</td>
+                <td>No change (utility, could be <code>src/dev/mock-data.ts</code> if dev-only)</td>
+            </tr>
+            <tr>
+                <td><code>src/lib/session.ts</code></td>
+                <td>Session management utilities.</td>
+                <td><code>src/backend/auth/session.ts</code> (if server-side session management)</td>
+            </tr>
+            <tr>
+                <td><code>src/lib/utils.ts</code></td>
+                <td>General utility functions (e.g., <code>cn</code> for Tailwind).</td>
+                <td>No change (general client-side utility)</td>
+            </tr>
+            <tr>
+                <td><code>src/lib/auth/blockchain.ts</code></td>
+                <td>Blockchain-related authentication utilities.</td>
+                <td><code>src/backend/auth/blockchain.ts</code> (if server-side auth logic)</td>
+            </tr>
+            <tr>
+                <td><code>src/lib/auth/utils.ts</code></td>
+                <td>General authentication utilities.</td>
+                <td><code>src/backend/auth/utils.ts</code> (if server-side auth logic)</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
