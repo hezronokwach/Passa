@@ -4,13 +4,21 @@ import { Logo } from './logo';
 import { ThemeToggle } from './theme-toggle';
 import { getSession } from '@/lib/session';
 import { logout } from '@/app/actions/auth';
-import { MobileNav } from './mobile-nav';
-import { NotificationBell } from './notifications';
+
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { UserCircle2, LayoutDashboard, User } from 'lucide-react';
 
 export const Header = async () => {
   const session = await getSession();
   const isAuthenticated = !!session;
-  const userRole = session?.role as string | undefined;
+  const userRole = session?.role;
 
   const navItems = [
     { name: 'Events', href: '/events' },
@@ -19,6 +27,14 @@ export const Header = async () => {
   ];
 
   const dashboardPath = userRole ? `/dashboard/${userRole.toLowerCase()}` : '/login';
+  
+  // Get user's name for display
+  let userName = 'User';
+  if (session?.name) {
+    userName = session.name.split(' ')[0];
+  } else if (session?.email) {
+    userName = session.email.split('@')[0];
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -40,19 +56,44 @@ export const Header = async () => {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <NotificationBell />
           <div className="hidden sm:flex items-center gap-2">
             {isAuthenticated ? (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link href={dashboardPath}>Dashboard</Link>
-                </Button>
-                <form action={logout}>
-                  <Button variant="outline" type="submit">
-                    Sign Out
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <UserCircle2 className="size-5" />
+                    <span className="hidden md:inline">{userName}</span>
                   </Button>
-                </form>
-              </>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href={dashboardPath} className="flex items-center gap-2">
+                      <LayoutDashboard className="size-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={`${dashboardPath}/profile`} className="flex items-center gap-2">
+                      <User className="size-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <form action={logout}>
+                    <DropdownMenuItem asChild>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start p-0 pl-2 hover:bg-transparent"
+                        type="submit"
+                      >
+                        Sign Out
+                      </Button>
+                    </DropdownMenuItem>
+                  </form>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <>
                 <Button variant="ghost" asChild>
@@ -64,7 +105,7 @@ export const Header = async () => {
               </>
             )}
           </div>
-          <MobileNav isAuthenticated={isAuthenticated} dashboardPath={dashboardPath} navItems={navItems} />
+
         </div>
       </div>
     </header>

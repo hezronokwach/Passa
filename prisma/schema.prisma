@@ -26,6 +26,7 @@ model User {
   organizerProfile     OrganizerProfile?
   purchasedTickets     PurchasedTicket[]
   submissions          Submission[]
+  scannedTickets       TicketScan[]         @relation("TicketScans")
 }
 
 model CreatorProfile {
@@ -104,6 +105,7 @@ model PurchasedTicket {
   owner       User         @relation(fields: [ownerId], references: [id])
   ticket      Ticket       @relation(fields: [ticketId], references: [id])
   transaction Transaction?
+  scans       TicketScan[]
 }
 
 model Transaction {
@@ -206,6 +208,27 @@ model Notification {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model QRToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  ticketId  Int
+  eventId   Int
+  ownerId   Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model TicketScan {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  scannerId Int
+  scannedAt DateTime @default(now())
+  ticket    PurchasedTicket @relation(fields: [ticketId], references: [id])
+  scanner   User     @relation("TicketScans", fields: [scannerId], references: [id])
 }
 
 enum Role {

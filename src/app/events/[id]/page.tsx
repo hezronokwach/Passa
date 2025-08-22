@@ -27,7 +27,7 @@ type EventWithDetails = Event & {
     artistInvitations: ArtistInvitation[],
 }
 
-async function getEventDetails(eventId: string): Promise<EventWithDetails | null> {
+async function getEventDetails(eventId: string, userId?: number): Promise<EventWithDetails | null> {
     const id = parseInt(eventId, 10);
     if (isNaN(id)) return null;
 
@@ -69,17 +69,24 @@ async function getEventDetails(eventId: string): Promise<EventWithDetails | null
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const event = await getEventDetails(id);
     const session = await getSession();
+    const event = await getEventDetails(id, session?.userId);
+    
+    // Check if user already has a ticket
+    const userHasTicket = session?.userId ? await prisma.purchasedTicket.findFirst({
+        where: {
+            eventId: parseInt(id),
+            ownerId: session.userId,
+            status: 'ACTIVE'
+        }
+    }) : null;
 
     if (!event) {
         notFound();
     }
     
-    const { translatedTitle } = await translateEventTitle({
-      title: event.title,
-      country: event.country,
-    });
+    // Skip translation for now to avoid AI calls
+    const translatedTitle = event.title;
     
     const price = event.tickets[0]?.price ?? 0;
     const isAlreadySponsor = event.attributions.some(attr => attr.userId === session?.userId);

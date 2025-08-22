@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { TicketStub } from './ticket-stub';
 import { purchaseTicket } from '@/app/actions/fan';
 
+
 interface TicketPurchaseDialogProps {
   event: Event & { 
     totalBudget: number | null;
@@ -30,6 +31,7 @@ interface TicketPurchaseDialogProps {
 export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchaseDialogProps) {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const [qrCode, setQrCode] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handlePurchase = async () => {
@@ -56,6 +58,8 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
         });
         setPurchaseSuccess(true);
         
+        // QR code will be generated server-side when viewing tickets
+        
         // Reset state and close dialog after animation
         setTimeout(() => {
             setIsOpen(false);
@@ -63,6 +67,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
             setTimeout(() => {
                 setPurchaseSuccess(false);
                 setIsPurchasing(false);
+                setQrCode(null);
             }, 500);
         }, 3000);
     } else {
@@ -82,6 +87,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
     // Reset success state if dialog is closed manually
     if (!open) {
         setPurchaseSuccess(false);
+        setQrCode(null);
     }
   }
 
@@ -97,6 +103,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
             onPurchase={handlePurchase}
             isPurchasing={isPurchasing}
             isSuccess={purchaseSuccess}
+            qrCode={qrCode || undefined}
           />
         </DialogContent>
       </Dialog>

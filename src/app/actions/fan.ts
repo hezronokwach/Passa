@@ -21,6 +21,11 @@ const purchaseSchema = z.object({
     ticketId: z.number(),
 });
 
+const profileUpdateSchema = z.object({
+    name: z.string().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
+    walletAddress: z.string().optional(),
+});
+
 export async function purchaseTicket(input: { eventId: number; ticketId: number }) {
   const userId = await getAuthenticatedUserId();
 
@@ -38,6 +43,19 @@ export async function purchaseTicket(input: { eventId: number; ticketId: number 
   try {
      // Use a transaction to ensure data integrity
      await prisma.$transaction(async (tx) => {
+        // Check if user already has a ticket for this event
+        const existingTicket = await tx.purchasedTicket.findFirst({
+            where: {
+                eventId: eventId,
+                ownerId: userId,
+                status: 'ACTIVE'
+            }
+        });
+
+        if (existingTicket) {
+            throw new Error("You already have a ticket for this event.");
+        }
+
         const ticketTier = await tx.ticket.findUnique({
             where: { id: ticketId },
         });
@@ -81,5 +99,38 @@ export async function purchaseTicket(input: { eventId: number; ticketId: number 
   } catch (error: unknown) {
     console.error("Purchase error:", error);
     return { success: false, message: (error as Error).message || 'An unexpected error occurred during purchase.' };
+  }
+}
+
+export async function updateUserProfile(formData: FormData) {
+  const userId = await getAuthenticatedUserId();
+
+  const validatedFields = profileUpdateSchema.safeParse({
+    name: formData.get('name'),
+    walletAddress: formData.get('walletAddress'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      message: "Invalid input provided.",
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: validatedFields.data.name,
+        walletAddress: validatedFields.data.walletAddress || null,
+      },
+    });
+
+    revalidatePath('/dashboard/fan/profile');
+    return { success: true, message: 'Profile updated successfully!' };
+  } catch (error) {
+    console.error("Profile update error:", error);
+    return { success: false, message: 'An unexpected error occurred while updating your profile.' };
   }
 }

@@ -14,9 +14,10 @@ interface TranslatedEvent extends Event {
 
 interface WrapperProps {
     event: TranslatedEvent & { tickets?: TicketTier[] };
+    userHasTicket?: boolean;
 }
 
-export function TicketPurchaseDialogWrapper({ event }: WrapperProps) {
+export function TicketPurchaseDialogWrapper({ event, userHasTicket }: WrapperProps) {
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
     // Ensure tickets property is an array
@@ -30,10 +31,13 @@ export function TicketPurchaseDialogWrapper({ event }: WrapperProps) {
             <Button
                 className="w-full font-bold"
                 onClick={() => setIsDialogOpen(true)}
+                disabled={userHasTicket}
             >
-                Get Ticket
+                {userHasTicket ? 'You have a ticket' : 'Get Ticket'}
             </Button>
-            <TicketPurchaseDialog event={eventWithTickets} isOpen={isDialogOpen} setIsOpen={setIsDialogOpen} />
+            {!userHasTicket && (
+                <TicketPurchaseDialog event={eventWithTickets} isOpen={isDialogOpen} setIsOpen={setIsDialogOpen} />
+            )}
         </>
     );
 }
