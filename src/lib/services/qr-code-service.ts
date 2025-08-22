@@ -2,7 +2,6 @@ import QRCode from 'qrcode';
 
 export interface QRCodeOptions {
   width?: number;
-  height?: number;
   margin?: number;
   color?: {
     dark?: string;
@@ -50,6 +49,7 @@ export class QRCodeService {
       const stringData = typeof data === 'string' ? data : JSON.stringify(data);
       
       const qrOptions = {
+        width: options?.width || 300,
         margin: options?.margin || 1,
         errorCorrectionLevel: options?.errorCorrectionLevel || 'M',
         color: {

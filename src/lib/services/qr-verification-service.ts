@@ -23,7 +23,7 @@ export class QRVerificationService {
    */
   static async scanTicket(qrDataString: string, scannerId: number): Promise<TicketScanResult> {
     // First verify the QR code cryptographically
-    const verification: TicketVerificationResult = SecureQRService.verifyQRCode(qrDataString);
+    const verification: TicketVerificationResult = await SecureQRService.verifyQRCode(qrDataString);
     
     if (!verification.isValid) {
       return {
@@ -73,24 +73,34 @@ export class QRVerificationService {
         };
       }
 
-      // Mark ticket as used
-      await prisma.purchasedTicket.update({
-        where: { id: ticket.id },
-        data: { status: 'USED' }
-      });
+      // Use transaction to ensure atomicity
+      await prisma.$transaction(async (tx) => {
+        // Mark ticket as used
+        await tx.purchasedTicket.update({
+          where: { id: ticket.id },
+          data: { status: 'USED' }
+        });
 
-      // Log the scan (create scan record)
-      await prisma.ticketScan.create({
-        data: {
-          ticketId: ticket.id,
-          scannerId,
-          scannedAt: new Date(),
-        }
+        // Log the scan (create scan record)
+        await tx.ticketScan.create({
+          data: {
+            ticketId: ticket.id,
+            scannerId,
+            scannedAt: new Date(),
+          }
+        });
       });
 
       // Mark token as used to prevent reuse
-      const qrData = JSON.parse(qrDataString);
-      SecureQRService.markTokenAsUsed(qrData.token);
+      try {
+        const qrData = JSON.parse(qrDataString);
+        if (qrData.token) {
+          await SecureQRService.markTokenAsUsed(qrData.token);
+        }
+      } catch (parseError) {
+        console.error('Error parsing QR data for token removal:', parseError);
+        // Continue as the ticket has already been marked as used
+      }
 
       return {
         success: true,

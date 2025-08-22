@@ -1,5 +1,6 @@
 import { QRCodeService } from './qr-code-service';
 import { QRSecurityService } from './qr-security';
+import { QRTokenStorage } from './qr-token-storage';
 import type { PurchasedTicket } from '@prisma/client';
 
 export interface SecureTicketQRData {
@@ -27,14 +28,15 @@ export class SecureQRService {
     ticket: PurchasedTicket,
     options?: { width?: number; margin?: number; expirationHours?: number }
   ): Promise<string> {
+    // Set expiration (default 24 hours)
+    const expiresAt = QRSecurityService.generateExpiration(options?.expirationHours || 24);
+    
     // Generate secure token instead of exposing sensitive data
     const token = QRSecurityService.generateTicketToken(ticket.id, ticket.eventId, ticket.ownerId);
     
-    // Store token for verification
-    this.storeToken(token, ticket.id, ticket.eventId, ticket.ownerId);
-    
-    // Set expiration (default 24 hours)
-    const expiresAt = QRSecurityService.generateExpiration(options?.expirationHours || 24);
+    // Store token for verification with matching expiration
+    const expirationDate = new Date(expiresAt);
+    await QRTokenStorage.storeToken(token, ticket.id, ticket.eventId, ticket.ownerId, expirationDate);
     
     // Create QR data without sensitive information
     const qrData: Omit<SecureTicketQRData, 'signature'> = {
@@ -60,22 +62,12 @@ export class SecureQRService {
     });
   }
 
-  /**
-   * Store token mapping for verification (in production, use Redis or database)
-   */
-  private static tokenStore = new Map<string, { ticketId: number; eventId: number; ownerId: number; createdAt: Date }>();
 
-  /**
-   * Store token for later verification
-   */
-  static storeToken(token: string, ticketId: number, eventId: number, ownerId: number): void {
-    this.tokenStore.set(token, { ticketId, eventId, ownerId, createdAt: new Date() });
-  }
 
   /**
    * Verify QR code data
    */
-  static verifyQRCode(qrDataString: string): TicketVerificationResult {
+  static async verifyQRCode(qrDataString: string): Promise<TicketVerificationResult> {
     try {
       const qrData = JSON.parse(qrDataString) as SecureTicketQRData;
       
@@ -98,8 +90,8 @@ export class SecureQRService {
         return { isValid: false, isExpired: true, error: 'QR code expired' };
       }
 
-      // Verify token exists in store
-      const tokenData = this.tokenStore.get(qrData.token);
+      // Verify token exists in database
+      const tokenData = await QRTokenStorage.getToken(qrData.token);
       if (!tokenData) {
         return { isValid: false, isExpired: false, error: 'Invalid token' };
       }
@@ -125,7 +117,7 @@ export class SecureQRService {
   /**
    * Mark token as used (prevent reuse)
    */
-  static markTokenAsUsed(token: string): boolean {
-    return this.tokenStore.delete(token);
+  static async markTokenAsUsed(token: string): Promise<boolean> {
+    return await QRTokenStorage.markTokenAsUsed(token);
   }
 }
