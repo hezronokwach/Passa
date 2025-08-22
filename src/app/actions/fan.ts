@@ -43,6 +43,19 @@ export async function purchaseTicket(input: { eventId: number; ticketId: number 
   try {
      // Use a transaction to ensure data integrity
      await prisma.$transaction(async (tx) => {
+        // Check if user already has a ticket for this event
+        const existingTicket = await tx.purchasedTicket.findFirst({
+            where: {
+                eventId: eventId,
+                ownerId: userId,
+                status: 'ACTIVE'
+            }
+        });
+
+        if (existingTicket) {
+            throw new Error("You already have a ticket for this event.");
+        }
+
         const ticketTier = await tx.ticket.findUnique({
             where: { id: ticketId },
         });
