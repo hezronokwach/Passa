@@ -28,8 +28,8 @@ export const ClientHeader = () => {
 
   return (
     <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-white/5 backdrop-blur-2xl border-b border-white/10 shadow-2xl' 
+      isScrolled
+        ? 'bg-white/5 backdrop-blur-2xl border-b border-white/10 shadow-2xl'
         : 'border-b border-transparent'
     }`}>
       <div className="container mx-auto px-6 py-4">

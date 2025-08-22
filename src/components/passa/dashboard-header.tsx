@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { ThemeToggle } from './theme-toggle';
 import { UserMenu } from './user-menu';
+import { NotificationBell } from './notifications';
 
 interface DashboardHeaderProps {
   user: {
@@ -23,6 +24,7 @@ export const DashboardHeader = ({ user }: DashboardHeaderProps) => {
           <span className="font-headline text-xl font-bold">Passa</span>
         </Link>
         <div className="flex items-center gap-2">
+          <NotificationBell />
           <ThemeToggle />
           <UserMenu user={user} />
         </div>

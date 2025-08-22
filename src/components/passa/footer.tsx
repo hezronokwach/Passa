@@ -4,15 +4,95 @@ import { FaGithub, FaTwitter, FaLinkedinIn } from "react-icons/fa";
 import { AnimatedLogo } from "@/components/animated-logo";
 import Link from "next/link";
 
-export function Footer() {
-  return (
-    <footer className="glass-nav border-t border-white/10 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-4 mb-4">
-              <AnimatedLogo className="w-12 h-12" />
-              <span className="text-2xl font-bold gradient-text">Passa</span>
+
+function SubmitButton() {
+    const { pending } = useFormStatus();
+
+    return (
+        <Button type="submit" variant="default" className="font-semibold" disabled={pending}>
+            {pending ? (
+                <>
+                    <Loader2 className="mr-2 animate-spin" /> Subscribing...
+                </>
+            ) : (
+                <>
+                    Subscribe <ArrowRight className="ml-2 size-4" />
+                </>
+            )}
+        </Button>
+    )
+}
+
+export const Footer = () => {
+    const router = useRouter();
+    const { toast } = useToast();
+    const formRef = React.useRef<HTMLFormElement>(null);
+
+    const [state, formAction] = React.useActionState(subscribeToNewsletter, {
+        success: false,
+        message: '',
+    });
+
+    React.useEffect(() => {
+        if (state.message) {
+            if (state.success) {
+                toast({
+                    title: "Subscribed!",
+                    description: state.message,
+                    action: <div className="p-1"><Check className="text-primary"/></div>
+                });
+                formRef.current?.reset();
+            } else {
+                 toast({
+                    title: "Whoops!",
+                    description: state.message,
+                    variant: "destructive"
+                });
+            }
+        }
+    }, [state, toast]);
+
+    const navigateToAbout = () => {
+        router.push('/about');
+    }
+
+    const navigateToFeatures = () => {
+        router.push('/features');
+    }
+
+    const navigateToHowItWorks = () => {
+        router.push('/how-it-works');
+    }
+
+    const navigateToContact = () => {
+        router.push('/contact');
+    }
+
+    return (
+        <footer className="w-full border-t bg-background">
+            <div className="container mx-auto grid grid-cols-1 gap-8 px-4 py-12 md:grid-cols-12">
+            <div className="col-span-12 md:col-span-4">
+                <Link href="/" className="flex items-center gap-2">
+                <Logo className="size-8 text-primary" />
+                <span className="font-headline text-xl font-bold">Passa</span>
+                </Link>
+                <p className="mt-4 text-sm text-muted-foreground">
+                The first African-built, blockchain-powered event platform.
+                </p>
+                <div className="mt-6 flex space-x-4">
+                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                    <Facebook className="size-5" />
+                </Link>
+                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                    <Linkedin className="size-5" />
+                </Link>
+                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                    <Instagram className="size-5" />
+                </Link>
+                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                    <Send className="size-5" />
+                </Link>
+                </div>
             </div>
             <p className="text-muted-foreground mb-4 max-w-md">
               Connecting African culture with the world through immersive experiences

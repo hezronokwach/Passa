@@ -48,7 +48,7 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
     <form action={formAction}>
         <div className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-3xl font-bold md:text-4xl">
-            Organization Profile
+            Organizer Profile
         </h1>
         <SubmitButton>Save Changes</SubmitButton>
         </div>

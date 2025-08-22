@@ -14,11 +14,11 @@ const protectedRoutes: { [key in Role]?: string[] } = {
     FAN: ['/dashboard/fan'],
 };
 
-const publicRoutes = ['/login', '/register', '/', '/about', '/contact', '/features', '/how-it-works'];
+
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const ip = req.ip ?? '127.0.0.1';
+  const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? '127.0.0.1';
 
   // Rate Limiting
   const now = Date.now();
@@ -42,8 +42,8 @@ export async function middleware(req: NextRequest) {
       [Role.FAN]: '/dashboard/fan',
   };
 
-  // Redirect authenticated users from public pages like login/register
-  if (publicRoutes.includes(path) && session) {
+  // Redirect authenticated users from auth pages like login/register only
+  if (['/', '/login', '/register'].includes(path) && session) {
       const redirectUrl = rolePaths[session.role] || '/dashboard';
       return NextResponse.redirect(new URL(redirectUrl, req.nextUrl));
   }

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 9002",
+    "dev": "next dev -p 9002",
     "dev:fast": "next dev -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
@@ -12,6 +13,9 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "node ./prisma/seed.js"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.16.1",
@@ -54,6 +58,7 @@
     "jose": "^6.0.13",
     "lucide-react": "^0.540.0",
     "next": "^15.5.0",
+    "qrcode": "^1.5.4",
     "react": "^19.1.1",
     "react-day-picker": "^9.9.0",
     "react-dom": "^19.1.1",
@@ -68,6 +73,7 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^24",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^19",
     "@types/react-dom": "^19.1.7",
     "autoprefixer": "^10.4.21",

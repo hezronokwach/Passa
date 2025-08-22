@@ -60,7 +60,11 @@ export async function signup(prevState: unknown, formData: FormData) {
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return { success: false, message: 'User with this email already exists.' };
+      return { 
+        success: false, 
+        message: 'User with this email already exists.',
+        errors: { email: ['This email is already registered. Please use a different email or sign in.'] }
+      };
     }
 
     const result = await prisma.$transaction(async (tx) => {
@@ -125,12 +129,20 @@ export async function login(prevState: unknown, formData: FormData) {
         });
 
         if (!user?.password) {
-            return { success: false, message: 'Invalid email or password.' };
+            return { 
+                success: false, 
+                message: 'Invalid email or password.',
+                errors: { email: ['No account found with this email address.'] }
+            };
         }
 
         const passwordsMatch = await bcrypt.compare(password, user.password);
         if (!passwordsMatch) {
-            return { success: false, message: 'Invalid email or password.' };
+            return { 
+                success: false, 
+                message: 'Invalid email or password.',
+                errors: { password: ['Incorrect password. Please try again.'] }
+            };
         }
 
         await createSession(user.id, user.role);
@@ -138,6 +150,7 @@ export async function login(prevState: unknown, formData: FormData) {
         return { 
           success: true, 
           message: 'Login successful!',
+          role: user.role,
           redirect: rolePaths[user.role] || '/dashboard' 
         };
 
@@ -264,9 +277,6 @@ export async function logout() {
         await deleteSession();
     } catch (error) {
         console.error('Logout error:', error);
-        // Optionally, you could return a specific error state here
-        // if you want to handle it on the client side.
-        return { success: false, message: 'Failed to logout' };
     }
     redirect('/login');
 }

@@ -22,7 +22,7 @@ export const MobileNav = ({ isAuthenticated, dashboardPath, navItems }: MobileNa
       >
         {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
       </Button>
-      
+
       {isOpen && (
         <div className="absolute right-0 top-16 z-50 w-48 rounded-md border bg-background p-2 shadow-lg">
           <nav className="flex flex-col gap-2">
