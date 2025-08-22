@@ -93,11 +93,7 @@ export class QRVerificationService {
         // Add user to event attendance
         await tx.eventAttendance.upsert({
           where: {
-            eventId_userId_ticketId: {
-              eventId: ticket.eventId,
-              userId: ticket.ownerId,
-              ticketId: ticket.id
-            }
+            ticketId: ticket.id
           },
           update: {},
           create: {

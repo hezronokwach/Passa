@@ -238,13 +238,14 @@ model EventAttendance {
   id         Int      @id @default(autoincrement())
   eventId    Int
   userId     Int
-  ticketId   Int
+  ticketId   Int      @unique
   checkedInAt DateTime @default(now())
-  event      Event    @relation(fields: [eventId], references: [id])
-  user       User     @relation("EventAttendees", fields: [userId], references: [id])
-  ticket     PurchasedTicket @relation(fields: [ticketId], references: [id])
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user       User     @relation("EventAttendees", fields: [userId], references: [id], onDelete: Cascade)
+  ticket     PurchasedTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   
-  @@unique([eventId, userId, ticketId])
+  @@index([eventId])
+  @@index([userId])
 }
 
 enum Role {
