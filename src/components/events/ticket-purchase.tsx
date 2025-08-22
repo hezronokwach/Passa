@@ -34,6 +34,7 @@ type TicketPurchaseProps = {
   hasApplied: boolean;
   applicationStatus?: string;
   isOwnEvent: boolean;
+  userHasTicket?: boolean;
 };
 
 export function TicketPurchase({ 
@@ -41,7 +42,8 @@ export function TicketPurchase({
   session, 
   hasApplied, 
   applicationStatus, 
-  isOwnEvent 
+  isOwnEvent,
+  userHasTicket = false
 }: TicketPurchaseProps) {
 
 
@@ -56,20 +58,24 @@ export function TicketPurchase({
       <CardContent className="space-y-4">
         {event.tickets.length > 1 ? (
           <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground text-center">Ticket Options</p>
+            <p className="text-sm font-medium text-muted-foreground text-center">Available Tickets</p>
             {event.tickets.map((ticket) => (
               <div key={ticket.id} className="flex justify-between items-center p-3 border rounded-lg">
                 <div>
                   <p className="font-medium">{ticket.name}</p>
-                  <p className="text-sm text-muted-foreground">{ticket.quantity - ticket.sold} left</p>
+                  <p className="text-sm text-muted-foreground">{ticket.quantity - ticket.sold} available</p>
                 </div>
                 <p className="text-xl font-bold">${ticket.price}</p>
               </div>
             ))}
+            <p className="text-xs text-muted-foreground text-center">Select your preferred ticket when purchasing</p>
           </div>
         ) : (
-          <div className="text-4xl font-bold text-center">
-            ${event.tickets[0]?.price || 0} <span className="text-lg font-normal text-muted-foreground">USD</span>
+          <div className="text-center">
+            <div className="text-4xl font-bold">
+              ${event.tickets[0]?.price || 0} <span className="text-lg font-normal text-muted-foreground">USD</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">{event.tickets[0]?.name || 'General Admission'}</p>
           </div>
         )}
 
@@ -89,7 +95,8 @@ export function TicketPurchase({
               </Button>
             )}
             <TicketPurchaseDialogWrapper 
-              event={{ ...event, currency: 'USD' }} 
+              event={{ ...event, currency: 'USD' }}
+              userHasTicket={userHasTicket}
             />
           </div>
         ) : isOwnEvent && session.role === 'ORGANIZER' ? (
@@ -98,7 +105,8 @@ export function TicketPurchase({
           </div>
         ) : (
           <TicketPurchaseDialogWrapper 
-            event={{ ...event, currency: 'USD' }} 
+            event={{ ...event, currency: 'USD' }}
+            userHasTicket={userHasTicket}
           />
         )}
 

@@ -1,7 +1,5 @@
 
 
-'use server';
-
 import prisma from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/passa/header';
@@ -9,6 +7,7 @@ import { Users, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
+import { BackButton } from '@/components/ui/back-button';
 
 
 import type { Event, OrganizerProfile, Attribution, User as UserType, Ticket as TicketTier, ArtistInvitation } from '@prisma/client';
@@ -100,10 +99,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <main className="flex-1">
                 <div className="container mx-auto px-4 py-8">
                     {/* Breadcrumb */}
-                    <Link href="/events" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+                    <BackButton className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
                         <ArrowLeft className="size-4" />
-                        Back to Events
-                    </Link>
+                        Back
+                    </BackButton>
                     <div className="grid lg:grid-cols-3 gap-8">
                         {/* Main Content */}
                         <div className="lg:col-span-2">
@@ -238,6 +237,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                 hasApplied={hasApplied}
                                 applicationStatus={applicationStatus}
                                 isOwnEvent={isOwnEvent}
+                                userHasTicket={!!userHasTicket}
                             />
 
                              <Card className="border-0 shadow-lg">
