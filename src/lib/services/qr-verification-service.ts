@@ -9,6 +9,10 @@ export interface TicketScanResult {
     eventId: number;
     ownerId: number;
     status: string;
+    owner: {
+      name: string | null;
+      email: string;
+    };
   };
   event?: {
     id: number;
@@ -22,10 +26,14 @@ export class QRVerificationService {
    * Verify and process ticket scan
    */
   static async scanTicket(qrDataString: string, scannerId: number): Promise<TicketScanResult> {
+    console.log('Scanning ticket with QR data:', qrDataString);
+    
     // First verify the QR code cryptographically
     const verification: TicketVerificationResult = await SecureQRService.verifyQRCode(qrDataString);
+    console.log('Verification result:', verification);
     
     if (!verification.isValid) {
+      console.log('QR verification failed:', verification.error);
       return {
         success: false,
         message: verification.error || 'Invalid QR code',
@@ -46,6 +54,9 @@ export class QRVerificationService {
         include: {
           event: {
             select: { id: true, title: true, date: true }
+          },
+          owner: {
+            select: { name: true, email: true }
           }
         }
       });
@@ -66,7 +77,7 @@ export class QRVerificationService {
       }
 
       // Check if ticket is valid
-      if (ticket.status !== 'VALID') {
+      if (ticket.status !== 'ACTIVE') {
         return {
           success: false,
           message: 'Ticket is not valid',
@@ -123,6 +134,7 @@ export class QRVerificationService {
           eventId: ticket.eventId,
           ownerId: ticket.ownerId,
           status: 'USED',
+          owner: ticket.owner,
         },
         event: ticket.event,
       };

@@ -3,7 +3,7 @@
 import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, Users, User, Calendar, TrendingUp, Eye } from 'lucide-react';
+import { PlusCircle, Users, User, Calendar, TrendingUp, Eye, Scan } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 import Link from 'next/link';
@@ -171,7 +171,7 @@ export default async function OrganizerDashboardPage() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-12">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5 mb-12">
             <Link href="/dashboard/organizer/events/create" className="group">
               <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] bg-gradient-to-br from-primary/5 to-primary/10">
                 <CardContent className="p-6">
@@ -214,6 +214,22 @@ export default async function OrganizerDashboardPage() {
                     <div>
                       <h3 className="font-semibold">Invitations</h3>
                       <p className="text-sm text-muted-foreground">Manage artists</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/gatescan" className="group">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl group-hover:bg-green-200 dark:group-hover:bg-green-900/50 transition-colors">
+                      <Scan className="size-6 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Gate Scanner</h3>
+                      <p className="text-sm text-muted-foreground">Scan tickets</p>
                     </div>
                   </div>
                 </CardContent>

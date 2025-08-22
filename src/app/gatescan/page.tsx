@@ -5,9 +5,24 @@ import { ClientHeader } from '@/components/passa/client-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Camera, CheckCircle, XCircle, Users, Scan } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import jsQR from 'jsqr';
+
+interface Event {
+  id: number;
+  title: string;
+  date: string;
+}
+
+interface TicketHolder {
+  id: number;
+  name: string | null;
+  email: string;
+  ticketType: string;
+  isCheckedIn: boolean;
+}
 
 interface ScanResult {
   success: boolean;
@@ -22,6 +37,9 @@ interface ScanResult {
 }
 
 export default function GateScanPage() {
+  const [selectedEventId, setSelectedEventId] = useState<string>('');
+  const [events, setEvents] = useState<Event[]>([]);
+  const [ticketHolders, setTicketHolders] = useState<TicketHolder[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [scanCount, setScanCount] = useState(0);
@@ -81,8 +99,30 @@ export default function GateScanPage() {
     }
   };
 
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch('/api/organizer/events');
+      const data = await response.json();
+      setEvents(data.events || []);
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  };
+
+  const fetchTicketHolders = async (eventId: string) => {
+    try {
+      const response = await fetch(`/api/events/${eventId}/ticket-holders`);
+      const data = await response.json();
+      setTicketHolders(data.ticketHolders || []);
+    } catch (error) {
+      console.error('Failed to fetch ticket holders:', error);
+    }
+  };
+
   const verifyTicket = async (qrData: string) => {
     try {
+      console.log('QR Data scanned:', qrData);
+      
       const response = await fetch('/api/qr-verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -90,13 +130,20 @@ export default function GateScanPage() {
       });
 
       const result = await response.json();
+      console.log('API Response:', result);
       setScanResult(result);
       
       if (result.success) {
         setScanCount(prev => prev + 1);
+        // Update ticket holders list to mark as checked in
+        setTicketHolders(prev => prev.map(holder => 
+          holder.email === result.ticket?.owner.email 
+            ? { ...holder, isCheckedIn: true }
+            : holder
+        ));
         toast({
           title: 'Valid Ticket',
-          description: `Welcome ${result.ticket?.owner.name}!`
+          description: `Welcome ${result.ticket?.owner.name || result.ticket?.owner.email}!`
         });
       } else {
         toast({
@@ -125,8 +172,15 @@ export default function GateScanPage() {
   }, [isScanning]);
 
   useEffect(() => {
+    fetchEvents();
     return () => stopCamera();
   }, []);
+
+  useEffect(() => {
+    if (selectedEventId) {
+      fetchTicketHolders(selectedEventId);
+    }
+  }, [selectedEventId]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -135,10 +189,34 @@ export default function GateScanPage() {
         <div className="container mx-auto max-w-4xl">
           <div className="mb-6">
             <h1 className="font-headline text-3xl font-bold">Gate Scanner</h1>
-            <p className="text-muted-foreground">Scan tickets to verify entry</p>
+            <p className="text-muted-foreground">Select an event and scan tickets to verify entry</p>
+            
+            <div className="mt-4 max-w-md">
+              <Select value={selectedEventId} onValueChange={setSelectedEventId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select an event to scan for" />
+                </SelectTrigger>
+                <SelectContent>
+                  {events.map((event) => (
+                    <SelectItem key={event.id} value={event.id.toString()}>
+                      {event.title} - {new Date(event.date).toLocaleDateString()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          {!selectedEventId ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Scan className="size-16 mx-auto mb-4 opacity-50" />
+                <h3 className="text-lg font-semibold mb-2">Select an Event</h3>
+                <p className="text-muted-foreground">Choose an event from the dropdown above to start scanning tickets.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-6 lg:grid-cols-3">
             {/* Scanner Section */}
             <Card>
               <CardHeader>
@@ -228,7 +306,7 @@ export default function GateScanPage() {
                     </p>
                     {scanResult.ticket && (
                       <div className="text-sm">
-                        <p><strong>Attendee:</strong> {scanResult.ticket.owner.name}</p>
+                        <p><strong>Attendee:</strong> {scanResult.ticket.owner.name || scanResult.ticket.owner.email}</p>
                         <p><strong>Event:</strong> {scanResult.event?.title}</p>
                       </div>
                     )}
@@ -243,7 +321,41 @@ export default function GateScanPage() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Ticket Holders List */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="size-5" />
+                  Ticket Holders ({ticketHolders.filter(h => h.isCheckedIn).length}/{ticketHolders.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {ticketHolders.map((holder) => (
+                    <div key={holder.id} className={`flex items-center justify-between p-3 border rounded-lg ${
+                      holder.isCheckedIn ? 'bg-green-50 border-green-200' : 'bg-background'
+                    }`}>
+                      <div className={holder.isCheckedIn ? 'line-through opacity-60' : ''}>
+                        <p className="font-medium">{holder.name || holder.email}</p>
+                        <p className="text-sm text-muted-foreground">{holder.ticketType}</p>
+                      </div>
+                      {holder.isCheckedIn && (
+                        <CheckCircle className="size-5 text-green-600" />
+                      )}
+                    </div>
+                  ))}
+                  {ticketHolders.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Users className="size-12 mx-auto mb-2 opacity-50" />
+                      <p>No ticket holders found</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
+          )}
         </div>
       </main>
     </div>
