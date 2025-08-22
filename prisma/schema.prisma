@@ -27,6 +27,7 @@ model User {
   purchasedTickets     PurchasedTicket[]
   submissions          Submission[]
   scannedTickets       TicketScan[]         @relation("TicketScans")
+  eventAttendances     EventAttendance[]    @relation("EventAttendees")
 }
 
 model CreatorProfile {
@@ -81,6 +82,7 @@ model Event {
   organizer         User               @relation(fields: [organizerId], references: [id])
   purchasedTickets  PurchasedTicket[]
   tickets           Ticket[]
+  attendances       EventAttendance[]
 }
 
 model Ticket {
@@ -106,6 +108,7 @@ model PurchasedTicket {
   ticket      Ticket       @relation(fields: [ticketId], references: [id])
   transaction Transaction?
   scans       TicketScan[]
+  attendance  EventAttendance[]
 }
 
 model Transaction {
@@ -229,6 +232,19 @@ model TicketScan {
   scannedAt DateTime @default(now())
   ticket    PurchasedTicket @relation(fields: [ticketId], references: [id])
   scanner   User     @relation("TicketScans", fields: [scannerId], references: [id])
+}
+
+model EventAttendance {
+  id         Int      @id @default(autoincrement())
+  eventId    Int
+  userId     Int
+  ticketId   Int
+  checkedInAt DateTime @default(now())
+  event      Event    @relation(fields: [eventId], references: [id])
+  user       User     @relation("EventAttendees", fields: [userId], references: [id])
+  ticket     PurchasedTicket @relation(fields: [ticketId], references: [id])
+  
+  @@unique([eventId, userId, ticketId])
 }
 
 enum Role {

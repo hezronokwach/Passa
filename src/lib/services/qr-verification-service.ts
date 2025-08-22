@@ -89,6 +89,23 @@ export class QRVerificationService {
             scannedAt: new Date(),
           }
         });
+
+        // Add user to event attendance
+        await tx.eventAttendance.upsert({
+          where: {
+            eventId_userId_ticketId: {
+              eventId: ticket.eventId,
+              userId: ticket.ownerId,
+              ticketId: ticket.id
+            }
+          },
+          update: {},
+          create: {
+            eventId: ticket.eventId,
+            userId: ticket.ownerId,
+            ticketId: ticket.id,
+          }
+        });
       });
 
       // Mark token as used to prevent reuse
@@ -147,6 +164,30 @@ export class QRVerificationService {
       },
       orderBy: {
         scannedAt: 'desc'
+      }
+    });
+  }
+
+  /**
+   * Get event attendance list
+   */
+  static async getEventAttendance(eventId: number) {
+    return await prisma.eventAttendance.findMany({
+      where: { eventId },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true }
+        },
+        ticket: {
+          include: {
+            ticket: {
+              select: { name: true, price: true }
+            }
+          }
+        }
+      },
+      orderBy: {
+        checkedInAt: 'desc'
       }
     });
   }

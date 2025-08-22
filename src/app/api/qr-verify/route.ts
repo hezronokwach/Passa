@@ -47,15 +47,21 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const eventId = searchParams.get('eventId');
+    const type = searchParams.get('type') || 'scans';
     
     if (!eventId) {
       return Response.json({ error: 'Event ID is required' }, { status: 400 });
     }
 
-    // Get scan history for the event
-    const scanHistory = await QRVerificationService.getEventScanHistory(parseInt(eventId));
-    
-    return Response.json({ scanHistory });
+    if (type === 'attendance') {
+      // Get attendance list for the event
+      const attendance = await QRVerificationService.getEventAttendance(parseInt(eventId));
+      return Response.json({ attendance });
+    } else {
+      // Get scan history for the event
+      const scanHistory = await QRVerificationService.getEventScanHistory(parseInt(eventId));
+      return Response.json({ scanHistory });
+    }
 
   } catch (error) {
     console.error('Error fetching scan history:', error);
