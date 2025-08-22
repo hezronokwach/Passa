@@ -21,7 +21,24 @@ type TranslatedEvent = Event & {
 
 async function getEvents() {
   const rawEvents = await prisma.event.findMany({
-    include: { tickets: true },
+    include: { 
+      tickets: true,
+      _count: {
+        select: { purchasedTickets: true }
+      },
+      purchasedTickets: {
+        take: 3,
+        include: {
+          owner: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      }
+    },
     orderBy: { date: 'asc' },
   });
 
@@ -39,6 +56,7 @@ async function getEvents() {
             price: event.tickets[0]?.price ?? 0,
             currency: 'USD',
             imageHint: 'music festival',
+            ticketBuyers: event.purchasedTickets.map(ticket => ticket.owner)
         };
       } catch (error) {
         console.error('Translation failed for event:', event.title, error);
@@ -48,6 +66,7 @@ async function getEvents() {
             price: event.tickets[0]?.price ?? 0,
             currency: 'USD',
             imageHint: 'music festival',
+            ticketBuyers: event.purchasedTickets.map(ticket => ticket.owner)
         };
       }
     })
@@ -82,7 +101,7 @@ export default async function EventsPage() {
           {events.length > 0 ? (
             <div className="grid gap-x-6 gap-y-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {events.map((event) => (
-                <EventCard key={event.id} event={event} />
+                <EventCard key={event.id} event={event} userRole={session?.role} />
               ))}
             </div>
           ) : (
