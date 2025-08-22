@@ -7,7 +7,7 @@ import { Ticket, Star, Compass, GanttChart, User } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
-
+import { MobileNav } from '@/components/passa/mobile-nav';
 import { getSession } from '@/lib/session';
 
 
@@ -79,6 +79,18 @@ async function getFanData() {
             },
             organizer: {
                 select: { name: true }
+            },
+            purchasedTickets: {
+                take: 3,
+                include: {
+                    owner: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
+                        }
+                    }
+                }
             }
         },
         orderBy: {
@@ -144,42 +156,42 @@ export default async function FanDashboardPage() {
                             <Link href="/dashboard/fan/artists">
                                 <Button variant="outline" className="flex-1">
                                     <Star className="mr-2 size-4" />
-                                    <span className="hidden sm:inline">Artists I've Attended</span>
+                                    <span className="hidden sm:inline">Favorite Artists</span>
                                     <span className="sm:hidden">Artists</span>
                                 </Button>
                             </Link>
                         </div>
                     </div>
                     
-                    <div className="grid gap-4 md:grid-cols-3 mb-8">
-                         <Card>
+                    <div className="grid gap-4 grid-cols-2 md:grid-cols-3 mb-8">
+                         <Card className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-200/20">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">My Tickets</CardTitle>
-                                <Ticket className="size-4 text-muted-foreground"/>
+                                <Ticket className="size-4 text-blue-500"/>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{stats.tickets}</div>
-                                <p className="text-xs text-muted-foreground">Active tickets for upcoming events</p>
+                                <p className="text-xs text-muted-foreground">Active tickets</p>
                             </CardContent>
                          </Card>
-                          <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Artists Attended</CardTitle>
-                                <Star className="size-4 text-muted-foreground"/>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{stats.favoriteArtists}</div>
-                                <p className="text-xs text-muted-foreground">Unique artists from events you've attended</p>
-                            </CardContent>
-                         </Card>
-                           <Card>
+                          <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200/20">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Events Attended</CardTitle>
-                                <GanttChart className="size-4 text-muted-foreground"/>
+                                <GanttChart className="size-4 text-purple-500"/>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{stats.eventsAttended}</div>
-                                <p className="text-xs text-muted-foreground">Events you've attended with Passa</p>
+                                <p className="text-xs text-muted-foreground">Events attended</p>
+                            </CardContent>
+                         </Card>
+                           <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200/20">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Artists Attended</CardTitle>
+                                <Star className="size-4 text-yellow-500"/>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.favoriteArtists}</div>
+                                <p className="text-xs text-muted-foreground">Unique artists</p>
                             </CardContent>
                          </Card>
                     </div>
@@ -195,37 +207,65 @@ export default async function FanDashboardPage() {
                         </div>
                         
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {popularEvents.map((event) => (
-                                <Card key={event.id} className="hover:shadow-md transition-shadow">
-                                    <CardHeader className="pb-3">
-                                        <CardTitle className="text-lg line-clamp-2">{event.title}</CardTitle>
-                                        <p className="text-sm text-muted-foreground">
-                                            by {event.organizer.name}
-                                        </p>
-                                    </CardHeader>
-                                    <CardContent className="space-y-3">
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-muted-foreground">Date:</span>
-                                            <span>{new Date(event.date).toLocaleDateString()}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-muted-foreground">Location:</span>
-                                            <span className="truncate ml-2">{event.location}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-muted-foreground">Tickets sold:</span>
-                                            <span className="font-medium">{event._count.purchasedTickets}</span>
-                                        </div>
-                                        <div className="pt-2">
-                                            <Link href={`/events/${event.id}`}>
-                                                <Button size="sm" className="w-full">
-                                                    View Event
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                            {popularEvents.map((event) => {
+                                const ticketCount = event._count.purchasedTickets;
+                                const displayBuyers = event.purchasedTickets.slice(0, 3);
+                                const remainingCount = Math.max(0, ticketCount - 3);
+                                
+                                return (
+                                    <Card key={event.id} className="hover:shadow-md transition-shadow">
+                                        <CardHeader className="pb-3">
+                                            <CardTitle className="text-lg line-clamp-2">{event.title}</CardTitle>
+                                            <p className="text-sm text-muted-foreground">
+                                                by {event.organizer.name}
+                                            </p>
+                                        </CardHeader>
+                                        <CardContent className="space-y-3">
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-muted-foreground">Date:</span>
+                                                <span>{new Date(event.date).toLocaleDateString()}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-muted-foreground">Location:</span>
+                                                <span className="truncate ml-2">{event.location}</span>
+                                            </div>
+                                            
+                                            {/* Ticket Buyers Section */}
+                                            {ticketCount > 0 && (
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex -space-x-2">
+                                                        {displayBuyers.map((ticket) => (
+                                                            <div key={ticket.owner.id} className="size-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-xs font-medium overflow-hidden">
+                                                                <img 
+                                                                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${ticket.owner.name || ticket.owner.email}`}
+                                                                    alt={ticket.owner.name || ticket.owner.email}
+                                                                    className="w-full h-full"
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                        {remainingCount > 0 && (
+                                                            <div className="flex size-6 items-center justify-center rounded-full bg-muted border-2 border-background text-xs font-medium">
+                                                                +{remainingCount}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-sm text-muted-foreground">
+                                                        {ticketCount} going
+                                                    </span>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="pt-2">
+                                                <Link href={`/events/${event.id}`}>
+                                                    <Button size="sm" className="w-full">
+                                                        View Event
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
                         </div>
                         
                         {popularEvents.length === 0 && (
@@ -244,6 +284,7 @@ export default async function FanDashboardPage() {
 
                 </div>
             </main>
+            <MobileNav userRole={user?.role} />
         </div>
     )
 }

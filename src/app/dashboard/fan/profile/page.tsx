@@ -143,7 +143,7 @@ export default async function FanProfilePage() {
           </div>
         </div>
       </main>
-      <MobileNav />
+      <MobileNav userRole={session?.role} />
     </div>
   );
 }

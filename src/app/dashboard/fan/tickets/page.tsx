@@ -42,6 +42,11 @@ async function getFanTickets(): Promise<TranslatedPurchasedTicket[]> {
                 include: {
                     tickets: true,
                 }
+            },
+            owner: {
+                select: {
+                    name: true
+                }
             }
         },
         orderBy: {
@@ -72,7 +77,7 @@ async function getFanTickets(): Promise<TranslatedPurchasedTicket[]> {
                     ...ticket.event,
                     translatedTitle,
                     price: ticketTier?.price ?? 0,
-                    currency: 'USD',
+                    currency: ticket.event.currency,
                     imageHint: 'music festival',
                 },
                 qrCode
@@ -117,6 +122,7 @@ export default async function MyTicketsPage() {
                                             event={ticket.event}
                                             isPurchased={true}
                                             qrCode={ticket.qrCode}
+                                            ownerName={ticket.owner?.name || 'Ticket Holder'}
                                         />
                                     </div>
                                 ))}
@@ -134,7 +140,7 @@ export default async function MyTicketsPage() {
                     </div>
                 </div>
             </main>
-            <MobileNav />
+            <MobileNav userRole="FAN" />
         </div>
     );
 }

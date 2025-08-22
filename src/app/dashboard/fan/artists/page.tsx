@@ -28,28 +28,55 @@ interface CreatorProfile {
   };
 }
 
-async function getArtists() {
-  // Get all creator profiles with user info and portfolio count
-  const creators = await prisma.creatorProfile.findMany({
-    include: {
-      user: {
-        select: {
-          name: true,
-          email: true,
-        }
-      },
-      _count: {
-        select: {
-          portfolio: true
-        }
-      }
+async function getArtists(userId: number) {
+  // Get creators from events the user has attended
+  const attendedEvents = await prisma.purchasedTicket.findMany({
+    where: {
+      ownerId: userId,
+      status: 'USED',
     },
-    orderBy: {
-      id: 'asc'
+    select: {
+      eventId: true,
     }
   });
-
-  return creators;
+  
+  const eventIds = attendedEvents.map(ticket => ticket.eventId);
+  
+  // Get unique creators from attributions in attended events
+  const creators = await prisma.attribution.findMany({
+    where: {
+      eventId: {
+        in: eventIds
+      },
+      contributionType: 'CREATIVE'
+    },
+    include: {
+      user: {
+        include: {
+          creatorProfile: {
+            include: {
+              _count: {
+                select: {
+                  portfolio: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  // Remove duplicates and return unique creators
+  const uniqueCreators = creators.reduce((acc: CreatorProfile[], attribution) => {
+    const creatorProfile = attribution.user.creatorProfile;
+    if (creatorProfile && !acc.find(c => c.userId === attribution.userId)) {
+      acc.push(creatorProfile);
+    }
+    return acc;
+  }, []);
+  
+  return uniqueCreators;
 }
 
 export default async function FanArtistsPage() {
@@ -59,7 +86,7 @@ export default async function FanArtistsPage() {
     return redirect('/login');
   }
 
-  const artists = await getArtists();
+  const artists = await getArtists(session.userId);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -138,7 +165,7 @@ export default async function FanArtistsPage() {
           )}
         </div>
       </main>
-      <MobileNav />
+      <MobileNav userRole={session?.role} />
     </div>
   );
 }
