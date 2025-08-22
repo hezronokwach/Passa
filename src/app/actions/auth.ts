@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import { createSession, deleteSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { Role } from '@prisma/client';
@@ -227,9 +228,10 @@ export async function resetPassword(prevState: unknown, formData: FormData) {
     const { token, password } = validatedFields.data;
 
     try {
+        const providedHash = crypto.createHash('sha256').update(token).digest('hex');
         const user = await prisma.user.findFirst({
             where: {
-                passwordResetToken: token,
+                passwordResetToken: providedHash,
                 passwordResetExpires: { gt: new Date() },
             },
         });

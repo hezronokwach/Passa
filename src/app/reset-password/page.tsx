@@ -57,9 +57,9 @@ export default function ResetPasswordPage() {
             >
                 <div className="text-center">
                     <p className="text-muted-foreground mb-4">Please request a new password reset link.</p>
-                    <Link href="/forgot-password">
-                        <Button>Request New Link</Button>
-                    </Link>
+                    <Button asChild>
+                      <Link href="/forgot-password">Request New Link</Link>
+                    </Button>
                 </div>
             </AuthLayout>
         );
