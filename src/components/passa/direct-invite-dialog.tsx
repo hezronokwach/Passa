@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useMemo, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -49,7 +49,8 @@ export function DirectInviteDialog({ eventId, children }: { eventId: number; chi
         const data = await res.json();
         if (!ignore) setResults(data);
       } catch {
-        // swallow
+        // ignore network/search errors; keep results as-is
+        void 0;
       }
     }
     run();
@@ -62,8 +63,6 @@ export function DirectInviteDialog({ eventId, children }: { eventId: number; chi
       // no-op here; we will reflect this in defaultValue fields
     }
   }, [selectedUser]);
-
-  const showManualEntry = !selectedUser;
 
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setQuery(''); setResults([]); setSelectedUser(null); } }}>
