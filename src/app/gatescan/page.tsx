@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Header } from '@/components/passa/header';
+import { ClientHeader } from '@/components/passa/client-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -130,7 +130,7 @@ export default function GateScanPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <Header />
+      <ClientHeader />
       <main className="flex-1 p-4">
         <div className="container mx-auto max-w-4xl">
           <div className="mb-6">
