@@ -9,10 +9,8 @@ import { InviteWithFeeDialog } from '@/components/passa/invite-with-fee-dialog';
 import { DirectInviteDialog } from '@/components/passa/direct-invite-dialog';
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-
-import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Users, Ticket, DollarSign, Calendar, Settings, MapPin, Music, TrendingUp, Eye } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Users, Ticket, DollarSign, Calendar, Settings, MapPin, Music, TrendingUp, Eye, Download } from 'lucide-react';
 import Link from 'next/link';
 import {
   Table,
@@ -25,10 +23,12 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import prisma from '@/lib/db';
-
 import { getSession } from '@/lib/session';
 import { useActionState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import type { Submission } from '@prisma/client';
+import { updateSubmissionStatus } from '@/app/actions/organizer';
+import React from 'react';
 
 
 
@@ -125,10 +125,6 @@ function ActionButtons({ submission, eventId }: { submission: Submission, eventI
         </div>
     );
 }
-
-export default async function EventSubmissionsPage({ params }: { params: { id: string } }) {
-    const eventId = parseInt(params.id, 10);
-
 
 export default async function EventSubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

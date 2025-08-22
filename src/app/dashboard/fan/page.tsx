@@ -284,7 +284,11 @@ export default async function FanDashboardPage() {
 
                 </div>
             </main>
-            <MobileNav userRole={user?.role} />
+            <MobileNav 
+        isAuthenticated={!!user}
+        dashboardPath="/dashboard/fan"
+        navItems={[]}
+      />
         </div>
     )
 }

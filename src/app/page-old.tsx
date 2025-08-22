@@ -31,6 +31,8 @@ type TranslatedEvent = Event & {
     currency: string;
     imageHint: string;
     tickets: { name: string; id: number; eventId: number; price: number; quantity: number; sold: number; }[];
+    published: boolean;
+    totalBudget: number | null;
 };
 
 // --- Real Data Fetching (Commented Out) ---
@@ -236,6 +238,8 @@ export default function Home() {
                     currency: 'USD',
                     imageHint: 'music festival',
                     tickets: [{ id: 1, eventId: 1, name: 'Regular', price: 50, quantity: 100, sold: 0 }],
+                    published: true,
+                    totalBudget: 10000,
                 },
                 {
                     id: 2,
@@ -256,6 +260,8 @@ export default function Home() {
                     currency: 'USD',
                     imageHint: 'live concert',
                     tickets: [{ id: 2, eventId: 2, name: 'VIP', price: 75, quantity: 50, sold: 0 }],
+                    published: true,
+                    totalBudget: 10000,
                 },
                 {
                     id: 3,
@@ -276,6 +282,8 @@ export default function Home() {
                     currency: 'USD',
                     imageHint: 'amapiano dj set',
                     tickets: [{ id: 3, eventId: 3, name: 'Standard', price: 40, quantity: 200, sold: 0 }],
+                    published: true,
+                    totalBudget: 10000,
                 },
                 {
                     id: 4,
@@ -296,6 +304,8 @@ export default function Home() {
                     currency: 'USD',
                     imageHint: 'afrobeats concert',
                     tickets: [{ id: 4, eventId: 4, name: 'Premium', price: 100, quantity: 75, sold: 0 }],
+                    published: true,
+                    totalBudget: 10000,
                 },
             ];
 

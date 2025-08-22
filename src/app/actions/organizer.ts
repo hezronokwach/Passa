@@ -36,7 +36,6 @@ const eventSchema = z.object({
   time: z.string().min(1, "Time is required."),
   imageUrl: z.string().url("Please enter a valid image URL.").or(z.string().min(1, "Image is required.")),
   tickets: z.string().min(1, "At least one ticket tier is required."),
-  imageUrl: z.string().url("Please enter a valid image URL."),
   ticketPrice: z.coerce.number().min(0, "Price must be a positive number."),
   ticketQuantity: z.coerce.number().int().min(1, "You must offer at least 1 ticket."),
   currency: z.string().min(2, "Currency is required."),
@@ -60,6 +59,12 @@ export async function createEvent(prevState: unknown, formData: FormData) {
     time: formData.get('time'),
     imageUrl: formData.get('imageUrl'),
     tickets: formData.get('tickets'),
+    ticketPrice: formData.get('ticketPrice'),
+    ticketQuantity: formData.get('ticketQuantity'),
+    currency: formData.get('currency'),
+    artistSplit: formData.get('artistSplit'),
+    venueSplit: formData.get('venueSplit'),
+    passaSplit: formData.get('passaSplit'),
   };
 
   console.log('Server received form data:', formDataObj);
@@ -80,13 +85,17 @@ export async function createEvent(prevState: unknown, formData: FormData) {
       location,
       country,
       date,
+      time,
       imageUrl,
-      ticketPrice,
-      ticketQuantity,
+      tickets,
+      currency,
       artistSplit,
       venueSplit,
       passaSplit,
     } = validatedFields.data;
+
+  const eventDateTime = new Date(`${date}T${time}`);
+  const ticketTiers = JSON.parse(tickets);
 
   try {
     await prisma.event.create({

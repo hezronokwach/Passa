@@ -17,15 +17,14 @@ import {
 import { TicketPurchaseDialog } from './ticket-purchase-dialog';
 import Link from 'next/link';
 
-interface TranslatedEvent extends Event {
+export interface TranslatedEvent extends Event {
   totalBudget: number | null;
   published: boolean;
-  tickets?: { id: number; name: string; eventId: number; price: number; quantity: number; sold: number; }[];
+  tickets: { id: number; name: string; eventId: number; price: number; quantity: number; sold: number; }[];
   translatedTitle: string;
   price: number;
   currency: string;
   imageHint: string;
-  tickets: { name: string; id: number; eventId: number; price: number; quantity: number; sold: number; }[];
   ticketBuyers?: {
     id: number;
     name: string | null;

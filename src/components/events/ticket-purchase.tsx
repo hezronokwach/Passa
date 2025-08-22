@@ -44,6 +44,10 @@ export function TicketPurchase({
   isOwnEvent 
 }: TicketPurchaseProps) {
 
+  const eventWithEventIdInTickets = {
+    ...event,
+    tickets: event.tickets.map(ticket => ({ ...ticket, eventId: event.id }))
+  };
 
   return (
     <Card className="sticky top-24">
@@ -89,7 +93,7 @@ export function TicketPurchase({
               </Button>
             )}
             <TicketPurchaseDialogWrapper 
-              event={{ ...event, currency: 'USD' }} 
+              event={{ ...eventWithEventIdInTickets, currency: 'USD' }} 
             />
           </div>
         ) : isOwnEvent && session.role === 'ORGANIZER' ? (
@@ -98,7 +102,7 @@ export function TicketPurchase({
           </div>
         ) : (
           <TicketPurchaseDialogWrapper 
-            event={{ ...event, currency: 'USD' }} 
+            event={{ ...eventWithEventIdInTickets, currency: 'USD' }} 
           />
         )}
 

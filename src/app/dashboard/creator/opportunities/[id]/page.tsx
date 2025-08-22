@@ -1,3 +1,10 @@
+'use client';
+
+import { useToast } from "@/components/ui/use-toast";
+import { useActionState, useEffect } from "react";
+import { createSubmission } from "@/app/actions/creator";
+import { PartyPopper } from "lucide-react";
+import React from "react";
 import { Header } from '@/components/passa/header';
 import { OpportunityDetailView } from './opportunity-detail-view';
 
@@ -21,6 +28,7 @@ export default function BriefDetailPage({ params: { id } }: { params: { id: stri
     const [submissionState, formAction] = useActionState(createSubmission, {
         message: '',
         errors: {},
+        success: false,
     });
 
     React.useEffect(() => {

@@ -23,7 +23,7 @@ export function VideoModal({ isOpen, onClose, title, videoUrl }: VideoModalProps
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <div className="aspect-video">
-          <ReactPlayer url={videoUrl} width="100%" height="100%" controls />
+          <ReactPlayer src={videoUrl} width="100%" height="100%" controls />
         </div>
       </DialogContent>
     </Dialog>

@@ -41,15 +41,18 @@ function LogoutButton() {
 
 export function UserMenu({ user }: UserMenuProps) {
   const { toast } = useToast();
-  const [state, formAction] = useActionState(logout, { success: false, message: '' });
+  const [state, formAction] = useActionState(logout, undefined);
 
   React.useEffect(() => {
-    if (state.message) {
+    if (state?.message) {
       toast({
         title: state.success ? 'Success!' : 'Error',
         description: state.message,
         variant: state.success ? 'default' : 'destructive',
       });
+      if (state.success) {
+        window.location.href = '/login';
+      }
     }
   }, [state, toast]);
 

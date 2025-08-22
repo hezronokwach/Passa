@@ -21,9 +21,18 @@ import React from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export const Header = () => {
-  const [state, formAction] = useActionState(logout, { success: false, message: '' });
+  const [state, formAction] = useActionState(logout, undefined);
   const { toast } = useToast();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      setSession(sessionData);
+    };
+    fetchSession();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,12 +43,15 @@ export const Header = () => {
   }, []);
 
   React.useEffect(() => {
-    if (state.message) {
+    if (state?.message) {
       toast({
         title: state.success ? 'Success!' : 'Error',
         description: state.message,
         variant: state.success ? 'default' : 'destructive',
       });
+      if (state.success) {
+        window.location.href = '/login';
+      }
     }
   }, [state, toast]);
 
