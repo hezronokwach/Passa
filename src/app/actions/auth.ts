@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 import { Role } from '@prisma/client';
 import { generateEmailVerificationToken, generatePasswordResetToken } from '@/lib/auth/utils';
 import { blockchainAuthService } from '@/lib/auth/blockchain';
+import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email/service';
 
 const signupSchema = z.object({
   email: z.string().email(),
@@ -89,11 +90,19 @@ export async function signup(prevState: unknown, formData: FormData) {
       return newUser;
     });
 
+    // Send verification email
+    try {
+      await sendVerificationEmail(email, result.verificationToken!);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Don't fail the signup if email sending fails
+    }
+
     await createSession(result.id, result.role);
 
     return { 
       success: true, 
-      message: 'Account created successfully!',
+      message: 'Account created successfully! Please check your email to verify your account.',
       redirect: rolePaths[role] || '/dashboard' 
     };
   } catch (error) {
@@ -181,8 +190,12 @@ export async function forgotPassword(prevState: unknown, formData: FormData) {
         const user = await prisma.user.findUnique({ where: { email } });
         if (user) {
             const resetToken = await generatePasswordResetToken(email);
-            // TODO: Send password reset email
-            console.log(`Password reset token for ${email}: ${resetToken}`);
+            try {
+                await sendPasswordResetEmail(email, resetToken);
+            } catch (emailError) {
+                console.error('Failed to send password reset email:', emailError);
+                // Continue with the flow even if email sending fails
+            }
         }
 
         return { success: true, message: 'If a user with that email exists, a password reset link has been sent.' };
