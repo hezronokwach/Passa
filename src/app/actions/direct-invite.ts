@@ -12,12 +12,13 @@ export async function createDirectInvite(formData: FormData) {
     }
 
     const eventId = parseInt(formData.get('eventId') as string);
-    const artistName = formData.get('artistName') as string;
-    const artistEmail = formData.get('artistEmail') as string;
+    const artistName = (formData.get('artistName') as string) || '';
+    const artistEmail = (formData.get('artistEmail') as string) || '';
     const proposedFee = parseFloat(formData.get('proposedFee') as string);
-    const message = formData.get('message') as string;
+    const message = (formData.get('message') as string) || '';
+    const providedUserId = formData.get('userId') ? parseInt(formData.get('userId') as string) : undefined;
 
-    if (!artistName?.trim() || !artistEmail?.trim()) {
+    if (!artistName.trim() || !artistEmail.trim()) {
       return { success: false, message: 'Artist name and email are required' };
     }
 
@@ -34,6 +35,27 @@ export async function createDirectInvite(formData: FormData) {
       return { success: false, message: 'Event not found or access denied' };
     }
 
+    // Determine artistId if the artist exists in the system
+    let artistId: number | null = null;
+
+    if (providedUserId && !Number.isNaN(providedUserId)) {
+      const existing = await prisma.user.findUnique({ where: { id: providedUserId } });
+      if (existing) {
+        artistId = existing.id;
+      }
+    }
+
+    if (!artistId) {
+      // Try to find user by email (case-insensitive)
+      const existingByEmail = await prisma.user.findFirst({
+        where: { email: artistEmail },
+        select: { id: true }
+      });
+      if (existingByEmail) {
+        artistId = existingByEmail.id;
+      }
+    }
+
     // Create the invitation
     const invitation = await prisma.artistInvitation.create({
       data: {
@@ -43,7 +65,8 @@ export async function createDirectInvite(formData: FormData) {
         artistName,
         proposedFee,
         message,
-        status: 'PENDING'
+        status: 'PENDING',
+        artistId: artistId ?? null,
       }
     });
 
@@ -57,6 +80,19 @@ export async function createDirectInvite(formData: FormData) {
         comments: message
       }
     });
+
+    // If artist exists in system, create in-app notification now
+    if (artistId) {
+      await prisma.notification.create({
+        data: {
+          userId: artistId,
+          type: 'ARTIST_INVITATION',
+          title: 'New Artist Invitation',
+          message: `You’ve been invited to perform at ${event.title}. Fee: $${proposedFee.toFixed(2)}`,
+          data: { eventId, invitationId: invitation.id, organizerId: session.userId }
+        }
+      });
+    }
 
     revalidatePath(`/dashboard/organizer/events/${eventId}`);
     return { success: true, message: 'Invitation sent successfully!' };
