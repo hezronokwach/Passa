@@ -20,6 +20,7 @@ interface TranslatedEvent extends Event {
   price: number;
   currency: string;
   imageHint: string;
+  tickets: { name: string; id: number; eventId: number; price: number; quantity: number; sold: number; }[];
 }
 
 export const EventCard = ({ event }: { event: TranslatedEvent }) => {

@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import type { Event, Ticket } from '@prisma/client';
 import { Confetti } from './confetti';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { TicketStub } from './ticket-stub';
 import { purchaseTicket } from '@/app/actions/fan';
 
