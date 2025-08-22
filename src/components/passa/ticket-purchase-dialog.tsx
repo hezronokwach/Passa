@@ -13,7 +13,7 @@ import { Confetti } from './confetti';
 import { useToast } from '@/components/ui/use-toast';
 import { TicketStub } from './ticket-stub';
 import { purchaseTicket } from '@/app/actions/fan';
-import { TicketQRCodeGenerator } from '@/lib/services/qr-code-examples';
+
 
 interface TicketPurchaseDialogProps {
   event: Event & { 
@@ -58,25 +58,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
         });
         setPurchaseSuccess(true);
         
-        // Generate QR code for the purchased ticket
-        // In a real implementation, you would get the actual ticket data from the result
-        // For now, we'll simulate with mock data
-        try {
-          // This is a placeholder - in reality, you'd get the actual purchased ticket data
-          const mockTicket = {
-            id: Date.now(), // Mock ID
-            eventId: event.id,
-            ownerId: 1, // Mock owner ID
-            createdAt: new Date(),
-            status: 'ACTIVE',
-            ticketId: ticketTier.id,
-          };
-          
-          const qrCodeData = await TicketQRCodeGenerator.generate(mockTicket);
-          setQrCode(qrCodeData);
-        } catch (error) {
-          console.error('Error generating QR code:', error);
-        }
+        // QR code will be generated server-side when viewing tickets
         
         // Reset state and close dialog after animation
         setTimeout(() => {

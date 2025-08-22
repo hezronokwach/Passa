@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { Compass, UserCircle2, Ticket, Star, Calendar, Users, Briefcase, PlusCircle } from 'lucide-react';
-import { getSession } from '@/lib/session';
 
-export const MobileNav = async () => {
-  const session = await getSession();
-  const userRole = session?.role;
+interface MobileNavProps {
+  userRole?: string;
+}
 
-  // Don't show mobile nav if user is not authenticated
-  if (!session) {
+export const MobileNav = ({ userRole }: MobileNavProps) => {
+  // Don't show mobile nav if user role is not provided
+  if (!userRole) {
     return null;
   }
 

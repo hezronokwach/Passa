@@ -56,7 +56,6 @@ export const Header = async () => {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <NotificationBell />
           <div className="hidden sm:flex items-center gap-2">
             {isAuthenticated ? (
               <DropdownMenu>
@@ -76,7 +75,7 @@ export const Header = async () => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/fan/profile" className="flex items-center gap-2">
+                    <Link href={`${dashboardPath}/profile`} className="flex items-center gap-2">
                       <User className="size-4" />
                       Profile
                     </Link>
