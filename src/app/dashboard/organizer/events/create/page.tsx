@@ -45,7 +45,8 @@ export default function CreateEventPage() {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = React.useState(1);
 
-  const [dateTimeInput, setDateTimeInput] = React.useState('');
+  const [dateInput, setDateInput] = React.useState('');
+  const [timeInput, setTimeInput] = React.useState('');
   const [ticketTiers, setTicketTiers] = React.useState<TicketTier[]>([
     { id: '1', name: 'General Admission', price: '50', quantity: '100' }
   ]);
@@ -107,14 +108,16 @@ export default function CreateEventPage() {
   };
 
   const isStep1Valid = () => {
-    const hasValidDateTime = dateTimeInput && dateTimeInput.includes('T');
+    const hasValidDate = Boolean(dateInput);
+    const hasValidTime = Boolean(timeInput);
     const hasValidImage = step1Data.imageUrl.length > 0 || uploadedImage;
     
     return step1Data.title.length >= 3 && 
            step1Data.description.length >= 10 && 
            step1Data.location.length >= 2 && 
            step1Data.country.length >= 2 && 
-           hasValidDateTime &&
+           hasValidDate &&
+           hasValidTime &&
            hasValidImage;
   };
 
@@ -156,9 +159,12 @@ export default function CreateEventPage() {
     formData.set('country', step1Data.country);
     formData.set('imageUrl', step1Data.imageUrl || `https://placehold.co/600x400.png?text=${encodeURIComponent(step1Data.title)}`);
 
-    // Handle date/time
-    if (dateTimeInput) {
-      formData.set('date', dateTimeInput);
+    // Handle date and time separately
+    if (dateInput) {
+      formData.set('date', dateInput);
+    }
+    if (timeInput) {
+      formData.set('time', timeInput);
     }
 
     // Handle image upload
@@ -272,17 +278,26 @@ export default function CreateEventPage() {
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="eventDate">Event Date & Time <span className="text-red-500">*</span></Label>
+                        <Label htmlFor="eventDate">Event Date <span className="text-red-500">*</span></Label>
                         <Input
                           id="eventDate"
-                          type="datetime-local"
-                          value={dateTimeInput}
-                          onChange={(e) => setDateTimeInput(e.target.value)}
-                          min={new Date().toISOString().slice(0, 16)}
+                          type="date"
+                          value={dateInput}
+                          onChange={(e) => setDateInput(e.target.value)}
+                          min={new Date().toISOString().slice(0, 10)}
                         />
                         {state.errors?.date && <p className="text-sm text-destructive">{state.errors.date[0]}</p>}
                       </div>
-
+                      <div className="space-y-2">
+                        <Label htmlFor="eventTime">Event Time <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="eventTime"
+                          type="time"
+                          value={timeInput}
+                          onChange={(e) => setTimeInput(e.target.value)}
+                        />
+                        {state.errors?.time && <p className="text-sm text-destructive">{state.errors.time[0]}</p>}
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label>Event Image <span className="text-red-500">*</span></Label>
