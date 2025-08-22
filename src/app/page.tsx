@@ -86,7 +86,7 @@ export default function LandingPage() {
             setTimeout(() => {
                 setEvents(translatedEvents);
                 setLoading(false);
-            }, 1500);
+            }, 800);
         };
 
         fetchEvents();
