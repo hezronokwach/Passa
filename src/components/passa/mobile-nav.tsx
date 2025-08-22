@@ -1,68 +1,64 @@
 import Link from 'next/link';
-import { Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { logout } from '@/app/actions/auth';
+import { Compass, UserCircle2, Ticket, Star, Calendar, Users, Briefcase, PlusCircle } from 'lucide-react';
 
-type NavItem = {
-  name: string;
-  href: string;
-};
+interface MobileNavProps {
+  userRole?: string;
+}
 
-type MobileNavProps = {
-  isAuthenticated: boolean;
-  dashboardPath: string;
-  navItems: NavItem[];
-};
+export const MobileNav = ({ userRole }: MobileNavProps) => {
+  // Don't show mobile nav if user role is not provided
+  if (!userRole) {
+    return null;
+  }
 
-export const MobileNav = ({ isAuthenticated, dashboardPath, navItems }: MobileNavProps) => {
+  const getNavItems = () => {
+    switch (userRole) {
+      case 'FAN':
+        return [
+          { name: 'Dashboard', href: '/dashboard/fan', icon: Compass },
+          { name: 'Tickets', href: '/dashboard/fan/tickets', icon: Ticket },
+          { name: 'Artists', href: '/dashboard/fan/artists', icon: Star },
+          { name: 'Profile', href: '/dashboard/fan/profile', icon: UserCircle2 },
+        ];
+      case 'ORGANIZER':
+        return [
+          { name: 'Dashboard', href: '/dashboard/organizer', icon: Compass },
+          { name: 'Events', href: '/dashboard/organizer/events', icon: Calendar },
+          { name: 'Create', href: '/dashboard/organizer/events/create', icon: PlusCircle },
+          { name: 'Profile', href: '/dashboard/organizer/profile', icon: UserCircle2 },
+        ];
+      case 'CREATOR':
+        return [
+          { name: 'Dashboard', href: '/dashboard/creator', icon: Compass },
+          { name: 'Opportunities', href: '/dashboard/creator/opportunities', icon: Briefcase },
+          { name: 'Applications', href: '/dashboard/creator/applications', icon: Users },
+          { name: 'Profile', href: '/dashboard/creator/profile', icon: UserCircle2 },
+        ];
+      default:
+        return [
+          { name: 'Dashboard', href: '/dashboard', icon: Compass },
+          { name: 'Events', href: '/events', icon: Calendar },
+          { name: 'Profile', href: '/dashboard/fan/profile', icon: UserCircle2 },
+        ];
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="sm" className="md:hidden">
-          <Menu className="size-5" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-        <nav className="flex flex-col gap-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="block px-2 py-1 text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {item.name}
-            </Link>
-          ))}
-          <div className="border-t pt-4 mt-4">
-            {isAuthenticated ? (
-              <>
-                <Link
-                  href={dashboardPath}
-                  className="block px-2 py-1 text-lg font-medium text-muted-foreground transition-colors hover:text-foreground mb-2"
-                >
-                  Dashboard
-                </Link>
-                <form action={logout}>
-                  <Button variant="outline" type="submit" className="w-full">
-                    Sign Out
-                  </Button>
-                </form>
-              </>
-            ) : (
-              <div className="space-y-2">
-                <Button variant="ghost" asChild className="w-full justify-start">
-                  <Link href="/login">Sign In</Link>
-                </Button>
-                <Button asChild className="w-full">
-                  <Link href="/register">Register</Link>
-                </Button>
-              </div>
-            )}
-          </div>
-        </nav>
-      </SheetContent>
-    </Sheet>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/90 p-2 backdrop-blur-sm md:hidden">
+      <div className="grid grid-cols-4 gap-1">
+        {navItems.map((item) => (
+          <Link
+            key={item.name}
+            href={item.href}
+            className="flex flex-col items-center justify-center gap-1 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent/10 hover:text-primary"
+          >
+            <item.icon className="size-5" />
+            <span className="text-xs font-medium">{item.name}</span>
+          </Link>
+        ))}
+      </div>
+    </nav>
   );
 };

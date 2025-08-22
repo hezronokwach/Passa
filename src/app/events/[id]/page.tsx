@@ -6,7 +6,9 @@ import prisma from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/passa/header';
 import Image from 'next/image';
-import { Calendar, MapPin, Users, Ticket, Percent, User, Handshake } from 'lucide-react';
+import { Calendar, MapPin, Users, Ticket, Percent, User, Handshake, ArrowLeft } from 'lucide-react';
+import { BackButton } from '@/components/ui/back-button';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { TicketPurchaseDialogWrapper } from './ticket-purchase-dialog-wrapper';
@@ -26,7 +28,7 @@ type EventWithDetails = Event & {
     attributions: SponsorWithProfile[],
 }
 
-async function getEventDetails(eventId: string): Promise<EventWithDetails | null> {
+async function getEventDetails(eventId: string, userId?: number): Promise<EventWithDetails | null> {
     const id = parseInt(eventId, 10);
     if (isNaN(id)) return null;
 
@@ -48,6 +50,21 @@ async function getEventDetails(eventId: string): Promise<EventWithDetails | null
                     user: {
                         include: {
                             organizerProfile: true
+                        }
+                    }
+                }
+            },
+            _count: {
+                select: { purchasedTickets: true }
+            },
+            purchasedTickets: {
+                take: 5,
+                include: {
+                    owner: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
                         }
                     }
                 }
@@ -76,17 +93,24 @@ function SponsorEventForm({ eventId }: { eventId: number }) {
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const event = await getEventDetails(id);
     const session = await getSession();
+    const event = await getEventDetails(id, session?.userId);
+    
+    // Check if user already has a ticket
+    const userHasTicket = session?.userId ? await prisma.purchasedTicket.findFirst({
+        where: {
+            eventId: parseInt(id),
+            ownerId: session.userId,
+            status: 'ACTIVE'
+        }
+    }) : null;
 
     if (!event) {
         notFound();
     }
     
-    const { translatedTitle } = await translateEventTitle({
-      title: event.title,
-      country: event.country,
-    });
+    // Skip translation for now to avoid AI calls
+    const translatedTitle = event.title;
     
     const price = event.tickets[0]?.price ?? 0;
     const isAlreadySponsor = event.attributions.some(attr => attr.userId === session?.userId);
@@ -97,6 +121,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <Header />
             <main className="flex-1">
                 <div className="container mx-auto px-4 py-8">
+                    {/* Back Button */}
+                    <div className="mb-6">
+                        <BackButton />
+                    </div>
                     <div className="grid lg:grid-cols-3 gap-8">
                         {/* Main Content */}
                         <div className="lg:col-span-2 space-y-8">
@@ -128,6 +156,36 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                 </CardHeader>
                                 <CardContent>
+                                    {/* Ticket Buyers Section */}
+                                    {event._count && event._count.purchasedTickets > 0 && (
+                                        <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <Users className="size-5 text-primary" />
+                                                <h3 className="font-semibold">
+                                                    {event._count.purchasedTickets} {event._count.purchasedTickets === 1 ? 'person is' : 'people are'} going
+                                                </h3>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex -space-x-2">
+                                                    {event.purchasedTickets?.slice(0, 5).map((ticket) => (
+                                                        <div key={ticket.owner.id} className="size-8 rounded-full border-2 border-background bg-muted flex items-center justify-center text-xs font-medium overflow-hidden">
+                                                            <img 
+                                                                src={`https://api.dicebear.com/7.x/initials/svg?seed=${ticket.owner.name || ticket.owner.email}`}
+                                                                alt={ticket.owner.name || ticket.owner.email}
+                                                                className="w-full h-full"
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                    {event._count.purchasedTickets > 5 && (
+                                                        <div className="flex size-8 items-center justify-center rounded-full bg-muted border-2 border-background text-xs font-medium">
+                                                            +{event._count.purchasedTickets - 5}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
                                     <h2 className="font-headline text-2xl font-semibold mb-4">About this event</h2>
                                     <p className="text-muted-foreground whitespace-pre-line">{event.description}</p>
                                 </CardContent>
@@ -161,7 +219,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                         ${price} <span className="text-lg font-normal text-muted-foreground">USD</span>
                                     </div>
 
-                                    <TicketPurchaseDialogWrapper event={{...event, price, translatedTitle, currency: 'USD' }} />
+                                    <TicketPurchaseDialogWrapper 
+                                        event={{...event, price, translatedTitle, currency: 'USD' }} 
+                                        userHasTicket={!!userHasTicket}
+                                    />
 
                                     <div className="space-y-2 pt-4">
                                         <p className="text-sm font-semibold flex items-center gap-2"><Percent className="text-accent" /> Revenue Splits</p>

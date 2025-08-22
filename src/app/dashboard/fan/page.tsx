@@ -3,21 +3,25 @@
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Ticket, Star, Compass, GanttChart } from 'lucide-react';
+import { Ticket, Star, Compass, GanttChart, User } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
-
+import { MobileNav } from '@/components/passa/mobile-nav';
 import { getSession } from '@/lib/session';
 
 
-async function getFanStats() {
+async function getFanData() {
     const session = await getSession();
     if (!session) {
         return {
-            tickets: 0,
-            favoriteArtists: 0,
-            eventsAttended: 0,
+            user: null,
+            stats: {
+                tickets: 0,
+                favoriteArtists: 0,
+                eventsAttended: 0,
+            },
+            popularEvents: [],
             error: 'No session found'
         };
     }
@@ -31,100 +35,256 @@ async function getFanStats() {
         }
     });
     
-    // This is mock data, as we don't have these features yet.
-    // We would build these out with relations in the Prisma schema.
-    const favoriteArtists = 5; 
+    // Calculate events attended (tickets with USED status)
     const eventsAttended = await prisma.purchasedTicket.count({
         where: {
             ownerId: user.id,
-            status: 'USED', // Assuming a 'USED' status for attended events
+            status: 'USED',
         }
+    });
+    
+    // Calculate unique artists attended (based on events with attributions)
+    const attendedEvents = await prisma.purchasedTicket.findMany({
+        where: {
+            ownerId: user.id,
+            status: 'USED',
+        },
+        select: {
+            eventId: true,
+        }
+    });
+    
+    const attendedEventIds = attendedEvents.map(ticket => ticket.eventId);
+    
+    // Get unique creators from attributions in attended events
+    const artistAttributions = await prisma.attribution.findMany({
+        where: {
+            eventId: {
+                in: attendedEventIds
+            },
+            contributionType: 'CREATIVE'
+        },
+        select: {
+            userId: true,
+        }
+    });
+    
+    const uniqueArtistsCount = new Set(artistAttributions.map(attr => attr.userId)).size;
+
+    // Get popular events sorted by ticket sales
+    const popularEvents = await prisma.event.findMany({
+        include: {
+            _count: {
+                select: { purchasedTickets: true }
+            },
+            organizer: {
+                select: { name: true }
+            },
+            purchasedTickets: {
+                take: 3,
+                include: {
+                    owner: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
+                        }
+                    }
+                }
+            }
+        },
+        orderBy: {
+            purchasedTickets: {
+                _count: 'desc'
+            }
+        },
+        take: 6
     });
 
     return {
-        tickets: user._count.purchasedTickets,
-        favoriteArtists,
-        eventsAttended,
+        user,
+        stats: {
+            tickets: user._count.purchasedTickets,
+            favoriteArtists: uniqueArtistsCount,
+            eventsAttended,
+        },
+        popularEvents,
+        error: null
     };
 }
 
 
 export default async function FanDashboardPage() {
-    const stats = await getFanStats();
+    const { user, stats, popularEvents, error } = await getFanData();
     
-    if (stats.error) {
+    if (error) {
         return redirect('/login');
     }
+    
+    // Get user's first name or full name
+    const userName = user?.name?.split(' ')[0] || user?.name || user?.email || 'Fan';
     
     return (
         <div className="flex min-h-screen w-full flex-col bg-background">
             <Header />
             <main className="flex-1 pb-20 md:pb-0">
                  <div className="container mx-auto px-4 py-8">
-                     <div className="flex items-center justify-between mb-8">
-                        <h1 className="font-headline text-3xl font-bold md:text-4xl">
-                            My Dashboard
-                        </h1>
-                        <div className="flex gap-2">
-                            <Link href="/dashboard">
-                                <Button variant="outline">
-                                    <Compass className="mr-2 size-4" />
-                                    Discover Events
-                                </Button>
-                            </Link>
-                             <Link href="/dashboard/fan/tickets">
-                                <Button>
-                                    <Ticket className="mr-2 size-4" />
-                                    View My Tickets
+                     <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+                        <div>
+                            <h2 className="font-headline text-xl text-muted-foreground">Welcome back,</h2>
+                            <h1 className="font-headline text-3xl font-bold md:text-4xl">
+                                {userName}!
+                            </h1>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                            <div className="flex gap-2">
+                                <Link href="/events">
+                                    <Button variant="outline" className="flex-1">
+                                        <Compass className="mr-2 size-4" />
+                                        <span className="hidden sm:inline">Discover Events</span>
+                                        <span className="sm:hidden">Events</span>
+                                    </Button>
+                                </Link>
+                                <Link href="/dashboard/fan/tickets">
+                                    <Button className="flex-1">
+                                        <Ticket className="mr-2 size-4" />
+                                        <span className="hidden sm:inline">My Tickets</span>
+                                        <span className="sm:hidden">Tickets</span>
+                                    </Button>
+                                </Link>
+                            </div>
+                            <Link href="/dashboard/fan/artists">
+                                <Button variant="outline" className="flex-1">
+                                    <Star className="mr-2 size-4" />
+                                    <span className="hidden sm:inline">Favorite Artists</span>
+                                    <span className="sm:hidden">Artists</span>
                                 </Button>
                             </Link>
                         </div>
                     </div>
                     
-                    <div className="grid gap-4 md:grid-cols-3 mb-8">
-                         <Card>
+                    <div className="grid gap-4 grid-cols-2 md:grid-cols-3 mb-8">
+                         <Card className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-200/20">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">My Tickets</CardTitle>
-                                <Ticket className="size-4 text-muted-foreground"/>
+                                <Ticket className="size-4 text-blue-500"/>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{stats.tickets}</div>
-                                <p className="text-xs text-muted-foreground">Active tickets for upcoming events</p>
+                                <p className="text-xs text-muted-foreground">Active tickets</p>
                             </CardContent>
                          </Card>
-                          <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Favorite Artists</CardTitle>
-                                <Star className="size-4 text-muted-foreground"/>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{stats.favoriteArtists}</div>
-                                <p className="text-xs text-muted-foreground">Artists you are following</p>
-                            </CardContent>
-                         </Card>
-                           <Card>
+                          <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200/20">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Events Attended</CardTitle>
-                                <GanttChart className="size-4 text-muted-foreground"/>
+                                <GanttChart className="size-4 text-purple-500"/>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{stats.eventsAttended}</div>
-                                <p className="text-xs text-muted-foreground">Events you&apos;ve been to with Passa</p>
+                                <p className="text-xs text-muted-foreground">Events attended</p>
+                            </CardContent>
+                         </Card>
+                           <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200/20">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Artists Attended</CardTitle>
+                                <Star className="size-4 text-yellow-500"/>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.favoriteArtists}</div>
+                                <p className="text-xs text-muted-foreground">Unique artists</p>
                             </CardContent>
                          </Card>
                     </div>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Welcome to Passa!</CardTitle>
-                            <CardContent className="pt-4">
-                               <p className="text-muted-foreground">This is your personal hub. Discover new events, view your tickets, and manage your profile.</p>
-                            </CardContent>
-                        </CardHeader>
-                    </Card>
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="font-headline text-2xl font-bold">Popular Events</h2>
+                            <Link href="/events">
+                                <Button variant="outline" size="sm">
+                                    View All Events
+                                </Button>
+                            </Link>
+                        </div>
+                        
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {popularEvents.map((event) => {
+                                const ticketCount = event._count.purchasedTickets;
+                                const displayBuyers = event.purchasedTickets.slice(0, 3);
+                                const remainingCount = Math.max(0, ticketCount - 3);
+                                
+                                return (
+                                    <Card key={event.id} className="hover:shadow-md transition-shadow">
+                                        <CardHeader className="pb-3">
+                                            <CardTitle className="text-lg line-clamp-2">{event.title}</CardTitle>
+                                            <p className="text-sm text-muted-foreground">
+                                                by {event.organizer.name}
+                                            </p>
+                                        </CardHeader>
+                                        <CardContent className="space-y-3">
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-muted-foreground">Date:</span>
+                                                <span>{new Date(event.date).toLocaleDateString()}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-muted-foreground">Location:</span>
+                                                <span className="truncate ml-2">{event.location}</span>
+                                            </div>
+                                            
+                                            {/* Ticket Buyers Section */}
+                                            {ticketCount > 0 && (
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex -space-x-2">
+                                                        {displayBuyers.map((ticket) => (
+                                                            <div key={ticket.owner.id} className="size-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-xs font-medium overflow-hidden">
+                                                                <img 
+                                                                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${ticket.owner.name || ticket.owner.email}`}
+                                                                    alt={ticket.owner.name || ticket.owner.email}
+                                                                    className="w-full h-full"
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                        {remainingCount > 0 && (
+                                                            <div className="flex size-6 items-center justify-center rounded-full bg-muted border-2 border-background text-xs font-medium">
+                                                                +{remainingCount}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-sm text-muted-foreground">
+                                                        {ticketCount} going
+                                                    </span>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="pt-2">
+                                                <Link href={`/events/${event.id}`}>
+                                                    <Button size="sm" className="w-full">
+                                                        View Event
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
+                        </div>
+                        
+                        {popularEvents.length === 0 && (
+                            <Card>
+                                <CardContent className="py-8 text-center">
+                                    <p className="text-muted-foreground">No events available yet.</p>
+                                    <Link href="/events">
+                                        <Button className="mt-4">
+                                            Discover Events
+                                        </Button>
+                                    </Link>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
 
                 </div>
             </main>
+            <MobileNav userRole={user?.role} />
         </div>
     )
 }

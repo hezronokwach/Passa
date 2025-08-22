@@ -344,11 +344,11 @@ export default function Home() {
   }, []);
 
   const navigateToLogin = () => {
-    router.push('/login');
+    router.push('/events');
   };
 
   const navigateToRegister = () => {
-    router.push('/register');
+    router.push('/events');
   }
 
   const howItWorks = [
@@ -448,7 +448,7 @@ export default function Home() {
             </div>
             <div className="mt-12 text-center">
                 <Button size="lg" asChild>
-                    <Link href="/dashboard">View All Events <ArrowRight className="ml-2 size-4" /></Link>
+                    <Link href="/events">View All Events <ArrowRight className="ml-2 size-4" /></Link>
                 </Button>
             </div>
           </div>
