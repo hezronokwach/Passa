@@ -42,7 +42,18 @@ export async function generateEmailVerificationToken(email: string) {
 }
 
 export async function generatePasswordResetToken(email: string) {
-  return generateToken(email, 'passwordReset');
+  const token = crypto.randomBytes(32).toString('hex');
+  const expires = new Date(new Date().getTime() + 3600 * 1000); // 1 hour from now
+
+  await prisma.user.update({
+    where: { email },
+    data: {
+      passwordResetToken: token,
+      passwordResetExpires: expires,
+    },
+  });
+
+  return token;
 }
 
 export async function getCurrentUser() {
