@@ -36,6 +36,7 @@ const eventSchema = z.object({
   imageUrl: z.string().url("Please enter a valid image URL."),
   ticketPrice: z.coerce.number().min(0, "Price must be a positive number."),
   ticketQuantity: z.coerce.number().int().min(1, "You must offer at least 1 ticket."),
+  currency: z.string().min(2, "Currency is required."),
   artistSplit: z.coerce.number().int().min(0).max(100),
   venueSplit: z.coerce.number().int().min(0).max(100),
   passaSplit: z.coerce.number().int().min(0).max(100),
@@ -56,6 +57,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
     imageUrl: formData.get('imageUrl'),
     ticketPrice: formData.get('ticketPrice'),
     ticketQuantity: formData.get('ticketQuantity'),
+    currency: formData.get('currency'), // Add currency here
     artistSplit: formData.get('artistSplit'),
     venueSplit: formData.get('venueSplit'),
     passaSplit: formData.get('passaSplit'),
@@ -78,6 +80,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
       imageUrl, 
       ticketPrice, 
       ticketQuantity,
+      currency, // Add currency here
       artistSplit,
       venueSplit,
       passaSplit,
@@ -96,6 +99,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
         artistSplit,
         venueSplit,
         passaSplit,
+        currency, // Add currency here
         tickets: {
             create: [
                 {
