@@ -55,6 +55,7 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
   const [existingArtists, setExistingArtists] = React.useState<ExistingArtist[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [, setIsSearching] = React.useState(false);
+  const [validationError, setValidationError] = React.useState('');
   
   const [invitationState, sendInvitations] = useActionState(sendArtistInvitations, {
     message: '',
@@ -120,19 +121,66 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
   const budgetExceeded = remainingBudget < 0;
 
   const handleSendInvitations = (formData: FormData) => {
-    if (!totalBudget || artists.length === 0) {
+    setValidationError(''); // Clear previous errors
+    
+    // Validate message to artists
+    if (!eventMessage.trim()) {
+      const error = 'Please add a message to artists explaining the opportunity.';
+      setValidationError(error);
       toast({
-        title: 'Missing Information',
-        description: 'Please set a budget and add at least one artist.',
+        title: 'Message Required',
+        description: error,
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Validate budget
+    if (!totalBudget || parseFloat(totalBudget) <= 0) {
+      const error = 'Please enter a valid budget amount.';
+      setValidationError(error);
+      toast({
+        title: 'Budget Required',
+        description: error,
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Validate artists
+    if (artists.length === 0) {
+      const error = 'Please add at least one artist to invite.';
+      setValidationError(error);
+      toast({
+        title: 'No Artists Added',
+        description: error,
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Validate artist details
+    const incompleteArtists = artists.filter(artist => 
+      !artist.name.trim() || !artist.email.trim() || !artist.fee || parseFloat(artist.fee) <= 0
+    );
+    
+    if (incompleteArtists.length > 0) {
+      const error = 'Please fill in all required fields for each artist (name, email, fee).';
+      setValidationError(error);
+      toast({
+        title: 'Incomplete Artist Information',
+        description: error,
         variant: 'destructive'
       });
       return;
     }
 
     if (budgetExceeded) {
+      const error = 'Total artist fees exceed the available budget.';
+      setValidationError(error);
       toast({
         title: 'Budget Exceeded',
-        description: 'Total artist fees exceed the available budget.',
+        description: error,
         variant: 'destructive'
       });
       return;
@@ -213,14 +261,19 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="eventMessage">Message to Artists</Label>
+                    <Label htmlFor="eventMessage">Message to Artists <span className="text-red-500">*</span></Label>
                     <Textarea
                       id="eventMessage"
                       placeholder="Tell artists about this opportunity, your vision, and what you're looking for..."
                       value={eventMessage}
                       onChange={(e) => setEventMessage(e.target.value)}
                       rows={3}
+                      className={!eventMessage.trim() ? "border-red-300" : ""}
+                      required
                     />
+                    {!eventMessage.trim() && (
+                      <p className="text-sm text-orange-600">Message to artists is required</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -236,15 +289,21 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Label htmlFor="budget">Total Budget (USD)</Label>
+                    <Label htmlFor="budget">Total Budget (USD) <span className="text-red-500">*</span></Label>
                     <Input
                       id="budget"
                       type="number"
                       step="0.01"
+                      min="0"
                       placeholder="10000.00"
                       value={totalBudget}
                       onChange={(e) => setTotalBudget(e.target.value)}
+                      className={!totalBudget ? "border-red-300" : ""}
+                      required
                     />
+                    {!totalBudget && (
+                      <p className="text-sm text-orange-600">Budget is required to publish event</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -339,32 +398,39 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
                           </div>
                           <div className="grid md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                              <Label>Artist Name</Label>
+                              <Label>Artist Name <span className="text-red-500">*</span></Label>
                               <Input
                                 placeholder="Artist name"
                                 value={artist.name}
                                 onChange={(e) => updateArtist(artist.id, 'name', e.target.value)}
                                 disabled={artist.isExisting}
+                                className={!artist.name && !artist.isExisting ? "border-red-300" : ""}
+                                required
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label>Email</Label>
+                              <Label>Email <span className="text-red-500">*</span></Label>
                               <Input
                                 type="email"
                                 placeholder="artist@example.com"
                                 value={artist.email}
                                 onChange={(e) => updateArtist(artist.id, 'email', e.target.value)}
                                 disabled={artist.isExisting}
+                                className={!artist.email && !artist.isExisting ? "border-red-300" : ""}
+                                required
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label>Fee (USD)</Label>
+                              <Label>Fee (USD) <span className="text-red-500">*</span></Label>
                               <Input
                                 type="number"
                                 step="0.01"
+                                min="0"
                                 placeholder="5000.00"
                                 value={artist.fee}
                                 onChange={(e) => updateArtist(artist.id, 'fee', e.target.value)}
+                                className={!artist.fee ? "border-red-300" : ""}
+                                required
                               />
                             </div>
                           </div>
@@ -394,6 +460,18 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
                   )}
                 </CardContent>
               </Card>
+
+              {validationError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">!</span>
+                    </div>
+                    <p className="text-red-800 font-medium">Error</p>
+                  </div>
+                  <p className="text-red-700 mt-1">{validationError}</p>
+                </div>
+              )}
 
               <form action={handleSendInvitations}>
                 <div className="flex justify-end">

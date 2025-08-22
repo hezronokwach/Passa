@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Search, Briefcase, DollarSign, FileText, Calendar, MapPin } from 'lucide-react';
+import Link from 'next/link';
 import prisma from '@/lib/db';
 import { ApplyToPerformDialog } from '@/components/passa/apply-to-perform-dialog';
 import { getSession } from '@/lib/session';
@@ -52,29 +53,29 @@ export default async function OpportunitiesPage() {
     const events = await getOpportunities();
 
     return (
-        <div className="flex min-h-screen w-full flex-col bg-secondary/30">
+        <div className="flex min-h-screen w-full flex-col bg-background">
             <Header />
             <main className="flex-1">
                 <div className="container mx-auto px-4 py-8">
-                    <div className="text-center mb-12">
-                         <h1 className="font-headline text-4xl font-bold md:text-5xl">
-                           Find Events to Perform At
+                    <div className="mb-12">
+                         <h1 className="font-headline text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
+                           Performance Opportunities
                          </h1>
-                         <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
+                         <p className="text-xl text-muted-foreground max-w-2xl">
                             Browse upcoming events and apply to perform at the most exciting events in Africa.
                          </p>
                     </div>
 
                     {/* Search and Filter Bar */}
-                    <Card className="p-4 mb-8">
+                    <Card className="border-0 shadow-lg p-6 mb-8">
                         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
                                 <Input placeholder="Search by title or keyword..." className="pl-10" />
                             </div>
                             <Select>
                                 <SelectTrigger>
-                                    <Briefcase className="mr-2 text-muted-foreground"/>
+                                    <Briefcase className="mr-2 text-muted-foreground size-4"/>
                                     <SelectValue placeholder="All Categories" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -86,7 +87,7 @@ export default async function OpportunitiesPage() {
                             </Select>
                             <Select>
                                 <SelectTrigger>
-                                    <DollarSign className="mr-2 text-muted-foreground"/>
+                                    <DollarSign className="mr-2 text-muted-foreground size-4"/>
                                     <SelectValue placeholder="Any Budget" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -95,7 +96,7 @@ export default async function OpportunitiesPage() {
                                     <SelectItem value=">5000">Over $5,000</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Button className="font-bold w-full">Search</Button>
+                            <Button className="w-full shadow-sm">Search</Button>
                         </div>
                     </Card>
 
@@ -103,39 +104,52 @@ export default async function OpportunitiesPage() {
                     {events.length > 0 ? (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {events.map(event => (
-                                <Card key={event.id} className="hover:shadow-lg transition-shadow">
+                                <Card key={event.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                                     <CardHeader>
-                                        <div className="flex items-start justify-between">
-                                            <Badge variant="secondary">Performance</Badge>
+                                        <div className="flex items-start justify-between mb-2">
+                                            <Badge className="bg-primary/10 text-primary hover:bg-primary/20">Performance</Badge>
                                             <div className="text-right">
                                                 <p className="text-xs text-muted-foreground">Apply to Perform</p>
                                             </div>
                                         </div>
-                                        <CardTitle className="text-xl">{event.title}</CardTitle>
+                                        <CardTitle className="text-xl line-clamp-2">{event.title}</CardTitle>
                                         <CardDescription className="line-clamp-2">{event.description}</CardDescription>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Calendar className="h-4 w-4" />
-                                                <span>{new Date(event.date).toLocaleDateString()}</span>
-                                                <MapPin className="h-4 w-4 ml-2" />
-                                                <span>{event.location}</span>
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                    <Calendar className="size-4 text-primary" />
+                                                    <span className="font-medium">{new Date(event.date).toLocaleDateString('en-US', {
+                                                        weekday: 'short',
+                                                        month: 'short', 
+                                                        day: 'numeric',
+                                                        year: 'numeric'
+                                                    })}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                    <MapPin className="size-4 text-primary" />
+                                                    <span className="font-medium">{event.location}</span>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-2 text-sm">
+                                            <div className="flex items-center gap-2 text-sm p-3 bg-muted/50 rounded-lg">
                                                 <span className="font-medium">Organizer:</span>
                                                 <span>{event.organizer.name}</span>
                                             </div>
                                             <div className="flex items-center justify-between pt-2">
                                                 <span className="text-sm text-muted-foreground">
-                                                    {event._count.artistInvitations} artist{event._count.artistInvitations !== 1 ? 's' : ''} invited
+                                                    {event._count.artistInvitations} artist{event._count.artistInvitations !== 1 ? 's' : ''} applied
                                                 </span>
                                                 {event.artistInvitations && event.artistInvitations.length > 0 ? (
-                                                    <Button size="sm" variant="outline" disabled>
+                                                    <Badge variant={
+                                                        event.artistInvitations[0].status === 'ACCEPTED' ? 'default' :
+                                                        event.artistInvitations[0].status === 'REJECTED' ? 'destructive' :
+                                                        'secondary'
+                                                    }>
                                                         {event.artistInvitations[0].status === 'PENDING' ? 'Applied' :
                                                          event.artistInvitations[0].status === 'ACCEPTED' ? 'Accepted' :
                                                          'Rejected'}
-                                                    </Button>
+                                                    </Badge>
                                                 ) : (
                                                     <ApplyToPerformDialog event={event} />
                                                 )}
@@ -146,10 +160,15 @@ export default async function OpportunitiesPage() {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center text-muted-foreground py-24">
-                            <FileText className="mx-auto size-16 mb-4" />
-                            <h3 className="font-semibold text-xl">No Events Available</h3>
-                            <p>There are currently no upcoming events. Please check back later!</p>
+                        <div className="text-center py-20">
+                            <div className="p-4 bg-muted/50 rounded-full w-fit mx-auto mb-6">
+                                <FileText className="size-12 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-2xl font-semibold mb-2">No Events Available</h3>
+                            <p className="text-muted-foreground mb-6">There are currently no upcoming events. Please check back later!</p>
+                            <Button asChild>
+                                <Link href="/events">Browse All Events</Link>
+                            </Button>
                         </div>
                     )}
                 </div>

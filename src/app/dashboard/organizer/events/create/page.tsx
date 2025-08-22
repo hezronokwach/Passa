@@ -11,14 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { ArrowLeft, PartyPopper, Calendar, Clock, Plus, Trash2, Upload, X } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Upload, X } from 'lucide-react';
 import Link from 'next/link';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
 import Image from 'next/image';
 
 type TicketTier = {
@@ -48,9 +44,9 @@ function SubmitButton() {
 export default function CreateEventPage() {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = React.useState(1);
-  const [selectedDate, setSelectedDate] = React.useState<Date>();
-  const [selectedTime, setSelectedTime] = React.useState('');
-  const [dateTimeInput, setDateTimeInput] = React.useState('');
+
+  const [dateInput, setDateInput] = React.useState('');
+  const [timeInput, setTimeInput] = React.useState('');
   const [ticketTiers, setTicketTiers] = React.useState<TicketTier[]>([
     { id: '1', name: 'General Admission', price: '50', quantity: '100' }
   ]);
@@ -73,16 +69,21 @@ export default function CreateEventPage() {
   React.useEffect(() => {
     if (state.success) {
       toast({
-        title: 'Event Created!',
-        description: state.message,
-        action: <div className="p-1"><PartyPopper className="text-primary"/></div>
+        title: '🎉 Event Created Successfully!',
+        description: 'Your event has been created and saved as a draft. You can now publish it to invite artists.',
+        duration: 4000,
       });
       // Redirect after showing success message
       setTimeout(() => {
         window.location.href = '/dashboard/organizer';
-      }, 2000);
+      }, 3000);
     } else if (state.message && !state.success && Object.keys(state.errors).length === 0) {
-      toast({ title: 'Error', description: state.message, variant: 'destructive' });
+      toast({ 
+        title: 'Error Creating Event', 
+        description: state.message, 
+        variant: 'destructive',
+        duration: 5000
+      });
     }
   }, [state, toast]);
 
@@ -107,8 +108,8 @@ export default function CreateEventPage() {
   };
 
   const isStep1Valid = () => {
-    const hasValidDate = selectedDate || (dateTimeInput && dateTimeInput.includes('T'));
-    const hasValidTime = selectedTime.length > 0;
+    const hasValidDate = Boolean(dateInput);
+    const hasValidTime = Boolean(timeInput);
     const hasValidImage = step1Data.imageUrl.length > 0 || uploadedImage;
     
     return step1Data.title.length >= 3 && 
@@ -158,14 +159,13 @@ export default function CreateEventPage() {
     formData.set('country', step1Data.country);
     formData.set('imageUrl', step1Data.imageUrl || `https://placehold.co/600x400.png?text=${encodeURIComponent(step1Data.title)}`);
 
-    // Handle date/time
-    if (dateTimeInput && dateTimeInput.includes('T')) {
-      const [dateStr] = dateTimeInput.split('T');
-      formData.set('date', dateStr);
-    } else if (selectedDate) {
-      formData.set('date', format(selectedDate, 'yyyy-MM-dd'));
+    // Handle date and time separately
+    if (dateInput) {
+      formData.set('date', dateInput);
     }
-    formData.set('time', selectedTime);
+    if (timeInput) {
+      formData.set('time', timeInput);
+    }
 
     // Handle image upload
     if (uploadedImage) {
@@ -221,123 +221,86 @@ export default function CreateEventPage() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-2">
-                      <Label htmlFor="title">Event Title</Label>
+                      <Label htmlFor="title">Event Title <span className="text-red-500">*</span></Label>
                       <Input 
                         id="title" 
                         name="title" 
                         placeholder="e.g., Afrochella Festival" 
                         value={step1Data.title}
                         onChange={(e) => setStep1Data({...step1Data, title: e.target.value})}
+                        className={step1Data.title.length > 0 && step1Data.title.length < 3 ? "border-red-300" : ""}
                       />
                       {state.errors?.title && <p className="text-sm text-destructive">{state.errors.title[0]}</p>}
+                      {step1Data.title.length > 0 && step1Data.title.length < 3 && (
+                        <p className="text-sm text-orange-600">Title must be at least 3 characters</p>
+                      )}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="description">Event Description</Label>
+                      <Label htmlFor="description">Event Description <span className="text-red-500">*</span></Label>
                       <Textarea 
                         id="description" 
                         name="description" 
                         placeholder="Tell everyone what makes your event special..." 
                         value={step1Data.description}
                         onChange={(e) => setStep1Data({...step1Data, description: e.target.value})}
+                        className={step1Data.description.length > 0 && step1Data.description.length < 10 ? "border-red-300" : ""}
                       />
                       {state.errors?.description && <p className="text-sm text-destructive">{state.errors.description[0]}</p>}
+                      {step1Data.description.length > 0 && step1Data.description.length < 10 && (
+                        <p className="text-sm text-orange-600">Description must be at least 10 characters</p>
+                      )}
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="location">Location</Label>
+                        <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
                         <Input 
                           id="location" 
                           name="location" 
                           placeholder="e.g., Nairobi" 
                           value={step1Data.location}
                           onChange={(e) => setStep1Data({...step1Data, location: e.target.value})}
+                          className={step1Data.location.length > 0 && step1Data.location.length < 2 ? "border-red-300" : ""}
                         />
                         {state.errors?.location && <p className="text-sm text-destructive">{state.errors.location[0]}</p>}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="country">Country</Label>
+                        <Label htmlFor="country">Country <span className="text-red-500">*</span></Label>
                         <Input 
                           id="country" 
                           name="country" 
                           placeholder="e.g., Kenya" 
                           value={step1Data.country}
                           onChange={(e) => setStep1Data({...step1Data, country: e.target.value})}
+                          className={step1Data.country.length > 0 && step1Data.country.length < 2 ? "border-red-300" : ""}
                         />
                         {state.errors?.country && <p className="text-sm text-destructive">{state.errors.country[0]}</p>}
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label>Event Date</Label>
-                        <Tabs defaultValue="picker" className="w-full">
-                          <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="picker">Date Picker</TabsTrigger>
-                            <TabsTrigger value="manual">Manual Input</TabsTrigger>
-                          </TabsList>
-                          <TabsContent value="picker">
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  className={cn(
-                                    "w-full justify-start text-left font-normal",
-                                    !selectedDate && "text-muted-foreground"
-                                  )}
-                                >
-                                  <Calendar className="mr-2 h-4 w-4" />
-                                  {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <CalendarComponent
-                                  mode="single"
-                                  selected={selectedDate}
-                                  onSelect={setSelectedDate}
-                                  disabled={(date) => date < new Date()}
-                                  initialFocus
-                                  className="rounded-md border"
-                                />
-                              </PopoverContent>
-                            </Popover>
-                          </TabsContent>
-                          <TabsContent value="manual">
-                            <Input
-                              type="date"
-                              value={dateTimeInput ? dateTimeInput.split('T')[0] : ''}
-                              onChange={(e) => {
-                                const dateValue = e.target.value;
-                                const timeValue = dateTimeInput ? dateTimeInput.split('T')[1] || '09:00' : '09:00';
-                                setDateTimeInput(`${dateValue}T${timeValue}`);
-                              }}
-                              min={format(new Date(), "yyyy-MM-dd")}
-                            />
-                          </TabsContent>
-                        </Tabs>
+                        <Label htmlFor="eventDate">Event Date <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="eventDate"
+                          type="date"
+                          value={dateInput}
+                          onChange={(e) => setDateInput(e.target.value)}
+                          min={new Date().toISOString().slice(0, 10)}
+                        />
                         {state.errors?.date && <p className="text-sm text-destructive">{state.errors.date[0]}</p>}
                       </div>
                       <div className="space-y-2">
-                        <Label>Event Time</Label>
-                        <Select value={selectedTime} onValueChange={setSelectedTime}>
-                          <SelectTrigger>
-                            <Clock className="mr-2 h-4 w-4" />
-                            <SelectValue placeholder="Select time" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Array.from({ length: 24 }, (_, i) => {
-                              const hour = i.toString().padStart(2, '0');
-                              return (
-                                <SelectItem key={`${hour}:00`} value={`${hour}:00`}>
-                                  {i === 0 ? '12:00 AM' : i < 12 ? `${i}:00 AM` : i === 12 ? '12:00 PM' : `${i - 12}:00 PM`}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
+                        <Label htmlFor="eventTime">Event Time <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="eventTime"
+                          type="time"
+                          value={timeInput}
+                          onChange={(e) => setTimeInput(e.target.value)}
+                        />
                         {state.errors?.time && <p className="text-sm text-destructive">{state.errors.time[0]}</p>}
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label>Event Image</Label>
+                      <Label>Event Image <span className="text-red-500">*</span></Label>
                       <Tabs defaultValue="upload" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
                           <TabsTrigger value="upload">Upload Image</TabsTrigger>
@@ -453,30 +416,35 @@ export default function CreateEventPage() {
                           <CardContent className="pt-6">
                             <div className="grid md:grid-cols-4 gap-4">
                               <div className="space-y-2">
-                                <Label>Tier Name</Label>
+                                <Label>Tier Name <span className="text-red-500">*</span></Label>
                                 <Input
                                   value={tier.name}
                                   onChange={(e) => updateTicketTier(tier.id, 'name', e.target.value)}
                                   placeholder="Tier name"
+                                  required
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label>Price (USD)</Label>
+                                <Label>Price (USD) <span className="text-red-500">*</span></Label>
                                 <Input
                                   type="number"
                                   step="0.01"
+                                  min="0"
                                   value={tier.price}
                                   onChange={(e) => updateTicketTier(tier.id, 'price', e.target.value)}
                                   placeholder="0.00"
+                                  required
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label>Quantity</Label>
+                                <Label>Quantity <span className="text-red-500">*</span></Label>
                                 <Input
                                   type="number"
+                                  min="1"
                                   value={tier.quantity}
                                   onChange={(e) => updateTicketTier(tier.id, 'quantity', e.target.value)}
                                   placeholder="100"
+                                  required
                                 />
                               </div>
                               <div className="flex items-end">
