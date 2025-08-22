@@ -115,6 +115,11 @@ export function NotificationBell() {
           variant: 'destructive'
         });
       }
+    } else if (notification.type === 'ARTIST_APPLICATION') {
+      // Redirect organizer to event management page
+      markAsRead(notification.id);
+      window.location.href = `/dashboard/organizer/events/${notification.data.eventId}`;
+      return;
     }
     markAsRead(notification.id);
   };

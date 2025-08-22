@@ -103,7 +103,7 @@ export default async function FanArtistsPage() {
                 Back to Dashboard
               </Link>
               <h1 className="font-headline text-3xl font-bold md:text-4xl">
-                Artists I've Attended
+                Artists I&apos;ve Attended
               </h1>
             </div>
           </div>
@@ -139,7 +139,7 @@ export default async function FanArtistsPage() {
                   </CardHeader>
                   <CardContent className="flex-1">
                     <CardDescription className="line-clamp-2 mb-4">
-                      {artist.bio || "This creator hasn't added a bio yet."}
+                      {artist.bio || "This creator hasn&apos;t added a bio yet."}
                     </CardDescription>
                     <div className="flex justify-between text-sm text-muted-foreground">
                       <span>{artist._count.portfolio} portfolio items</span>
