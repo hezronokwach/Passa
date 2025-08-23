@@ -73,13 +73,13 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     const event = await getEventDetails(id);
 
     // Check if user already has a ticket (not used currently, so removed to satisfy lint)
-    // const userHasTicket = session?.userId ? await prisma.purchasedTicket.findFirst({
-    //     where: {
-    //         eventId: parseInt(id),
-    //         ownerId: session.userId,
-    //         status: 'ACTIVE'
-    //     }
-    // }) : null;
+    const userHasTicket = session?.userId ? await prisma.purchasedTicket.findFirst({
+        where: {
+            eventId: parseInt(id),
+            ownerId: session.userId,
+            status: 'ACTIVE'
+        }
+    }) : null;
 
     if (!event) {
         notFound();
