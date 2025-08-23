@@ -1,6 +1,4 @@
-
-
-'use server';
+'use client';
 
 
 
@@ -22,8 +20,7 @@ import {
 } from "@/components/ui/table"
 
 import { Badge } from '@/components/ui/badge';
-import prisma from '@/lib/db';
-import { getSession } from '@/lib/session';
+
 import { useActionState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import type { Submission } from '@prisma/client';
@@ -33,33 +30,7 @@ import React from 'react';
 
 
 
-async function getEventData(eventId: number) {
-    const session = await getSession();
-    const userId = session!.userId;
 
-    const event = await prisma.event.findUnique({
-        where: { id: eventId, organizerId: userId },
-        include: {
-            tickets: true,
-            artistInvitations: {
-                include: {
-                    artist: true,
-                },
-                orderBy: {
-                    createdAt: 'desc',
-                }
-            },
-            purchasedTickets: true,
-            _count: {
-                select: {
-                    purchasedTickets: true,
-                    artistInvitations: true
-                }
-            }
-        }
-    });
-    return event;
-}
 
 const getStatusIcon = (status: string) => {
     switch (status) {
@@ -126,10 +97,35 @@ function ActionButtons({ submission, eventId }: { submission: Submission, eventI
     );
 }
 
-export default async function EventSubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
+export default function EventSubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = React.use(params);
     const eventId = parseInt(id, 10);
-    const event = await getEventData(eventId);
+    const [event, setEvent] = React.useState<any>(null);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchEvent = async () => {
+            try {
+                const response = await fetch(`/api/events/${eventId}`);
+                if (response.ok) {
+                    const eventData = await response.json();
+                    setEvent(eventData);
+                } else {
+                    console.error('Failed to fetch event');
+                }
+            } catch (error) {
+                console.error('Error fetching event:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchEvent();
+    }, [eventId]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     if (!event) {
         return (

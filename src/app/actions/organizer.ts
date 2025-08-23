@@ -36,15 +36,13 @@ const eventSchema = z.object({
   time: z.string().min(1, "Time is required."),
   imageUrl: z.string().url("Please enter a valid image URL.").or(z.string().min(1, "Image is required.")),
   tickets: z.string().min(1, "At least one ticket tier is required."),
-  ticketPrice: z.coerce.number().min(0, "Price must be a positive number."),
-  ticketQuantity: z.coerce.number().int().min(1, "You must offer at least 1 ticket."),
-  currency: z.string().min(2, "Currency is required."),
-  artistSplit: z.coerce.number().int().min(0).max(100),
-  venueSplit: z.coerce.number().int().min(0).max(100),
-  passaSplit: z.coerce.number().int().min(0).max(100),
-}).refine(data => data.artistSplit + data.venueSplit + data.passaSplit === 100, {
-    message: "The sum of all splits must be exactly 100.",
-    path: ["revenueSplits"], // Assign error to a custom path
+  // Make these optional since they're not used in current workflow
+  ticketPrice: z.coerce.number().min(0).optional().nullable(),
+  ticketQuantity: z.coerce.number().int().min(1).optional().nullable(),
+  currency: z.string().min(2).optional().nullable(),
+  artistSplit: z.coerce.number().int().min(0).max(100).optional().nullable(),
+  venueSplit: z.coerce.number().int().min(0).max(100).optional().nullable(),
+  passaSplit: z.coerce.number().int().min(0).max(100).optional().nullable(),
 });
 
 export async function createEvent(prevState: unknown, formData: FormData) {
@@ -107,10 +105,11 @@ export async function createEvent(prevState: unknown, formData: FormData) {
         date: eventDateTime,
         imageUrl,
         organizerId: userId,
-        artistSplit,
-        venueSplit,
-        passaSplit,
-        currency, // Add currency here
+        // Set defaults for optional fields
+        artistSplit: artistSplit || 70,
+        venueSplit: venueSplit || 20,
+        passaSplit: passaSplit || 10,
+        currency: currency || 'USD',
         tickets: {
           create: ticketTiers.map((tier: { name: string; price: string; quantity: string }) => ({
             name: tier.name,

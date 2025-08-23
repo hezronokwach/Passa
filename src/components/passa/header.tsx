@@ -19,6 +19,7 @@ import { UserCircle2, LayoutDashboard, User } from 'lucide-react';
 import { useActionState, useState, useEffect } from 'react';
 import React from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { NotificationBell } from './notifications';
 
 export const Header = () => {
   const [state, formAction] = useActionState(logout, undefined);
@@ -94,6 +95,7 @@ export const Header = () => {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <NotificationBell />
           <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2">
             {isAuthenticated ? (
