@@ -123,12 +123,12 @@ export function WalletProfile({ userWallet }: WalletProfileProps) {
                 </div>
               </div>
 
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="rounded-xl border bg-card/60 p-4 backdrop-blur-sm dark:bg-card/20">
                 <div className="flex items-center gap-2 mb-2">
-                  <Wallet className="h-4 w-4 text-blue-600" />
-                  <p className="text-sm font-medium text-blue-800">Secret Key</p>
+                  <Wallet className="h-4 w-4 text-primary" />
+                  <p className="text-sm font-medium text-foreground">Secret Key</p>
                 </div>
-                <p className="text-xs text-blue-700 mb-3">
+                <p className="text-xs text-muted-foreground mb-3">
                   Your secret key is needed for smart contract transactions. Keep it secure.
                 </p>
                 
@@ -141,14 +141,14 @@ export function WalletProfile({ userWallet }: WalletProfileProps) {
                     >
                       {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
-                    <span className="text-xs text-blue-700">
+                    <span className="text-xs text-muted-foreground">
                       {showSecret ? 'Hide' : 'Show'} Secret Key
                     </span>
                   </div>
                   
                   {showSecret && (
                     <div className="flex items-center gap-2">
-                      <code className="text-xs bg-blue-100 p-2 rounded flex-1 break-all font-mono">
+                      <code className="text-xs bg-muted/50 p-2 rounded flex-1 break-all font-mono text-foreground">
                         {secretKey || 'Could not retrieve secret key.'}
                       </code>
                       {(secretKey) && (
