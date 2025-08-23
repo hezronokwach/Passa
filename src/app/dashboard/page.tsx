@@ -8,13 +8,15 @@ import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import prisma from '@/lib/db';
-import type { Event } from '@prisma/client';
+import type { Event, Ticket } from '@prisma/client';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation'; 
 
 
-type TranslatedEvent = Event & {
+type EventWithTickets = Event & { tickets: Ticket[] };
+
+type TranslatedEvent = EventWithTickets & {
   translatedTitle: string;
   price: number;
   currency: string;

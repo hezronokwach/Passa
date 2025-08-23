@@ -33,6 +33,8 @@ export default async function FanProfilePage() {
     return redirect('/login');
   }
 
+  const session = await getSession();
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />
@@ -63,7 +65,7 @@ export default async function FanProfilePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form action={updateUserProfile} className="space-y-4">
+                  <form action={async (formData) => {await updateUserProfile(formData)}} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
                       <Input 
@@ -143,7 +145,11 @@ export default async function FanProfilePage() {
           </div>
         </div>
       </main>
-      <MobileNav userRole={session?.role} />
+      <MobileNav 
+        isAuthenticated={!!session}
+        dashboardPath="/dashboard/fan"
+        navItems={[]}
+      />
     </div>
   );
 }

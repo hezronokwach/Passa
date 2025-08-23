@@ -5,7 +5,7 @@
 import React from 'react';
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Ticket, Download, QrCode } from 'lucide-react';
+import { ArrowLeft, Ticket, Download } from 'lucide-react';
 import Link from 'next/link';
 import { TicketStub } from '@/components/passa/ticket-stub';
 import type { Event, PurchasedTicket } from '@prisma/client';
@@ -23,6 +23,7 @@ type TranslatedPurchasedTicket = PurchasedTicket & {
         imageHint: string;
     };
     qrCode?: string;
+    owner: { name: string | null } | null;
 };
 
 async function getAuthenticatedFanId() {
@@ -93,6 +94,8 @@ export default async function MyTicketsPage() {
     
     const tickets = await getFanTickets();
 
+    const session = await getSession();
+
     return (
         <div className="flex min-h-screen w-full flex-col bg-secondary/30">
             <Header />
@@ -140,7 +143,11 @@ export default async function MyTicketsPage() {
                     </div>
                 </div>
             </main>
-            <MobileNav userRole="FAN" />
+            <MobileNav 
+                isAuthenticated={!!session}
+                dashboardPath="/dashboard/fan"
+                navItems={[]}
+            />
         </div>
     );
 }

@@ -78,9 +78,9 @@ export default function CreateEventPage() {
         window.location.href = '/dashboard/organizer';
       }, 3000);
     } else if (state.message && !state.success && Object.keys(state.errors).length === 0) {
-      toast({ 
-        title: 'Error Creating Event', 
-        description: state.message, 
+      toast({
+        title: 'Error Creating Event',
+        description: state.message,
         variant: 'destructive',
         duration: 5000
       });
@@ -102,7 +102,7 @@ export default function CreateEventPage() {
   };
 
   const updateTicketTier = (id: string, field: keyof TicketTier, value: string) => {
-    setTicketTiers(ticketTiers.map(tier => 
+    setTicketTiers(ticketTiers.map(tier =>
       tier.id === id ? { ...tier, [field]: value } : tier
     ));
   };
@@ -111,11 +111,11 @@ export default function CreateEventPage() {
     const hasValidDate = Boolean(dateInput);
     const hasValidTime = Boolean(timeInput);
     const hasValidImage = step1Data.imageUrl.length > 0 || uploadedImage;
-    
-    return step1Data.title.length >= 3 && 
-           step1Data.description.length >= 10 && 
-           step1Data.location.length >= 2 && 
-           step1Data.country.length >= 2 && 
+
+    return step1Data.title.length >= 3 &&
+           step1Data.description.length >= 10 &&
+           step1Data.location.length >= 2 &&
+           step1Data.country.length >= 2 &&
            hasValidDate &&
            hasValidTime &&
            hasValidImage;
@@ -186,7 +186,7 @@ export default function CreateEventPage() {
               <ArrowLeft className="size-4" />
               Back to Dashboard
             </Link>
-            
+
             <div className="mb-8">
               <div className="flex items-center space-x-4">
                 <div className={cn(
@@ -222,10 +222,10 @@ export default function CreateEventPage() {
                   <CardContent className="space-y-6">
                     <div className="space-y-2">
                       <Label htmlFor="title">Event Title <span className="text-red-500">*</span></Label>
-                      <Input 
-                        id="title" 
-                        name="title" 
-                        placeholder="e.g., Afrochella Festival" 
+                      <Input
+                        id="title"
+                        name="title"
+                        placeholder="e.g., Afrochella Festival"
                         value={step1Data.title}
                         onChange={(e) => setStep1Data({...step1Data, title: e.target.value})}
                         className={step1Data.title.length > 0 && step1Data.title.length < 3 ? "border-red-300" : ""}
@@ -237,10 +237,10 @@ export default function CreateEventPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="description">Event Description <span className="text-red-500">*</span></Label>
-                      <Textarea 
-                        id="description" 
-                        name="description" 
-                        placeholder="Tell everyone what makes your event special..." 
+                      <Textarea
+                        id="description"
+                        name="description"
+                        placeholder="Tell everyone what makes your event special..."
                         value={step1Data.description}
                         onChange={(e) => setStep1Data({...step1Data, description: e.target.value})}
                         className={step1Data.description.length > 0 && step1Data.description.length < 10 ? "border-red-300" : ""}
@@ -253,10 +253,10 @@ export default function CreateEventPage() {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
-                        <Input 
-                          id="location" 
-                          name="location" 
-                          placeholder="e.g., Nairobi" 
+                        <Input
+                          id="location"
+                          name="location"
+                          placeholder="e.g., Nairobi"
                           value={step1Data.location}
                           onChange={(e) => setStep1Data({...step1Data, location: e.target.value})}
                           className={step1Data.location.length > 0 && step1Data.location.length < 2 ? "border-red-300" : ""}
@@ -265,10 +265,10 @@ export default function CreateEventPage() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="country">Country <span className="text-red-500">*</span></Label>
-                        <Input 
-                          id="country" 
-                          name="country" 
-                          placeholder="e.g., Kenya" 
+                        <Input
+                          id="country"
+                          name="country"
+                          placeholder="e.g., Kenya"
                           value={step1Data.country}
                           onChange={(e) => setStep1Data({...step1Data, country: e.target.value})}
                           className={step1Data.country.length > 0 && step1Data.country.length < 2 ? "border-red-300" : ""}
@@ -354,10 +354,10 @@ export default function CreateEventPage() {
                         <TabsContent value="url">
                           <div className="space-y-2">
                             <Label htmlFor="imageUrl">Image URL</Label>
-                            <Input 
-                              id="imageUrl" 
-                              name="imageUrl" 
-                              placeholder="https://placehold.co/600x400.png" 
+                            <Input
+                              id="imageUrl"
+                              name="imageUrl"
+                              placeholder="https://placehold.co/600x400.png"
                               value={step1Data.imageUrl}
                               onChange={(e) => setStep1Data({...step1Data, imageUrl: e.target.value})}
                             />
@@ -367,8 +367,8 @@ export default function CreateEventPage() {
                       {state.errors?.imageUrl && <p className="text-sm text-destructive">{state.errors.imageUrl[0]}</p>}
                     </div>
                     <div className="flex justify-end">
-                      <Button 
-                        type="button" 
+                      <Button
+                        type="button"
                         onClick={handleStep1Next}
                         disabled={!isStep1Valid()}
                       >

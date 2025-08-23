@@ -38,7 +38,7 @@ export default function LoginPage() {
     useEffect(() => {
         if (state?.success) {
             toast({ title: 'Success!', description: state.message });
-            
+
             // Redirect based on role
             switch (state?.role) {
                 case 'ADMIN':

@@ -52,3 +52,6 @@ Thumbs.db
 
 frontend/node_modules/.vite/deps
 backend/logs
+.gitignore
+.env
+.env.example

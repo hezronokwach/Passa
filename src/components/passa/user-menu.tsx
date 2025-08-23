@@ -13,6 +13,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { logout } from '@/app/actions/auth';
 import { User } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import React from 'react';
 
 interface UserMenuProps {
   user: {
@@ -37,6 +40,22 @@ function LogoutButton() {
 }
 
 export function UserMenu({ user }: UserMenuProps) {
+  const { toast } = useToast();
+  const [state, formAction] = useActionState(logout, undefined);
+
+  React.useEffect(() => {
+    if (state?.message) {
+      toast({
+        title: state.success ? 'Success!' : 'Error',
+        description: state.message,
+        variant: state.success ? 'default' : 'destructive',
+      });
+      if (state.success) {
+        window.location.href = '/login';
+      }
+    }
+  }, [state, toast]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -65,7 +84,7 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            <form action={logout} className="w-full">
+            <form action={formAction} className="w-full">
                 <LogoutButton />
             </form>
         </DropdownMenuItem>

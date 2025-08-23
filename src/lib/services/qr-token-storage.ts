@@ -58,7 +58,7 @@ export class QRTokenStorage {
         where: { token }
       });
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

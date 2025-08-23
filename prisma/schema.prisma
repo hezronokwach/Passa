@@ -71,6 +71,7 @@ model Event {
   artistSplit       Int                @default(70)
   venueSplit        Int                @default(20)
   passaSplit        Int                @default(10)
+  currency         String            @default("USD") // Add currency field
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   published         Boolean            @default(false)

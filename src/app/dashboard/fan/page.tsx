@@ -3,8 +3,9 @@
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Ticket, Star, Compass, GanttChart, User } from 'lucide-react';
+import { Ticket, Star, Compass, GanttChart } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
 import { MobileNav } from '@/components/passa/mobile-nav';
@@ -236,10 +237,11 @@ export default async function FanDashboardPage() {
                                                     <div className="flex -space-x-2">
                                                         {displayBuyers.map((ticket) => (
                                                             <div key={ticket.owner.id} className="size-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-xs font-medium overflow-hidden">
-                                                                <img 
+                                                                <Image 
                                                                     src={`https://api.dicebear.com/7.x/initials/svg?seed=${ticket.owner.name || ticket.owner.email}`}
                                                                     alt={ticket.owner.name || ticket.owner.email}
-                                                                    className="w-full h-full"
+                                                                    fill
+                                                                    className="object-cover"
                                                                 />
                                                             </div>
                                                         ))}
@@ -284,7 +286,11 @@ export default async function FanDashboardPage() {
 
                 </div>
             </main>
-            <MobileNav userRole={user?.role} />
+            <MobileNav 
+        isAuthenticated={!!user}
+        dashboardPath="/dashboard/fan"
+        navItems={[]}
+      />
         </div>
     )
 }

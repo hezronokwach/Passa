@@ -69,7 +69,7 @@ export default async function EventsPage() {
               </div>
             </div>
           )}
-          
+
           {events.length === 0 ? (
             <div className="text-center py-20">
               <div className="max-w-md mx-auto">
@@ -103,9 +103,9 @@ export default async function EventsPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {upcomingEvents.map((event) => (
-                      <EventCard 
-                        key={event.id} 
-                        event={event} 
+                      <EventCard
+                        key={event.id}
+                        event={event}
                         userRole={session?.role}
                         userId={session?.userId}
                       />
@@ -128,9 +128,9 @@ export default async function EventsPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {pastEvents.map((event) => (
-                      <EventCard 
-                        key={event.id} 
-                        event={event} 
+                      <EventCard
+                        key={event.id}
+                        event={event}
                         userRole={session?.role}
                         userId={session?.userId}
                       />

@@ -66,7 +66,7 @@ export class QRVerificationService {
       }
 
       // Check if ticket is valid
-      if (ticket.status !== 'VALID') {
+      if (ticket.status !== 'ACTIVE') {
         return {
           success: false,
           message: 'Ticket is not valid',

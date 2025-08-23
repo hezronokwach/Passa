@@ -1,6 +1,4 @@
-
-
-'use server';
+'use client';
 
 
 
@@ -9,9 +7,7 @@ import { InviteWithFeeDialog } from '@/components/passa/invite-with-fee-dialog';
 import { DirectInviteDialog } from '@/components/passa/direct-invite-dialog';
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-
 import { ArrowLeft, CheckCircle, Clock, XCircle, FileText, Users, Ticket, DollarSign, Calendar, Settings, MapPin, Music, TrendingUp, Eye } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -24,40 +20,14 @@ import {
 } from "@/components/ui/table"
 
 import { Badge } from '@/components/ui/badge';
-import prisma from '@/lib/db';
-
-import { getSession } from '@/lib/session';
 
 
+import React from 'react';
 
 
-async function getEventData(eventId: number) {
-    const session = await getSession();
-    const userId = session!.userId;
 
-    const event = await prisma.event.findUnique({
-        where: { id: eventId, organizerId: userId },
-        include: {
-            tickets: true,
-            artistInvitations: {
-                include: {
-                    artist: true,
-                },
-                orderBy: {
-                    createdAt: 'desc',
-                }
-            },
-            purchasedTickets: true,
-            _count: {
-                select: {
-                    purchasedTickets: true,
-                    artistInvitations: true
-                }
-            }
-        }
-    });
-    return event;
-}
+
+
 
 const getStatusIcon = (status: string) => {
     switch (status) {
@@ -85,10 +55,54 @@ function StatusBadge({ status }: { status: string }) {
 
 
 
-export default async function EventSubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
+export default function EventSubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = React.use(params);
     const eventId = parseInt(id, 10);
-    const event = await getEventData(eventId);
+    interface EventData {
+        id: number;
+        title: string;
+        published: boolean;
+        date: string;
+        location: string;
+        tickets: Array<{ id: number; price: number; quantity: number }>;
+        artistInvitations: Array<{
+            id: number;
+            artistName: string;
+            status: string;
+            proposedFee: number;
+            message?: string;
+            artist?: { email: string };
+        }>;
+        purchasedTickets: Array<{ ticketId: number }>;
+        _count: { purchasedTickets: number; artistInvitations: number };
+    }
+    
+    const [event, setEvent] = React.useState<EventData | null>(null);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchEvent = async () => {
+            try {
+                const response = await fetch(`/api/events/${eventId}`);
+                if (response.ok) {
+                    const eventData = await response.json();
+                    setEvent(eventData);
+                } else {
+                    console.error('Failed to fetch event');
+                }
+            } catch (error) {
+                console.error('Error fetching event:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchEvent();
+    }, [eventId]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     if (!event) {
         return (
@@ -101,7 +115,7 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
             </div>
         )
     }
-    
+
     return (
         <div className="flex min-h-screen w-full flex-col bg-secondary/30">
             <Header />
@@ -115,33 +129,33 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                         {/* Hero Section */}
                         <div className="relative mb-12 p-8 rounded-3xl bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5 border border-primary/20">
                             <div className="absolute top-4 right-4">
-                                <Badge variant={event.published ? 'default' : 'secondary'} className="text-sm px-3 py-1">
-                                    {event.published ? '🟢 Live' : '🟡 Draft'}
+                                <Badge variant={event?.published ? 'default' : 'secondary'} className="text-sm px-3 py-1">
+                                    {event?.published ? '🟢 Live' : '🟡 Draft'}
                                 </Badge>
                             </div>
                             <div className="mb-6">
                                 <h1 className="font-headline text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-2">
-                                    {event.title}
+                                    {event?.title || 'Loading...'}
                                 </h1>
                                 <div className="flex items-center gap-6 text-muted-foreground">
                                     <div className="flex items-center gap-2">
                                         <Calendar className="size-4" />
-                                        <span>{new Date(event.date).toLocaleDateString('en-US', { dateStyle: 'full' })}</span>
+                                        <span>{event?.date ? new Date(event.date).toLocaleDateString('en-US', { dateStyle: 'full' }) : 'Date TBD'}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <MapPin className="size-4" />
-                                        <span>{event.location}</span>
+                                        <span>{event?.location || 'Location TBD'}</span>
                                     </div>
                                 </div>
                             </div>
                             <div className="flex gap-3">
-                                <Link href={`/dashboard/organizer/events/${event.id}/edit`}>
+                                <Link href={`/dashboard/organizer/events/${event?.id || 0}/edit`}>
                                     <Button size="lg" className="shadow-lg">
                                         <Settings className="mr-2 size-5" />
                                         Edit Event
                                     </Button>
                                 </Link>
-                                <Link href={`/events/${event.id}`}>
+                                <Link href={`/events/${event?.id || 0}`}>
                                     <Button variant="outline" size="lg">
                                         <Eye className="mr-2 size-5" />
                                         View Public Page
@@ -162,8 +176,8 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                             </div>
                                             <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Tickets Sold</p>
                                         </div>
-                                        <p className="text-3xl font-bold text-blue-900 dark:text-blue-100 mb-1">{event._count.purchasedTickets}</p>
-                                        <p className="text-xs text-blue-600 dark:text-blue-400">of {event.tickets.reduce((sum, t) => sum + t.quantity, 0)} available</p>
+                                        <p className="text-3xl font-bold text-blue-900 dark:text-blue-100 mb-1">{event?._count?.purchasedTickets || 0}</p>
+                                        <p className="text-xs text-blue-600 dark:text-blue-400">of {event?.tickets?.reduce((sum: number, t: any) => sum + t.quantity, 0) || 0} available</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -178,7 +192,7 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                             </div>
                                             <p className="text-sm font-medium text-green-700 dark:text-green-300">Revenue</p>
                                         </div>
-                                        <p className="text-3xl font-bold text-green-900 dark:text-green-100 mb-1">${(event.purchasedTickets.reduce((sum, ticket) => sum + (event.tickets.find(t => t.id === ticket.ticketId)?.price || 0), 0)).toFixed(2)}</p>
+                                        <p className="text-3xl font-bold text-green-900 dark:text-green-100 mb-1">${(event?.purchasedTickets?.reduce((sum: number, ticket: any) => sum + (event?.tickets?.find((t: any) => t.id === ticket.ticketId)?.price || 0), 0) || 0).toFixed(2)}</p>
                                         <p className="text-xs text-green-600 dark:text-green-400">+{Math.round(Math.random() * 20 + 5)}% growth</p>
                                     </div>
                                 </CardContent>
@@ -194,8 +208,8 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                             </div>
                                             <p className="text-sm font-medium text-purple-700 dark:text-purple-300">Applications</p>
                                         </div>
-                                        <p className="text-3xl font-bold text-purple-900 dark:text-purple-100 mb-1">{event._count.artistInvitations}</p>
-                                        <p className="text-xs text-purple-600 dark:text-purple-400">{event.artistInvitations.filter(inv => inv.status === 'ACCEPTED').length} confirmed artists</p>
+                                        <p className="text-3xl font-bold text-purple-900 dark:text-purple-100 mb-1">{event?._count?.artistInvitations || 0}</p>
+                                        <p className="text-xs text-purple-600 dark:text-purple-400">{event?.artistInvitations?.filter(inv => inv.status === 'ACCEPTED').length} confirmed artists</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -254,9 +268,9 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    {event.artistInvitations.filter(inv => inv.status === 'ACCEPTED').length > 0 ? (
+                                    {event?.artistInvitations?.filter(inv => inv.status === 'ACCEPTED').length > 0 ? (
                                         <div className="space-y-3">
-                                            {event.artistInvitations.filter(inv => inv.status === 'ACCEPTED').map((invitation) => (
+                                            {event?.artistInvitations?.filter(inv => inv.status === 'ACCEPTED').map((invitation) => (
                                                 <div key={invitation.id} className="flex justify-between items-center p-3 bg-secondary/50 rounded-lg">
                                                     <div>
                                                         <p className="font-medium">{invitation.artistName}</p>
@@ -282,7 +296,7 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
 
                         {/* Management Actions */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                            <DirectInviteDialog eventId={event.id}>
+                            <DirectInviteDialog eventId={event?.id || 0}>
                                 <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group">
                                     <CardContent className="p-8">
                                         <div className="flex items-center gap-4">
@@ -298,7 +312,7 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                 </Card>
                             </DirectInviteDialog>
 
-                            <Link href={`/dashboard/organizer/events/${event.id}/analytics`} className="group">
+                            <Link href={`/dashboard/organizer/events/${event?.id || 0}/analytics`} className="group">
                                 <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
                                     <CardContent className="p-8">
                                         <div className="flex items-center gap-4">
@@ -320,7 +334,7 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                 <CardHeader>
                                     <CardTitle>Artist Applications</CardTitle>
                                     <CardDescription>
-                                        {event.artistInvitations.length} artist{event.artistInvitations.length !== 1 ? 's' : ''} applied to perform.
+                                        {event?.artistInvitations?.length || 0} artist{(event?.artistInvitations?.length || 0) !== 1 ? 's' : ''} applied to perform.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -334,7 +348,7 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {event.artistInvitations.map((invitation) => (
+                                            {event?.artistInvitations?.map((invitation) => (
                                                 <TableRow key={invitation.id}>
                                                     <TableCell>
                                                         <div className="flex items-center gap-3">
@@ -356,7 +370,7 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                             ))}
                                         </TableBody>
                                     </Table>
-                                    {event.artistInvitations.length === 0 && (
+                                    {event?.artistInvitations?.length || 0 === 0 && (
                                         <div className="text-center py-12 text-muted-foreground">
                                             <FileText className="mx-auto size-12 mb-4" />
                                             <h3 className="font-semibold">No applications yet</h3>

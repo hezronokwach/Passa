@@ -1,3 +1,5 @@
+"use client";
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
@@ -5,29 +7,67 @@ import { ThemeToggle } from './theme-toggle';
 import { getSession } from '@/lib/session';
 import { logout } from '@/app/actions/auth';
 
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { UserCircle2, LayoutDashboard, User } from 'lucide-react';
+import { useActionState, useState, useEffect } from 'react';
+import React from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { NotificationBell } from './notifications';
 
-export const Header = async () => {
-  const session = await getSession();
+export const Header = () => {
+  const [state, formAction] = useActionState(logout, undefined);
+  const { toast } = useToast();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [session, setSession] = useState<{ userId: number; role: string; name?: string; email?: string } | null>(null);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      setSession(sessionData);
+    };
+    fetchSession();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  React.useEffect(() => {
+    if (state?.message) {
+      toast({
+        title: state.success ? 'Success!' : 'Error',
+        description: state.message,
+        variant: state.success ? 'default' : 'destructive',
+      });
+      if (state.success) {
+        window.location.href = '/login';
+      }
+    }
+  }, [state, toast]);
+
   const isAuthenticated = !!session;
   const userRole = session?.role;
 
   const navItems = [
     { name: 'Events', href: '/events' },
+    { name: 'My tickets', href: '/my-tickets'},
     { name: 'How It Works', href: '/how-it-works' },
     { name: 'About', href: '/about' },
   ];
 
   const dashboardPath = userRole ? `/dashboard/${userRole.toLowerCase()}` : '/login';
-  
+
   // Get user's name for display
   let userName = 'User';
   if (session?.name) {
@@ -37,7 +77,7 @@ export const Header = async () => {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
+    <header className={`sticky top-0 z-40 w-full border-b transition-all duration-300 ${isScrolled ? 'border-b bg-background/80 backdrop-blur-sm' : 'border-transparent'}`}>
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <Logo className="size-8 text-primary" />
@@ -55,9 +95,14 @@ export const Header = async () => {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <NotificationBell />
           <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2">
             {isAuthenticated ? (
+              <>
+                <Button variant="outline" asChild>
+                  <Link href={dashboardPath}>Dashboard</Link>
+                </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center gap-2">
@@ -81,10 +126,10 @@ export const Header = async () => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <form action={logout}>
+                  <form action={formAction}>
                     <DropdownMenuItem asChild>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         className="w-full justify-start p-0 pl-2 hover:bg-transparent"
                         type="submit"
                       >
@@ -94,6 +139,7 @@ export const Header = async () => {
                   </form>
                 </DropdownMenuContent>
               </DropdownMenu>
+              </>
             ) : (
               <>
                 <Button variant="ghost" asChild>

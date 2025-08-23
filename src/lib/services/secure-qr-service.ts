@@ -109,7 +109,7 @@ export class SecureQRService {
         ownerId: tokenData.ownerId,
       };
 
-    } catch (error) {
+    } catch {
       return { isValid: false, isExpired: false, error: 'Invalid QR code format' };
     }
   }

@@ -36,6 +36,13 @@ const eventSchema = z.object({
   time: z.string().min(1, "Time is required."),
   imageUrl: z.string().url("Please enter a valid image URL.").or(z.string().min(1, "Image is required.")),
   tickets: z.string().min(1, "At least one ticket tier is required."),
+  // Make these optional since they're not used in current workflow
+  ticketPrice: z.coerce.number().min(0).optional().nullable(),
+  ticketQuantity: z.coerce.number().int().min(1).optional().nullable(),
+  currency: z.string().min(2).optional().nullable(),
+  artistSplit: z.coerce.number().int().min(0).max(100).optional().nullable(),
+  venueSplit: z.coerce.number().int().min(0).max(100).optional().nullable(),
+  passaSplit: z.coerce.number().int().min(0).max(100).optional().nullable(),
 });
 
 export async function createEvent(prevState: unknown, formData: FormData) {
@@ -50,8 +57,14 @@ export async function createEvent(prevState: unknown, formData: FormData) {
     time: formData.get('time'),
     imageUrl: formData.get('imageUrl'),
     tickets: formData.get('tickets'),
+    ticketPrice: formData.get('ticketPrice'),
+    ticketQuantity: formData.get('ticketQuantity'),
+    currency: formData.get('currency'),
+    artistSplit: formData.get('artistSplit'),
+    venueSplit: formData.get('venueSplit'),
+    passaSplit: formData.get('passaSplit'),
   };
-  
+
   console.log('Server received form data:', formDataObj);
 
   const validatedFields = eventSchema.safeParse(formDataObj);
@@ -64,20 +77,25 @@ export async function createEvent(prevState: unknown, formData: FormData) {
     };
   }
 
-  const { title, description, location, country, date, time, imageUrl, tickets } = validatedFields.data;
+  const {
+      title,
+      description,
+      location,
+      country,
+      date,
+      time,
+      imageUrl,
+      tickets,
+      currency,
+      artistSplit,
+      venueSplit,
+      passaSplit,
+    } = validatedFields.data;
+
+  const eventDateTime = new Date(`${date}T${time}`);
+  const ticketTiers = JSON.parse(tickets);
 
   try {
-    const ticketTiers = JSON.parse(tickets);
-    const eventDateTime = new Date(`${date}T${time}`);
-
-    if (isNaN(eventDateTime.getTime())) {
-      return {
-        errors: { date: ['Invalid date/time format'] },
-        message: 'Please provide a valid date and time.',
-        success: false,
-      };
-    }
-
     await prisma.event.create({
       data: {
         title,
@@ -87,6 +105,11 @@ export async function createEvent(prevState: unknown, formData: FormData) {
         date: eventDateTime,
         imageUrl,
         organizerId: userId,
+        // Set defaults for optional fields
+        artistSplit: artistSplit || 70,
+        venueSplit: venueSplit || 20,
+        passaSplit: passaSplit || 10,
+        currency: currency || 'USD',
         tickets: {
           create: ticketTiers.map((tier: { name: string; price: string; quantity: string }) => ({
             name: tier.name,
@@ -100,12 +123,12 @@ export async function createEvent(prevState: unknown, formData: FormData) {
 
     revalidatePath('/dashboard');
     revalidatePath('/dashboard/organizer');
-    
+
   } catch (error) {
     console.error('Event creation error:', error);
     return { success: false, message: 'An unexpected error occurred while saving to the database.', errors: {} };
   }
-  
+
   redirect('/dashboard/organizer');
 }
 
@@ -125,7 +148,7 @@ export async function updateOrganizerProfile(prevState: unknown, formData: FormD
     bio: formData.get('bio'),
     website: formData.get('website'),
   };
-  
+
   const validatedFields = organizerProfileSchema.safeParse(rawData);
 
   if (!validatedFields.success) {
@@ -135,9 +158,9 @@ export async function updateOrganizerProfile(prevState: unknown, formData: FormD
       success: false,
     };
   }
-  
+
   const { name, companyName, bio, website } = validatedFields.data;
-  
+
   try {
     await prisma.$transaction([
       prisma.user.update({
@@ -153,7 +176,7 @@ export async function updateOrganizerProfile(prevState: unknown, formData: FormD
         },
       }),
     ]);
-    
+
     revalidatePath('/dashboard/organizer/profile');
     return { success: true, message: 'Profile updated successfully!', errors: {} };
   } catch (error) {
@@ -171,7 +194,7 @@ const submissionStatusSchema = z.object({
 export async function updateSubmissionStatus(prevState: unknown, formData: FormData) {
     // Ensure the user is an organizer before proceeding
     await getAuthenticatedUser();
-    
+
     const validatedFields = submissionStatusSchema.safeParse({
         submissionId: formData.get('submissionId'),
         status: formData.get('status'),
@@ -206,13 +229,13 @@ export async function updateSubmissionStatus(prevState: unknown, formData: FormD
                             contributionType: 'CREATIVE',
                             // This is a placeholder. A real implementation would have a more dynamic way
                             // for organizers to set this, possibly splitting the artist share.
-                            sharePercentage: 10, 
+                            sharePercentage: 10,
                         }
                     });
                 }
             }
         });
-        
+
         revalidatePath(`/dashboard/organizer/events/${eventId}`);
         revalidatePath(`/events/${eventId}`);
         return { success: true, message: `Submission status updated to ${status}.` };

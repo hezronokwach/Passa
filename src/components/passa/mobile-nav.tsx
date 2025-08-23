@@ -1,64 +1,71 @@
+'use client';
 import Link from 'next/link';
-import { Compass, UserCircle2, Ticket, Star, Calendar, Users, Briefcase, PlusCircle } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 interface MobileNavProps {
-  userRole?: string;
+  isAuthenticated: boolean;
+  dashboardPath: string;
+  navItems: { name: string; href: string }[];
 }
 
-export const MobileNav = ({ userRole }: MobileNavProps) => {
-  // Don't show mobile nav if user role is not provided
-  if (!userRole) {
-    return null;
-  }
-
-  const getNavItems = () => {
-    switch (userRole) {
-      case 'FAN':
-        return [
-          { name: 'Dashboard', href: '/dashboard/fan', icon: Compass },
-          { name: 'Tickets', href: '/dashboard/fan/tickets', icon: Ticket },
-          { name: 'Artists', href: '/dashboard/fan/artists', icon: Star },
-          { name: 'Profile', href: '/dashboard/fan/profile', icon: UserCircle2 },
-        ];
-      case 'ORGANIZER':
-        return [
-          { name: 'Dashboard', href: '/dashboard/organizer', icon: Compass },
-          { name: 'Events', href: '/dashboard/organizer/events', icon: Calendar },
-          { name: 'Create', href: '/dashboard/organizer/events/create', icon: PlusCircle },
-          { name: 'Profile', href: '/dashboard/organizer/profile', icon: UserCircle2 },
-        ];
-      case 'CREATOR':
-        return [
-          { name: 'Dashboard', href: '/dashboard/creator', icon: Compass },
-          { name: 'Opportunities', href: '/dashboard/creator/opportunities', icon: Briefcase },
-          { name: 'Applications', href: '/dashboard/creator/applications', icon: Users },
-          { name: 'Profile', href: '/dashboard/creator/profile', icon: UserCircle2 },
-        ];
-      default:
-        return [
-          { name: 'Dashboard', href: '/dashboard', icon: Compass },
-          { name: 'Events', href: '/events', icon: Calendar },
-          { name: 'Profile', href: '/dashboard/fan/profile', icon: UserCircle2 },
-        ];
-    }
-  };
-
-  const navItems = getNavItems();
+export const MobileNav = ({ isAuthenticated, dashboardPath, navItems }: MobileNavProps) => {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/90 p-2 backdrop-blur-sm md:hidden">
-      <div className="grid grid-cols-4 gap-1">
-        {navItems.map((item) => (
-          <Link
-            key={item.name}
-            href={item.href}
-            className="flex flex-col items-center justify-center gap-1 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent/10 hover:text-primary"
-          >
-            <item.icon className="size-5" />
-            <span className="text-xs font-medium">{item.name}</span>
-          </Link>
-        ))}
-      </div>
-    </nav>
+    <div className="md:hidden">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle menu"
+      >
+        {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+      </Button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-16 z-50 w-48 rounded-md border bg-background p-2 shadow-lg">
+          <nav className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                onClick={() => setIsOpen(false)}
+              >
+                {item.name}
+              </Link>
+            ))}
+            {isAuthenticated ? (
+              <Link
+                href={dashboardPath}
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Register
+                </Link>
+              </>
+            )}
+          </nav>
+        </div>
+      )}
+    </div>
   );
 };

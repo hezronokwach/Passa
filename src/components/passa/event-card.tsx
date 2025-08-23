@@ -17,10 +17,10 @@ import {
 import { TicketPurchaseDialog } from './ticket-purchase-dialog';
 import Link from 'next/link';
 
-interface TranslatedEvent extends Event {
+export interface TranslatedEvent extends Event {
   totalBudget: number | null;
   published: boolean;
-  tickets?: { id: number; name: string; eventId: number; price: number; quantity: number; sold: number; }[];
+  tickets: { id: number; name: string; eventId: number; price: number; quantity: number; sold: number; }[];
   translatedTitle: string;
   price: number;
   currency: string;
@@ -37,14 +37,14 @@ interface TranslatedEvent extends Event {
 
 export const EventCard = ({ event, userRole }: { event: TranslatedEvent; userRole?: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [imageError, setImageError] = useState(false);
+
 
   const router = useRouter();
-  
+
   const ticketCount = event._count?.purchasedTickets || 0;
   const displayBuyers = event.ticketBuyers?.slice(0, 3) || [];
   const remainingCount = Math.max(0, ticketCount - 3);
-  
+
   const handleViewOpportunitiesClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
@@ -68,7 +68,6 @@ export const EventCard = ({ event, userRole }: { event: TranslatedEvent; userRol
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              onError={() => setImageError(true)}
             />
           </div>
           <CardContent className="flex flex-1 flex-col justify-between p-4">
@@ -89,7 +88,7 @@ export const EventCard = ({ event, userRole }: { event: TranslatedEvent; userRol
             {ticketCount > 0 && (
               <div className="mt-3 flex items-center gap-2">
                 <div className="flex -space-x-2">
-                  {displayBuyers.map((buyer, index) => (
+                  {displayBuyers.map((buyer) => (
                     <Avatar key={buyer.id} className="size-6 border-2 border-background">
                       <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${buyer.name || buyer.email}`} />
                       <AvatarFallback className="text-xs">
@@ -108,7 +107,7 @@ export const EventCard = ({ event, userRole }: { event: TranslatedEvent; userRol
                 </span>
               </div>
             )}
-            
+
             <div className="mt-4 flex items-center justify-between">
                <p className="text-xl font-bold text-primary">
                 ${event.price} <span className="text-sm font-normal text-muted-foreground">{event.currency}</span>

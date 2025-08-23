@@ -71,7 +71,7 @@ async function getArtists(userId: number) {
   const uniqueCreators = creators.reduce((acc: CreatorProfile[], attribution) => {
     const creatorProfile = attribution.user.creatorProfile;
     if (creatorProfile && !acc.find(c => c.userId === attribution.userId)) {
-      acc.push(creatorProfile);
+      acc.push({ ...creatorProfile, user: attribution.user });
     }
     return acc;
   }, []);
@@ -165,7 +165,11 @@ export default async function FanArtistsPage() {
           )}
         </div>
       </main>
-      <MobileNav userRole={session?.role} />
+      <MobileNav 
+        isAuthenticated={!!session}
+        dashboardPath="/dashboard/fan"
+        navItems={[]}
+      />
     </div>
   );
 }
