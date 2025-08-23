@@ -18,8 +18,8 @@ async function getAuthenticatedUserId() {
 }
 
 const purchaseSchema = z.object({
-    eventId: z.number(),
-    ticketId: z.number(),
+    eventId: z.coerce.number(),
+    ticketId: z.coerce.number(),
     buyerSecretKey: z.string().min(1, 'Wallet secret key required'),
 });
 
@@ -31,12 +31,15 @@ const profileUpdateSchema = z.object({
 export async function purchaseTicket(input: { eventId: number; ticketId: number; buyerSecretKey: string }) {
   const userId = await getAuthenticatedUserId();
 
+  console.log('Purchase input:', input);
   const validatedFields = purchaseSchema.safeParse(input);
 
   if (!validatedFields.success) {
+    console.error('Validation errors:', validatedFields.error.flatten());
     return {
       success: false,
       message: "Invalid input provided.",
+      errors: validatedFields.error.flatten().fieldErrors
     };
   }
   
