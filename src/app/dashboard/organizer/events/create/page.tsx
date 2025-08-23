@@ -26,10 +26,10 @@ type TicketTier = {
 
 const PRESET_TIERS = [
   { name: 'Free', price: '0' },
-  { name: 'Early Bird', price: '25' },
-  { name: 'General Admission', price: '50' },
-  { name: 'VIP', price: '100' },
-  { name: 'VVIP', price: '200' },
+  { name: 'Early Bird', price: '5' },
+  { name: 'General Admission', price: '10' },
+  { name: 'VIP', price: '25' },
+  { name: 'VVIP', price: '50' },
 ];
 
 function SubmitButton() {
@@ -48,7 +48,7 @@ export default function CreateEventPage() {
   const [dateInput, setDateInput] = React.useState('');
   const [timeInput, setTimeInput] = React.useState('');
   const [ticketTiers, setTicketTiers] = React.useState<TicketTier[]>([
-    { id: '1', name: 'General Admission', price: '50', quantity: '100' }
+    { id: '1', name: 'General Admission', price: '10', quantity: '100' }
   ]);
   const [step1Data, setStep1Data] = React.useState({
     title: '',
@@ -459,7 +459,7 @@ export default function CreateEventPage() {
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label>Price (USD) <span className="text-red-500">*</span></Label>
+                                <Label>Price (XLM) <span className="text-red-500">*</span></Label>
                                 <Input
                                   type="number"
                                   step="0.01"

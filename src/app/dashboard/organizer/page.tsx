@@ -15,24 +15,39 @@ import { redirect } from 'next/navigation';
 async function getOrganizerData() {
     const session = await getSession();
     if (!session) {
-        return {
-            user: null,
-            events: [],
-            stats: {
-                totalEvents: 0,
-                totalRevenue: 0,
-                totalTicketsSold: 0,
-                upcomingEvents: 0,
-                totalApplications: 0
-            },
-            error: 'No session found'
-        };
+        redirect('/login');
     }
     
-    const user = await prisma.user.findUniqueOrThrow({
+    const user = await prisma.user.findUnique({
         where: { id: session.userId },
         include: { organizerProfile: true }
     });
+    
+    if (!user) {
+        redirect('/login');
+    }
+
+    // Get total escrow balance from all events
+    let escrowBalance = '0';
+    try {
+        // Calculate total from all ticket sales
+        const totalSales = await prisma.transaction.aggregate({
+            where: {
+                purchasedTicket: {
+                    event: {
+                        organizerId: user.id
+                    }
+                },
+                status: 'COMPLETED'
+            },
+            _sum: {
+                amount: true
+            }
+        });
+        escrowBalance = (totalSales._sum.amount || 0).toFixed(2);
+    } catch (error) {
+        console.error('Escrow balance fetch error:', error);
+    }
 
     const events = await prisma.event.findMany({
         where: { organizerId: user.id },
@@ -78,7 +93,7 @@ async function getOrganizerData() {
         })),
         stats: {
             totalEvents,
-            totalRevenue,
+            escrowBalance,
             totalTicketsSold,
             upcomingEvents,
             totalApplications
@@ -87,11 +102,7 @@ async function getOrganizerData() {
 }
 
 export default async function OrganizerDashboardPage() {
-  const { user, events, stats, error } = await getOrganizerData();
-  
-  if (error || !user) {
-    return redirect('/login');
-  }
+  const { user, events, stats } = await getOrganizerData();
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -108,8 +119,8 @@ export default async function OrganizerDashboardPage() {
               </div>
               <div className="hidden md:flex items-center gap-3">
                 <div className="text-right">
-                  <p className="text-sm font-medium">Total Revenue</p>
-                  <p className="text-2xl font-bold text-green-600">${stats.totalRevenue.toFixed(2)}</p>
+                  <p className="text-sm font-medium">Escrow Balance</p>
+                  <p className="text-2xl font-bold text-green-600">{stats.escrowBalance} XLM</p>
                 </div>
                 <div className="w-px h-12 bg-border"></div>
                 <Button size="lg" asChild className="shadow-lg">

@@ -18,6 +18,7 @@ model User {
   passwordResetToken   String?            @unique
   verificationToken    String?            @unique
   walletAddress        String?            @unique
+  walletSecretKey      String?            // Encrypted secret key
   artistInvitations    ArtistInvitation[]
   attributions         Attribution[]
   creatorProfile       CreatorProfile?
@@ -76,6 +77,8 @@ model Event {
   updatedAt         DateTime           @updatedAt
   published         Boolean            @default(false)
   totalBudget       Float?
+  contractAgreementId String?          // Smart contract agreement ID
+  paymentsReleased    Boolean            @default(false) // Whether payments have been released
   artistInvitations ArtistInvitation[]
   attributions      Attribution[]
   briefs            CreativeBrief[]
@@ -180,6 +183,9 @@ model ArtistInvitation {
   artistComments String?
   artistId       Int?
   sourceBriefId  Int?
+  escrowAccountId String?              // Smart contract address
+  organizerSecret String?              // Organizer's secret key (encrypted)
+  artistSecret   String?               // Artist's secret key (encrypted)
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
   artist         User?                 @relation(fields: [artistId], references: [id])

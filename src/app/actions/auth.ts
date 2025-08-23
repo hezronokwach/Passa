@@ -10,6 +10,7 @@ import { Role } from '@prisma/client';
 import { generateEmailVerificationToken, generatePasswordResetToken } from '@/lib/auth/utils';
 import { blockchainAuthService } from '@/lib/auth/blockchain';
 import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email/service';
+import { walletService } from '@/lib/services/wallet-service';
 
 const signupSchema = z.object({
   email: z.string().email(),
@@ -73,12 +74,16 @@ export async function signup(prevState: unknown, formData: FormData) {
       const hashedPassword = await bcrypt.hash(password, 10);
       const verificationToken = await generateEmailVerificationToken(email);
       
+      // Generate wallet for new user
+      const wallet = walletService.generateWallet();
+      
       const newUser = await tx.user.create({
         data: {
           email,
           password: hashedPassword,
           role,
           verificationToken: verificationToken,
+          walletAddress: wallet.publicKey,
         },
       });
 
@@ -92,8 +97,17 @@ export async function signup(prevState: unknown, formData: FormData) {
         });
       }
 
-      return newUser;
+      return { ...newUser, walletSecretKey: wallet.secretKey };
     });
+
+    // Fund the testnet account
+    try {
+      await walletService.fundTestnetAccount(result.walletAddress!);
+      console.log('✅ Funded testnet wallet:', result.walletAddress);
+    } catch (fundingError) {
+      console.error('Failed to fund testnet account:', fundingError);
+      // Don't fail signup if funding fails
+    }
 
     // Send verification email
     try {
@@ -107,8 +121,12 @@ export async function signup(prevState: unknown, formData: FormData) {
 
     return { 
       success: true, 
-      message: 'Account created successfully! Please check your email to verify your account.',
-      redirect: rolePaths[role] || '/dashboard' 
+      message: `Account created successfully! Your Stellar wallet (${result.walletAddress}) has been funded with testnet XLM. Please check your email to verify your account.`,
+      redirect: rolePaths[role] || '/dashboard',
+      walletInfo: {
+        publicKey: result.walletAddress,
+        secretKey: result.walletSecretKey // Only returned once for user to save
+      }
     };
   } catch (error) {
     console.error('Signup error:', error);

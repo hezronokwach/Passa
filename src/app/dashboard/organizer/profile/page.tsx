@@ -6,6 +6,7 @@ import React from 'react';
 import { Header } from '@/components/passa/header';
 import Link from 'next/link';
 import { ProfileForm } from './profile-form';
+import { WalletProfile } from '@/components/passa/wallet-profile';
 import { getCurrentUserWithProfile } from '@/lib/auth/utils';
 import type { User, OrganizerProfile } from '@prisma/client';
 import { ArrowLeft } from 'lucide-react';
@@ -35,7 +36,10 @@ export default async function OrganizerProfilePage() {
                             <ArrowLeft className="size-4" />
                             Back to Dashboard
                         </Link>
-                        <ProfileForm user={user} profile={user.organizerProfile!} />
+                        <div className="space-y-6">
+                            <WalletProfile userWallet={user.walletAddress} />
+                            <ProfileForm user={user} profile={user.organizerProfile!} />
+                        </div>
                     </div>
                 </div>
             </main>

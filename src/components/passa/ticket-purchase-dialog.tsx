@@ -14,7 +14,8 @@ import type { Event, Ticket } from '@prisma/client';
 import { Confetti } from './confetti';
 import { useToast } from '@/components/ui/use-toast';
 import { TicketStub } from './ticket-stub';
-import { purchaseTicket } from '@/app/actions/fan';
+import { WalletConnector } from './wallet-connector';
+import { handleTicketPurchase } from '@/lib/actions/purchase-client';
 
 
 interface TicketPurchaseDialogProps {
@@ -35,9 +36,11 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
+  const [showWalletConnect, setShowWalletConnect] = useState(false);
+  const [buyerSecretKey, setBuyerSecretKey] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handlePurchase = async () => {
+  const handlePurchaseClick = () => {
     if (!selectedTicketId) {
         toast({
             title: "Error",
@@ -46,9 +49,18 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
         });
         return;
     }
+    setShowWalletConnect(true);
+  };
 
+  const handleWalletConnect = async (secretKey: string) => {
+    setBuyerSecretKey(secretKey);
     setIsPurchasing(true);
-    const result = await purchaseTicket({ eventId: event.id, ticketId: selectedTicketId });
+    
+    const result = await handleTicketPurchase(
+      event.id, 
+      selectedTicketId!, 
+      secretKey
+    );
     
     if (result.success) {
         toast({
@@ -56,17 +68,16 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
         description: `You got 1 ticket for ${event.translatedTitle}.`,
         });
         setPurchaseSuccess(true);
-        
-        // QR code will be generated server-side when viewing tickets
+        setShowWalletConnect(false);
         
         // Reset state and close dialog after animation
         setTimeout(() => {
             setIsOpen(false);
-            // A slight delay before resetting purchase success to let dialog close animation finish
             setTimeout(() => {
                 setPurchaseSuccess(false);
                 setIsPurchasing(false);
                 setQrCode(null);
+                setBuyerSecretKey(null);
             }, 500);
         }, 3000);
     } else {
@@ -76,6 +87,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
             variant: "destructive"
         });
         setIsPurchasing(false);
+        setShowWalletConnect(false);
     }
   };
   
@@ -88,6 +100,8 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
         setPurchaseSuccess(false);
         setQrCode(null);
         setSelectedTicketId(null);
+        setShowWalletConnect(false);
+        setBuyerSecretKey(null);
     }
   }
 
@@ -104,7 +118,12 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
           <DialogTitle className="sr-only">{event.translatedTitle}</DialogTitle>
           <DialogDescription className="sr-only">Purchase ticket for {event.translatedTitle}</DialogDescription>
           
-          {hasMultipleTickets && !selectedTicketId ? (
+          {showWalletConnect ? (
+            <WalletConnector 
+              onConnect={handleWalletConnect}
+              isConnecting={isPurchasing}
+            />
+          ) : hasMultipleTickets && !selectedTicketId ? (
             <div className="space-y-4">
               <div className="text-center">
                 <h3 className="text-lg font-semibold">Select Ticket Type</h3>
@@ -121,8 +140,8 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
                           <p className="text-sm text-muted-foreground">{ticket.quantity - ticket.sold} available</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-xl font-bold">${ticket.price}</p>
-                          <p className="text-xs text-muted-foreground">USD</p>
+                          <p className="text-xl font-bold">{ticket.price} XLM</p>
+                          <p className="text-xs text-muted-foreground">Stellar Lumens</p>
                         </div>
                       </div>
                     </CardContent>
@@ -136,7 +155,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
                 ...event,
                 price: selectedTicket?.price || event.tickets?.[0]?.price || event.price
               }} 
-              onPurchase={handlePurchase}
+              onPurchase={handlePurchaseClick}
               isPurchasing={isPurchasing}
               isSuccess={purchaseSuccess}
               qrCode={qrCode || undefined}

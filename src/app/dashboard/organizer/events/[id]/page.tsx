@@ -7,6 +7,8 @@
 
 import { InviteWithFeeDialog } from '@/components/passa/invite-with-fee-dialog';
 import { DirectInviteDialog } from '@/components/passa/direct-invite-dialog';
+import { SecretKeyDialog } from '@/components/passa/secret-key-dialog';
+import { ReleasePaymentsDialog } from '@/components/passa/release-payments-dialog';
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
 
@@ -147,6 +149,14 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                         View Public Page
                                     </Button>
                                 </Link>
+                                {event.contractAgreementId && event.date < new Date() && event.artistInvitations.filter(inv => inv.status === 'ACCEPTED').length > 0 && (
+                                    <ReleasePaymentsDialog 
+                                        eventId={event.id}
+                                        artistCount={event.artistInvitations.filter(inv => inv.status === 'ACCEPTED').length}
+                                        totalAmount={event.artistInvitations.filter(inv => inv.status === 'ACCEPTED').reduce((sum, inv) => sum + inv.proposedFee, 0)}
+                                        eventTitle={event.title}
+                                    />
+                                )}
                             </div>
                         </div>
 
@@ -350,6 +360,15 @@ export default async function EventSubmissionsPage({ params }: { params: Promise
                                                     <TableCell className="text-right">
                                                         {invitation.status === 'PENDING' && (
                                                             <InviteWithFeeDialog invitation={invitation} />
+                                                        )}
+                                                        {invitation.status === 'ACCEPTED' && !invitation.organizerSecret && (
+                                                            <SecretKeyDialog invitation={invitation} />
+                                                        )}
+                                                        {invitation.status === 'ACCEPTED' && invitation.organizerSecret && !invitation.artistSecret && (
+                                                            <span className="text-sm text-muted-foreground">Waiting for artist key</span>
+                                                        )}
+                                                        {invitation.status === 'ACCEPTED' && invitation.organizerSecret && invitation.artistSecret && (
+                                                            <span className="text-sm text-green-600">Contract ready</span>
                                                         )}
                                                     </TableCell>
                                                 </TableRow>

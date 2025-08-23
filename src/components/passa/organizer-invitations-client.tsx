@@ -126,7 +126,7 @@ export function OrganizerInvitationsClient({ invitations }: OrganizerInvitations
               <TableCell>
                 <div className="flex items-center gap-1">
                   <DollarSign className="h-4 w-4" />
-                  <span className="font-medium">${invitation.proposedFee.toFixed(2)}</span>
+                  <span className="font-medium">{invitation.proposedFee.toFixed(2)} XLM</span>
                 </div>
               </TableCell>
               <TableCell>

@@ -65,7 +65,7 @@ export function TicketPurchase({
                   <p className="font-medium">{ticket.name}</p>
                   <p className="text-sm text-muted-foreground">{ticket.quantity - ticket.sold} available</p>
                 </div>
-                <p className="text-xl font-bold">${ticket.price}</p>
+                <p className="text-xl font-bold">{ticket.price} XLM</p>
               </div>
             ))}
             <p className="text-xs text-muted-foreground text-center">Select your preferred ticket when purchasing</p>
@@ -73,7 +73,7 @@ export function TicketPurchase({
         ) : (
           <div className="text-center">
             <div className="text-4xl font-bold">
-              ${event.tickets[0]?.price || 0} <span className="text-lg font-normal text-muted-foreground">USD</span>
+              {event.tickets[0]?.price || 0} <span className="text-lg font-normal text-muted-foreground">XLM</span>
             </div>
             <p className="text-sm text-muted-foreground mt-1">{event.tickets[0]?.name || 'General Admission'}</p>
           </div>
@@ -95,7 +95,7 @@ export function TicketPurchase({
               </Button>
             )}
             <TicketPurchaseDialogWrapper 
-              event={{ ...event, currency: 'USD' }}
+              event={{ ...event, currency: 'XLM' }}
               userHasTicket={userHasTicket}
             />
           </div>
@@ -105,7 +105,7 @@ export function TicketPurchase({
           </div>
         ) : (
           <TicketPurchaseDialogWrapper 
-            event={{ ...event, currency: 'USD' }}
+            event={{ ...event, currency: 'XLM' }}
             userHasTicket={userHasTicket}
           />
         )}

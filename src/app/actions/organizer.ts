@@ -6,6 +6,7 @@ import prisma from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/session';
+import { escrowService } from '@/lib/services/escrow-service';
 
 async function getAuthenticatedUser() {
   const session = await getSession();
@@ -78,6 +79,36 @@ export async function createEvent(prevState: unknown, formData: FormData) {
       };
     }
 
+    // Get organizer wallet address
+    const organizer = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { walletAddress: true }
+    });
+
+    if (!organizer?.walletAddress) {
+      return {
+        errors: {},
+        message: 'Organizer wallet address required. Please update your profile.',
+        success: false,
+      };
+    }
+
+    // Create escrow agreement for the event
+    const escrowResult = await escrowService.createEventEscrow(
+      organizer.walletAddress,
+      '', // artist address - set when artist accepts invitation
+      '0', // artist fixed amount - set when artist accepts
+      Math.floor(eventDateTime.getTime() / 1000)
+    );
+
+    if (!escrowResult.success) {
+      return {
+        errors: {},
+        message: 'Failed to create event escrow contract.',
+        success: false,
+      };
+    }
+
     await prisma.event.create({
       data: {
         title,
@@ -87,6 +118,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
         date: eventDateTime,
         imageUrl,
         organizerId: userId,
+        contractAgreementId: escrowResult.contractAddress,
         tickets: {
           create: ticketTiers.map((tier: { name: string; price: string; quantity: string }) => ({
             name: tier.name,

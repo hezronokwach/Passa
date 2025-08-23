@@ -5,6 +5,7 @@
 import React from 'react';
 import { Header } from '@/components/passa/header';
 import { ProfileForm } from './profile-form';
+import { WalletProfile } from '@/components/passa/wallet-profile';
 import { getCurrentUserWithCreatorProfileAndPortfolio } from '@/lib/auth/utils';
 
 async function getCreatorProfile() {
@@ -28,7 +29,8 @@ export default async function CreatorProfilePage() {
             <Header />
             <main className="flex-1">
                 <div className="container mx-auto px-4 py-8">
-                    <div className="max-w-4xl mx-auto">
+                    <div className="max-w-4xl mx-auto space-y-6">
+                        <WalletProfile userWallet={user.walletAddress} />
                         <ProfileForm user={user} profile={creatorProfile!} portfolioItems={creatorProfile!.portfolio} />
                     </div>
                 </div>

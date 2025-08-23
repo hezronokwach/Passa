@@ -7,7 +7,7 @@ use soroban_sdk::{
 };
 use soroban_sdk::token;
 
-const BPS_DENOM: i128 = 10_000; // 100.00%
+// Removed BPS_DENOM as we now use fixed amounts
 
 #[contracterror]
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -28,7 +28,7 @@ pub enum Err {
 #[derive(Clone)]
 pub struct Share {
     pub recipient: Address,
-    pub bps: u32, // optional if you prefer ad-hoc amounts; kept here for defaults
+    pub fixed_amount: i128, // Fixed XLM amount in stroops
 }
 
 #[contracttype]
@@ -75,10 +75,10 @@ impl SplitterRegistry {
         if payees.len() == 0 {
             panic_with_error!(&e, Err::ZeroPayees);
         }
-        // optional: enforce default split sums to 100%
-        let mut sum: i128 = 0;
-        for s in payees.iter() { sum += s.bps as i128; }
-        if sum != BPS_DENOM { panic_with_error!(&e, Err::BadPercents); }
+        // Validate total fixed amounts don't exceed budget
+        let mut total_fixed: i128 = 0;
+        for s in payees.iter() { total_fixed += s.fixed_amount; }
+        if total_fixed > budget { panic_with_error!(&e, Err::OverBudget); }
 
         let ag = Agreement {
             payer,
@@ -157,21 +157,11 @@ impl SplitterRegistry {
 
         let tk = token::Client::new(&e, &ag.token);
 
-        // split with floor, send remainder to last payee
-        let mut sent: i128 = 0;
-        let n = ag.payees.len();
-        for i in 0..n-1 {
-            let sh = ag.payees.get_unchecked(i);
-            let share = (total_amount * sh.bps as i128) / BPS_DENOM;
-            if share > 0 { 
-                tk.transfer_from(&e.current_contract_address(), &ag.payer, &sh.recipient, &share); 
+        // Pay fixed amounts to each payee
+        for payee in ag.payees.iter() {
+            if payee.fixed_amount > 0 {
+                tk.transfer_from(&e.current_contract_address(), &ag.payer, &payee.recipient, &payee.fixed_amount);
             }
-            sent += share;
-        }
-        let last = ag.payees.get_unchecked(n-1);
-        let remainder = total_amount - sent;
-        if remainder > 0 { 
-            tk.transfer_from(&e.current_contract_address(), &ag.payer, &last.recipient, &remainder); 
         }
 
         ag.released += total_amount;

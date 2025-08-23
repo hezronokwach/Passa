@@ -35,7 +35,14 @@ async function getCreatorData() {
 
     const invitations = await prisma.artistInvitation.findMany({
         where: { artistId: session.userId },
-        include: {
+        select: {
+            id: true,
+            eventId: true,
+            status: true,
+            proposedFee: true,
+            createdAt: true,
+            artistSecret: true,
+            organizerSecret: true,
             event: {
                 select: {
                     id: true,
