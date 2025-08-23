@@ -66,12 +66,13 @@ export default function Home() {
     tickets: { id: number; eventId: number; name: string; price: number; quantity: number; sold: number }[];
   };
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentStory((prev) => (prev + 1) % creatorStories.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [creatorStories.length]);
+  // Rotating stories disabled for now
+  // React.useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setCurrentStory((prev) => (prev + 1) % creatorStories.length);
+  //   }, 5000);
+  //   return () => clearInterval(timer);
+  // }, [creatorStories.length]);
 
   React.useEffect(() => {
     const fetchEvents = async () => {
@@ -176,32 +177,13 @@ export default function Home() {
         },
       ];
 
-      const translatedEvents: TranslatedEvent[] = await Promise.all(
-        mockEvents.map(async (event) => {
-          try {
-            const { translatedTitle } = await translateEventTitle({
-              title: event.title,
-              country: event.country,
-            });
-            return {
-              ...event,
-              translatedTitle,
-              price: 50,
-              currency: "USD",
-              imageHint: "music festival",
-            };
-          } catch (error) {
-            console.error("Translation failed for event:", event.title, error);
-            return {
-              ...event,
-              translatedTitle: event.title,
-              price: 50,
-              currency: "USD",
-              imageHint: "music festival",
-            };
-          }
-        })
-      );
+      const translatedEvents: TranslatedEvent[] = mockEvents.map((event) => ({
+        ...event,
+        translatedTitle: event.title, // Use original title for now
+        price: 50,
+        currency: "USD",
+        imageHint: "music festival",
+      }));
 
       setTimeout(() => {
         setEvents(translatedEvents);

@@ -99,6 +99,10 @@ export const Header = () => {
           <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2">
             {isAuthenticated ? (
+              <>
+                <Button variant="outline" asChild>
+                  <Link href={dashboardPath}>Dashboard</Link>
+                </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center gap-2">
@@ -135,6 +139,7 @@ export const Header = () => {
                   </form>
                 </DropdownMenuContent>
               </DropdownMenu>
+              </>
             ) : (
               <>
                 <Button variant="ghost" asChild>
