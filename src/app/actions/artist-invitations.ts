@@ -4,6 +4,7 @@ import { z } from 'zod';
 import prisma from '@/lib/db';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
+import { sorobanService } from '@/lib/services/soroban-service';
 
 const invitationSchema = z.object({
   eventId: z.coerce.number(),
@@ -102,7 +103,7 @@ export async function sendArtistInvitations(prevState: unknown, formData: FormDa
               userId: artist.userId,
               type: 'ARTIST_INVITATION',
               title: 'New Artist Invitation',
-              message: `You've been invited to perform at an event. Fee: $${artist.fee}`,
+              message: `You've been invited to perform at an event. Fee: ${artist.fee} XLM`,
               data: {
                 eventId,
                 invitationId: invitation.id,
@@ -115,6 +116,9 @@ export async function sendArtistInvitations(prevState: unknown, formData: FormDa
         return invitation;
       })
     );
+
+    // Contract creation will happen when artists accept invitations
+    console.log(`Invitations sent for event ${eventId} with total budget: ${totalBudget}`);
 
     return {
       success: true,

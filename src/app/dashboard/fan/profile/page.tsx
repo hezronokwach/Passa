@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { WalletProfile } from '@/components/passa/wallet-profile';
 import { updateUserProfile } from '@/app/actions/fan';
 import { ArrowLeft, User } from 'lucide-react';
 import Link from 'next/link';
@@ -27,6 +28,11 @@ async function getFanProfile() {
 }
 
 export default async function FanProfilePage() {
+  const session = await getSession();
+  if (!session) {
+    return redirect('/login');
+  }
+  
   const user = await getFanProfile();
 
   if (!user) {
@@ -55,8 +61,11 @@ export default async function FanProfilePage() {
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-            <div className="lg:col-span-2">
+          <div className="space-y-6">
+            <WalletProfile userWallet={user.walletAddress} />
+            
+            <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
+              <div className="lg:col-span-2">
               <Card>
                 <CardHeader>
                   <CardTitle>Personal Information</CardTitle>
@@ -141,6 +150,7 @@ export default async function FanProfilePage() {
                   </div>
                 </CardContent>
               </Card>
+              </div>
             </div>
           </div>
         </div>

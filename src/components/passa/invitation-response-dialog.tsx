@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, DollarSign, Check, X, History, Clock } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { respondToInvitation } from '@/app/actions/invitation-response';
+import { SecretKeyModal } from './secret-key-modal';
 
 type Invitation = {
   id: number;
@@ -18,6 +19,7 @@ type Invitation = {
   proposedFee: number;
   message: string | null;
   status: string;
+  escrowAccountId?: string | null;
   event: {
     title: string;
     description: string;
@@ -53,6 +55,7 @@ export function InvitationResponseDialog({
   const { toast } = useToast();
   const [comments, setComments] = React.useState('');
   const [isPending, startTransition] = useTransition();
+  const [showSecretKeyModal, setShowSecretKeyModal] = React.useState(false);
   
   const [state, formAction] = useActionState(respondToInvitation, {
     message: '',
@@ -132,7 +135,7 @@ export function InvitationResponseDialog({
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Proposed Fee:</span>
                 <Badge variant="secondary" className="text-lg font-bold">
-                  ${invitation.proposedFee.toFixed(2)}
+                  {invitation.proposedFee.toFixed(2)} XLM
                 </Badge>
               </div>
               {invitation.message && (
@@ -166,7 +169,7 @@ export function InvitationResponseDialog({
                         </Badge>
                         {entry.oldFee !== entry.newFee && (
                           <span className="text-xs text-muted-foreground">
-                            ${entry.oldFee?.toFixed(2)} → ${entry.newFee?.toFixed(2)}
+                            {entry.oldFee?.toFixed(2)} XLM → {entry.newFee?.toFixed(2)} XLM
                           </span>
                         )}
                         {entry.oldStatus !== entry.newStatus && (
@@ -244,12 +247,35 @@ export function InvitationResponseDialog({
                   <p className="text-sm text-muted-foreground mt-2">
                     You have already responded to this invitation
                   </p>
+                  {invitation.status === 'ACCEPTED' && !invitation.escrowAccountId && (
+                    <Button 
+                      className="mt-4"
+                      onClick={() => setShowSecretKeyModal(true)}
+                    >
+                      Initiate Smart Contract
+                    </Button>
+                  )}
+                  {invitation.escrowAccountId && (
+                    <div className="mt-4 p-3 bg-green-50 rounded-md">
+                      <p className="text-sm text-green-800 font-medium">Smart Contract Active</p>
+                      <p className="text-xs text-green-600 mt-1">Escrow: {invitation.escrowAccountId}</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
           )}
         </div>
       </DialogContent>
+      
+      <SecretKeyModal
+        open={showSecretKeyModal}
+        onOpenChange={setShowSecretKeyModal}
+        invitationId={invitation.id}
+        userRole="artist"
+        eventTitle={invitation.event.title}
+        proposedFee={invitation.proposedFee}
+      />
     </Dialog>
   );
 }

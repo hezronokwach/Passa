@@ -8,11 +8,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import type { Event, Ticket } from '@prisma/client';
 import { Confetti } from './confetti';
 import { useToast } from '@/hooks/use-toast';
 import { TicketStub } from './ticket-stub';
-import { purchaseTicket } from '@/app/actions/fan';
+import { WalletConnector } from './wallet-connector';
+import { handleTicketPurchase } from '@/lib/actions/purchase-client';
 
 
 interface TicketPurchaseDialogProps {
@@ -32,24 +35,32 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
+  const [showWalletConnect, setShowWalletConnect] = useState(false);
+  const [buyerSecretKey, setBuyerSecretKey] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handlePurchase = async () => {
-    setIsPurchasing(true);
-    
-    // In a real app, you might have multiple ticket tiers. We'll use the first one.
-    const ticketTier = event.tickets?.[0];
-    if (!ticketTier) {
+  const handlePurchaseClick = () => {
+    if (!selectedTicketId) {
         toast({
             title: "Error",
-            description: "No tickets available for this event.",
+            description: "Please select a ticket tier.",
             variant: "destructive"
         });
-        setIsPurchasing(false);
         return;
     }
+    setShowWalletConnect(true);
+  };
 
-    const result = await purchaseTicket({ eventId: event.id, ticketId: ticketTier.id });
+  const handleWalletConnect = async (secretKey: string) => {
+    setBuyerSecretKey(secretKey);
+    setIsPurchasing(true);
+    
+    const result = await handleTicketPurchase(
+      event.id, 
+      selectedTicketId!, 
+      secretKey
+    );
     
     if (result.success) {
         toast({
@@ -57,17 +68,16 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
         description: `You got 1 ticket for ${event.translatedTitle}.`,
         });
         setPurchaseSuccess(true);
-        
-        // QR code will be generated server-side when viewing tickets
+        setShowWalletConnect(false);
         
         // Reset state and close dialog after animation
         setTimeout(() => {
             setIsOpen(false);
-            // A slight delay before resetting purchase success to let dialog close animation finish
             setTimeout(() => {
                 setPurchaseSuccess(false);
                 setIsPurchasing(false);
                 setQrCode(null);
+                setBuyerSecretKey(null);
             }, 500);
         }, 3000);
     } else {
@@ -77,6 +87,7 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
             variant: "destructive"
         });
         setIsPurchasing(false);
+        setShowWalletConnect(false);
     }
   };
   
@@ -88,23 +99,68 @@ export function TicketPurchaseDialog({ event, isOpen, setIsOpen }: TicketPurchas
     if (!open) {
         setPurchaseSuccess(false);
         setQrCode(null);
+        setSelectedTicketId(null);
+        setShowWalletConnect(false);
+        setBuyerSecretKey(null);
     }
   }
+
+  const selectedTicket = event.tickets?.find(t => t.id === selectedTicketId);
+  const hasMultipleTickets = (event.tickets?.length || 0) > 1;
 
   return (
     <>
       <Confetti active={purchaseSuccess} />
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-sm p-0 bg-transparent border-0 shadow-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+        <DialogContent 
+          className={hasMultipleTickets ? "max-w-md" : "max-w-sm p-0 bg-transparent border-0 shadow-none"}
+        >
           <DialogTitle className="sr-only">{event.translatedTitle}</DialogTitle>
           <DialogDescription className="sr-only">Purchase ticket for {event.translatedTitle}</DialogDescription>
-          <TicketStub 
-            event={event} 
-            onPurchase={handlePurchase}
-            isPurchasing={isPurchasing}
-            isSuccess={purchaseSuccess}
-            qrCode={qrCode || undefined}
-          />
+          
+          {showWalletConnect ? (
+            <WalletConnector 
+              onConnect={handleWalletConnect}
+              isConnecting={isPurchasing}
+            />
+          ) : hasMultipleTickets && !selectedTicketId ? (
+            <div className="space-y-4">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">Select Ticket Type</h3>
+                <p className="text-sm text-muted-foreground">{event.translatedTitle}</p>
+              </div>
+              
+              <div className="space-y-3">
+                {event.tickets?.map((ticket) => (
+                  <Card key={ticket.id} className="cursor-pointer hover:bg-accent transition-colors" onClick={() => setSelectedTicketId(ticket.id)}>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h4 className="font-medium">{ticket.name}</h4>
+                          <p className="text-sm text-muted-foreground">{ticket.quantity - ticket.sold} available</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold">{ticket.price} XLM</p>
+                          <p className="text-xs text-muted-foreground">Stellar Lumens</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <TicketStub 
+              event={{
+                ...event,
+                price: selectedTicket?.price || event.tickets?.[0]?.price || event.price
+              }} 
+              onPurchase={handlePurchaseClick}
+              isPurchasing={isPurchasing}
+              isSuccess={purchaseSuccess}
+              qrCode={qrCode || undefined}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </>

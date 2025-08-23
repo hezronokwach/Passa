@@ -6,6 +6,7 @@ import prisma from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/session';
+import { escrowService } from '@/lib/services/escrow-service';
 
 async function getAuthenticatedUser() {
   const session = await getSession();
@@ -77,25 +78,50 @@ export async function createEvent(prevState: unknown, formData: FormData) {
     };
   }
 
-  const {
-      title,
-      description,
-      location,
-      country,
-      date,
-      time,
-      imageUrl,
-      tickets,
-      currency,
-      artistSplit,
-      venueSplit,
-      passaSplit,
-    } = validatedFields.data;
-
-  const eventDateTime = new Date(`${date}T${time}`);
-  const ticketTiers = JSON.parse(tickets);
+  const { title, description, location, country, date, time, imageUrl, tickets } = validatedFields.data;
 
   try {
+    const ticketTiers = JSON.parse(tickets);
+    const eventDateTime = new Date(`${date}T${time}`);
+
+    if (isNaN(eventDateTime.getTime())) {
+      return {
+        errors: { date: ['Invalid date/time format'] },
+        message: 'Please provide a valid date and time.',
+        success: false,
+      };
+    }
+
+    // Get organizer wallet address
+    const organizer = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { walletAddress: true }
+    });
+
+    if (!organizer?.walletAddress) {
+      return {
+        errors: {},
+        message: 'Organizer wallet address required. Please update your profile.',
+        success: false,
+      };
+    }
+
+    // Create escrow agreement for the event
+    const escrowResult = await escrowService.createEventEscrow(
+      organizer.walletAddress,
+      '', // artist address - set when artist accepts invitation
+      '0', // artist fixed amount - set when artist accepts
+      Math.floor(eventDateTime.getTime() / 1000)
+    );
+
+    if (!escrowResult.success) {
+      return {
+        errors: {},
+        message: 'Failed to create event escrow contract.',
+        success: false,
+      };
+    }
+
     await prisma.event.create({
       data: {
         title,
@@ -105,11 +131,7 @@ export async function createEvent(prevState: unknown, formData: FormData) {
         date: eventDateTime,
         imageUrl,
         organizerId: userId,
-        // Set defaults for optional fields
-        artistSplit: artistSplit || 70,
-        venueSplit: venueSplit || 20,
-        passaSplit: passaSplit || 10,
-        currency: currency || 'USD',
+        contractAgreementId: escrowResult.contractAddress,
         tickets: {
           create: ticketTiers.map((tier: { name: string; price: string; quantity: string }) => ({
             name: tier.name,

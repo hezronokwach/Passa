@@ -26,10 +26,10 @@ type TicketTier = {
 
 const PRESET_TIERS = [
   { name: 'Free', price: '0' },
-  { name: 'Early Bird', price: '25' },
-  { name: 'General Admission', price: '50' },
-  { name: 'VIP', price: '100' },
-  { name: 'VVIP', price: '200' },
+  { name: 'Early Bird', price: '5' },
+  { name: 'General Admission', price: '10' },
+  { name: 'VIP', price: '25' },
+  { name: 'VVIP', price: '50' },
 ];
 
 function SubmitButton() {
@@ -48,7 +48,7 @@ export default function CreateEventPage() {
   const [dateInput, setDateInput] = React.useState('');
   const [timeInput, setTimeInput] = React.useState('');
   const [ticketTiers, setTicketTiers] = React.useState<TicketTier[]>([
-    { id: '1', name: 'General Admission', price: '50', quantity: '100' }
+    { id: '1', name: 'General Admission', price: '10', quantity: '100' }
   ]);
   const [step1Data, setStep1Data] = React.useState({
     title: '',
@@ -133,7 +133,7 @@ export default function CreateEventPage() {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setUploadedImage(file);
@@ -142,6 +142,38 @@ export default function CreateEventPage() {
         setImagePreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+
+      // Upload the file immediately
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          setStep1Data({...step1Data, imageUrl: result.imageUrl});
+          toast({
+            title: 'Image Uploaded',
+            description: 'Your event image has been uploaded successfully.',
+          });
+        } else {
+          toast({
+            title: 'Upload Failed',
+            description: result.error || 'Failed to upload image.',
+            variant: 'destructive'
+          });
+        }
+      } catch (error) {
+        toast({
+          title: 'Upload Error',
+          description: 'Failed to upload image. Please try again.',
+          variant: 'destructive'
+        });
+      }
     }
   };
 
@@ -167,8 +199,10 @@ export default function CreateEventPage() {
       formData.set('time', timeInput);
     }
 
-    // Handle image upload
-    if (uploadedImage) {
+    // Use uploaded image URL or fallback to placeholder
+    if (step1Data.imageUrl) {
+      formData.set('imageUrl', step1Data.imageUrl);
+    } else {
       formData.set('imageUrl', `https://placehold.co/600x400.png?text=${encodeURIComponent(step1Data.title)}`);
     }
 
@@ -425,7 +459,7 @@ export default function CreateEventPage() {
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label>Price (USD) <span className="text-red-500">*</span></Label>
+                                <Label>Price (XLM) <span className="text-red-500">*</span></Label>
                                 <Input
                                   type="number"
                                   step="0.01"

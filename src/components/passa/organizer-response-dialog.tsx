@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { DollarSign, MessageSquare, Edit, History, Clock } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { editInvitation } from '@/app/actions/invitation-response';
+import { SecretKeyModal } from './secret-key-modal';
 
 type InvitationResponse = {
   id: number;
@@ -21,6 +22,7 @@ type InvitationResponse = {
   message: string | null;
   status: string;
   artistComments: string | null;
+  escrowAccountId?: string | null;
   event: {
     title: string;
   };
@@ -54,6 +56,7 @@ export function OrganizerResponseDialog({
   const [newFee, setNewFee] = React.useState(invitation.proposedFee.toString());
   const [newMessage, setNewMessage] = React.useState(invitation.message || '');
   const [isPending, startTransition] = useTransition();
+  const [showSecretKeyModal, setShowSecretKeyModal] = React.useState(false);
   
   const [state, formAction] = useActionState(editInvitation, {
     message: '',
@@ -116,7 +119,7 @@ export function OrganizerResponseDialog({
               <div className="space-y-2">
                 <p><strong>Artist:</strong> {invitation.artistName}</p>
                 <p><strong>Event:</strong> {invitation.event.title}</p>
-                <p><strong>Original Fee:</strong> ${invitation.proposedFee.toFixed(2)}</p>
+                <p><strong>Original Fee:</strong> {invitation.proposedFee.toFixed(2)} XLM</p>
               </div>
             </CardContent>
           </Card>
@@ -158,7 +161,7 @@ export function OrganizerResponseDialog({
                         </Badge>
                         {entry.oldFee !== entry.newFee && (
                           <span className="text-xs text-muted-foreground">
-                            ${entry.oldFee?.toFixed(2)} → ${entry.newFee?.toFixed(2)}
+                            {entry.oldFee?.toFixed(2)} XLM → {entry.newFee?.toFixed(2)} XLM
                           </span>
                         )}
                         {entry.oldStatus !== entry.newStatus && (
@@ -178,6 +181,31 @@ export function OrganizerResponseDialog({
             </CardContent>
           </Card>
 
+          {/* Smart Contract Section */}
+          {invitation.status === 'ACCEPTED' && (
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  {!invitation.escrowAccountId ? (
+                    <>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Agreement accepted! Initiate the smart contract to secure the payment.
+                      </p>
+                      <Button onClick={() => setShowSecretKeyModal(true)}>
+                        Initiate Smart Contract
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="p-3 bg-green-50 rounded-md">
+                      <p className="text-sm text-green-800 font-medium">Smart Contract Active</p>
+                      <p className="text-xs text-green-600 mt-1">Escrow: {invitation.escrowAccountId}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Edit Invitation */}
           {invitation.status === 'REJECTED' && (
             <Card>
@@ -195,18 +223,15 @@ export function OrganizerResponseDialog({
                 ) : (
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="newFee">New Proposed Fee</Label>
-                      <div className="relative">
-                        <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="newFee"
-                          type="number"
-                          step="0.01"
-                          value={newFee}
-                          onChange={(e) => setNewFee(e.target.value)}
-                          className="pl-9"
-                        />
-                      </div>
+                      <Label htmlFor="newFee">New Proposed Fee (XLM)</Label>
+                      <Input
+                        id="newFee"
+                        type="number"
+                        step="0.01"
+                        value={newFee}
+                        onChange={(e) => setNewFee(e.target.value)}
+                        placeholder="50.00"
+                      />
                     </div>
                     
                     <div className="space-y-2">
@@ -242,6 +267,15 @@ export function OrganizerResponseDialog({
           )}
         </div>
       </DialogContent>
+      
+      <SecretKeyModal
+        open={showSecretKeyModal}
+        onOpenChange={setShowSecretKeyModal}
+        invitationId={invitation.id}
+        userRole="organizer"
+        eventTitle={invitation.event.title}
+        proposedFee={invitation.proposedFee}
+      />
     </Dialog>
   );
 }

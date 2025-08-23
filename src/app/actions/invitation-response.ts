@@ -5,6 +5,8 @@ import prisma from '@/lib/db';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { blockchainService, BlockchainService } from '@/lib/services/blockchain-service';
+import { Keypair } from '@stellar/stellar-sdk';
 
 const responseSchema = z.object({
   invitationId: z.coerce.number(),
@@ -77,10 +79,56 @@ export async function respondToInvitation(prevState: unknown, formData: FormData
     const allAccepted = allInvitations.every(inv => inv.status === 'ACCEPTED');
     
     if (allAccepted && status === 'ACCEPTED') {
-      await prisma.event.update({
-        where: { id: invitation.event.id },
-        data: { published: true }
-      });
+      try {
+        // Create smart contract agreement
+        const agreementId = BlockchainService.generateAgreementId(invitation.event.id);
+        const totalBudget = allInvitations.reduce((sum, inv) => sum + inv.proposedFee, 0);
+        const shares = BlockchainService.convertToShares(
+          allInvitations.map(inv => ({ artistEmail: inv.artistEmail, proposedFee: inv.proposedFee })),
+          totalBudget
+        );
+        
+        // Get platform wallet (in production, this would be from secure storage)
+        const platformSecret = process.env.PLATFORM_WALLET_SECRET;
+        if (!platformSecret) throw new Error('Platform wallet not configured');
+        
+        const platformKeypair = Keypair.fromSecret(platformSecret);
+        const tokenAddress = process.env.USDC_TOKEN_ADDRESS || 'CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA'; // USDC testnet
+        
+        const contractResult = await blockchainService.createAgreement({
+          id: agreementId,
+          payer: platformKeypair.publicKey(),
+          token: tokenAddress,
+          payees: shares,
+          budget: BigInt(Math.round(totalBudget * 1000000)), // Convert to stroops
+          deadline: BigInt(Math.floor(new Date(invitation.event.date).getTime() / 1000) + 86400), // Event date + 24h
+          approvers: []
+        }, platformKeypair);
+        
+        if (contractResult.success) {
+          // Store contract ID in database
+          await prisma.event.update({
+            where: { id: invitation.event.id },
+            data: { 
+              published: true,
+              contractAgreementId: agreementId
+            }
+          });
+          
+          // Update all invitations with contract status
+          await prisma.artistInvitation.updateMany({
+            where: { eventId: invitation.event.id },
+            data: { escrowAccountId: agreementId }
+          });
+        }
+      } catch (error) {
+        console.error('Smart contract deployment failed:', error);
+        // Still publish event but log the error
+        await prisma.event.update({
+          where: { id: invitation.event.id },
+          data: { published: true }
+        });
+      }
       
       // Notify organizer that event is published
       await prisma.notification.create({

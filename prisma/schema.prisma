@@ -18,6 +18,7 @@ model User {
   passwordResetToken   String?            @unique
   verificationToken    String?            @unique
   walletAddress        String?            @unique
+  walletSecretKey      String?            // Encrypted secret key
   artistInvitations    ArtistInvitation[]
   attributions         Attribution[]
   creatorProfile       CreatorProfile?
@@ -27,6 +28,7 @@ model User {
   purchasedTickets     PurchasedTicket[]
   submissions          Submission[]
   scannedTickets       TicketScan[]         @relation("TicketScans")
+  eventAttendances     EventAttendance[]    @relation("EventAttendees")
 }
 
 model CreatorProfile {
@@ -76,12 +78,15 @@ model Event {
   updatedAt         DateTime           @updatedAt
   published         Boolean            @default(false)
   totalBudget       Float?
+  contractAgreementId String?          // Smart contract agreement ID
+  paymentsReleased    Boolean            @default(false) // Whether payments have been released
   artistInvitations ArtistInvitation[]
   attributions      Attribution[]
   briefs            CreativeBrief[]
   organizer         User               @relation(fields: [organizerId], references: [id])
   purchasedTickets  PurchasedTicket[]
   tickets           Ticket[]
+  attendances       EventAttendance[]
 }
 
 model Ticket {
@@ -107,6 +112,7 @@ model PurchasedTicket {
   ticket      Ticket       @relation(fields: [ticketId], references: [id])
   transaction Transaction?
   scans       TicketScan[]
+  attendance  EventAttendance[]
 }
 
 model Transaction {
@@ -178,6 +184,9 @@ model ArtistInvitation {
   artistComments String?
   artistId       Int?
   sourceBriefId  Int?
+  escrowAccountId String?              // Smart contract address
+  organizerSecret String?              // Organizer's secret key (encrypted)
+  artistSecret   String?               // Artist's secret key (encrypted)
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
   artist         User?                 @relation(fields: [artistId], references: [id])
@@ -230,6 +239,20 @@ model TicketScan {
   scannedAt DateTime @default(now())
   ticket    PurchasedTicket @relation(fields: [ticketId], references: [id])
   scanner   User     @relation("TicketScans", fields: [scannerId], references: [id])
+}
+
+model EventAttendance {
+  id         Int      @id @default(autoincrement())
+  eventId    Int
+  userId     Int
+  ticketId   Int      @unique
+  checkedInAt DateTime @default(now())
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user       User     @relation("EventAttendees", fields: [userId], references: [id], onDelete: Cascade)
+  ticket     PurchasedTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  
+  @@index([eventId])
+  @@index([userId])
 }
 
 enum Role {

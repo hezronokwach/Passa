@@ -42,7 +42,20 @@ export async function generateEmailVerificationToken(email: string) {
 }
 
 export async function generatePasswordResetToken(email: string) {
-  return generateToken(email, 'passwordReset');
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  const expires = new Date(new Date().getTime() + 3600 * 1000); // 1 hour from now
+
+  const result = await prisma.user.updateMany({
+    where: { email },
+    data: {
+      passwordResetToken: tokenHash,
+      passwordResetExpires: expires,
+    },
+  });
+  // Optional: if (result.count === 0) keep response generic to prevent user enumeration.
+
+  return rawToken; // email this
 }
 
 export async function getCurrentUser() {

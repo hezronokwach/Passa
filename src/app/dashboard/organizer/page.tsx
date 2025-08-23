@@ -3,7 +3,7 @@
 import { DashboardHeader } from '@/components/passa/dashboard-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, Users, User, Calendar, TrendingUp, Eye } from 'lucide-react';
+import { PlusCircle, Users, User, Calendar, TrendingUp, Eye, Scan } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 import Link from 'next/link';
@@ -15,24 +15,39 @@ import { redirect } from 'next/navigation';
 async function getOrganizerData() {
     const session = await getSession();
     if (!session) {
-        return {
-            user: null,
-            events: [],
-            stats: {
-                totalEvents: 0,
-                totalRevenue: 0,
-                totalTicketsSold: 0,
-                upcomingEvents: 0,
-                totalApplications: 0
-            },
-            error: 'No session found'
-        };
+        redirect('/login');
     }
     
-    const user = await prisma.user.findUniqueOrThrow({
+    const user = await prisma.user.findUnique({
         where: { id: session.userId },
         include: { organizerProfile: true }
     });
+    
+    if (!user) {
+        redirect('/login');
+    }
+
+    // Get total escrow balance from all events
+    let escrowBalance = '0';
+    try {
+        // Calculate total from all ticket sales
+        const totalSales = await prisma.transaction.aggregate({
+            where: {
+                purchasedTicket: {
+                    event: {
+                        organizerId: user.id
+                    }
+                },
+                status: 'COMPLETED'
+            },
+            _sum: {
+                amount: true
+            }
+        });
+        escrowBalance = (totalSales._sum.amount || 0).toFixed(2);
+    } catch (error) {
+        console.error('Escrow balance fetch error:', error);
+    }
 
     const events = await prisma.event.findMany({
         where: { organizerId: user.id },
@@ -78,7 +93,7 @@ async function getOrganizerData() {
         })),
         stats: {
             totalEvents,
-            totalRevenue,
+            escrowBalance,
             totalTicketsSold,
             upcomingEvents,
             totalApplications
@@ -87,11 +102,7 @@ async function getOrganizerData() {
 }
 
 export default async function OrganizerDashboardPage() {
-  const { user, events, stats, error } = await getOrganizerData();
-  
-  if (error || !user) {
-    return redirect('/login');
-  }
+  const { user, events, stats } = await getOrganizerData();
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -108,8 +119,8 @@ export default async function OrganizerDashboardPage() {
               </div>
               <div className="hidden md:flex items-center gap-3">
                 <div className="text-right">
-                  <p className="text-sm font-medium">Total Revenue</p>
-                  <p className="text-2xl font-bold text-green-600">${stats.totalRevenue.toFixed(2)}</p>
+                  <p className="text-sm font-medium">Escrow Balance</p>
+                  <p className="text-2xl font-bold text-green-600">{stats.escrowBalance} XLM</p>
                 </div>
                 <div className="w-px h-12 bg-border"></div>
                 <Button size="lg" asChild className="shadow-lg">
@@ -171,7 +182,7 @@ export default async function OrganizerDashboardPage() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-12">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5 mb-12">
             <Link href="/dashboard/organizer/events/create" className="group">
               <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] bg-gradient-to-br from-primary/5 to-primary/10">
                 <CardContent className="p-6">
@@ -214,6 +225,22 @@ export default async function OrganizerDashboardPage() {
                     <div>
                       <h3 className="font-semibold">Invitations</h3>
                       <p className="text-sm text-muted-foreground">Manage artists</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/gatescan" className="group">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl group-hover:bg-green-200 dark:group-hover:bg-green-900/50 transition-colors">
+                      <Scan className="size-6 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Gate Scanner</h3>
+                      <p className="text-sm text-muted-foreground">Scan tickets</p>
                     </div>
                   </div>
                 </CardContent>

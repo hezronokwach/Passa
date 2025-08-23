@@ -289,13 +289,13 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Label htmlFor="budget">Total Budget (USD) <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="budget">Total Budget (XLM) <span className="text-red-500">*</span></Label>
                     <Input
                       id="budget"
                       type="number"
                       step="0.01"
                       min="0"
-                      placeholder="10000.00"
+                      placeholder="1000.00"
                       value={totalBudget}
                       onChange={(e) => setTotalBudget(e.target.value)}
                       className={!totalBudget ? "border-red-300" : ""}
@@ -421,12 +421,12 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label>Fee (USD) <span className="text-red-500">*</span></Label>
+                              <Label>Fee (XLM) <span className="text-red-500">*</span></Label>
                               <Input
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                placeholder="5000.00"
+                                placeholder="50.00"
                                 value={artist.fee}
                                 onChange={(e) => updateArtist(artist.id, 'fee', e.target.value)}
                                 className={!artist.fee ? "border-red-300" : ""}
@@ -444,17 +444,17 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
                     <div className="bg-muted/50 p-4 rounded-lg space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Total Budget:</span>
-                        <span>${parseFloat(totalBudget).toFixed(2)}</span>
+                        <span>{parseFloat(totalBudget).toFixed(2)} XLM</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Artist Fees:</span>
-                        <span>${totalFees.toFixed(2)}</span>
+                        <span>{totalFees.toFixed(2)} XLM</span>
                       </div>
                       <div className={`flex justify-between text-sm font-medium ${
                         budgetExceeded ? 'text-destructive' : 'text-foreground'
                       }`}>
                         <span>Remaining:</span>
-                        <span>${remainingBudget.toFixed(2)}</span>
+                        <span>{remainingBudget.toFixed(2)} XLM</span>
                       </div>
                     </div>
                   )}
@@ -499,7 +499,7 @@ export function PublishEventModal({ open, onOpenChange, event }: PublishEventMod
                       <p className="text-sm text-muted-foreground">{artist.email}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">${parseFloat(artist.fee).toFixed(2)}</p>
+                      <p className="font-medium">{parseFloat(artist.fee).toFixed(2)} XLM</p>
                       <Badge variant="secondary">Pending</Badge>
                     </div>
                   </div>

@@ -1,7 +1,7 @@
 
 'use server';
 
-import { translateEventTitle } from '@/ai/flows/translate-event-title';
+
 import React from 'react';
 import { EventCard } from '@/components/passa/event-card';
 import { DashboardHeader } from '@/components/passa/dashboard-header';
@@ -55,33 +55,13 @@ export default async function DashboardPage() {
     orderBy: { date: 'asc' },
   });
 
-  const events: TranslatedEvent[] = await Promise.all(
-    rawEvents.map(async (event) => {
-      try {
-        const { translatedTitle } = await translateEventTitle({
-          title: event.title,
-          country: event.country,
-        });
-        
-        return { 
-            ...event, 
-            translatedTitle,
-            price: event.tickets[0]?.price ?? 0,
-            currency: 'USD',
-            imageHint: 'music festival',
-        };
-      } catch (error) {
-        console.error('Translation failed for event:', event.title, error);
-        return { 
-            ...event, 
-            translatedTitle: event.title,
-            price: event.tickets[0]?.price ?? 0,
-            currency: 'USD',
-            imageHint: 'music festival',
-        };
-      }
-    })
-  );
+  const events: TranslatedEvent[] = rawEvents.map((event) => ({
+    ...event,
+    translatedTitle: event.title,
+    price: event.tickets[0]?.price ?? 0,
+    currency: 'USD',
+    imageHint: 'music festival',
+  }));
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">

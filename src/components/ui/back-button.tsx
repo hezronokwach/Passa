@@ -1,15 +1,31 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
-export function BackButton() {
-    return (
-        <button 
-            onClick={() => window.history.back()}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-            <ArrowLeft className="size-4" />
-            Back
-        </button>
-    );
+interface BackButtonProps {
+  children: React.ReactNode;
+  className?: string;
+  fallbackHref?: string;
+}
+
+export function BackButton({ children, className, fallbackHref = '/' }: BackButtonProps) {
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(fallbackHref);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleBack}
+      className={cn("cursor-pointer", className)}
+    >
+      {children}
+    </button>
+  );
 }

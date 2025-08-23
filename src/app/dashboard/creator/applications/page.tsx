@@ -17,7 +17,13 @@ async function getArtistActivity() {
   // Get invitations received (organizer-initiated)
   const invitations = await prisma.artistInvitation.findMany({
     where: { artistId: session.userId },
-    include: {
+    select: {
+      id: true,
+      proposedFee: true,
+      status: true,
+      createdAt: true,
+      artistSecret: true,
+      organizerSecret: true,
       event: {
         select: {
           title: true,

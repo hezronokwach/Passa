@@ -10,7 +10,7 @@ const RATE_LIMIT_MAX_REQUESTS = 100; // 100 requests per window
 const protectedRoutes: { [key in Role]?: string[] } = {
     ADMIN: ['/dashboard/admin'],
     CREATOR: ['/dashboard/creator'],
-    ORGANIZER: ['/dashboard/organizer'],
+    ORGANIZER: ['/dashboard/organizer', '/gatescan'],
     FAN: ['/dashboard/fan'],
 };
 
@@ -60,8 +60,8 @@ export async function middleware(req: NextRequest) {
           return NextResponse.redirect(new URL(redirectUrl, req.nextUrl));
       }
   } else {
-      // Protect all dashboard routes if no session
-      if (path.startsWith('/dashboard')) {
+      // Protect all dashboard routes and gatescan if no session
+      if (path.startsWith('/dashboard') || path.startsWith('/gatescan')) {
           return NextResponse.redirect(new URL('/login', req.nextUrl));
       }
   }

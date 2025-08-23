@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
+import { escrowService } from '@/lib/services/escrow-service';
 
 // Mock user authentication for a fan
 async function getAuthenticatedUserId() {
@@ -19,6 +20,7 @@ async function getAuthenticatedUserId() {
 const purchaseSchema = z.object({
     eventId: z.number(),
     ticketId: z.number(),
+    buyerSecretKey: z.string().min(1, 'Wallet secret key required'),
 });
 
 const profileUpdateSchema = z.object({
@@ -26,7 +28,7 @@ const profileUpdateSchema = z.object({
     walletAddress: z.string().optional(),
 });
 
-export async function purchaseTicket(input: { eventId: number; ticketId: number }) {
+export async function purchaseTicket(input: { eventId: number; ticketId: number; buyerSecretKey: string }) {
   const userId = await getAuthenticatedUserId();
 
   const validatedFields = purchaseSchema.safeParse(input);
@@ -38,7 +40,7 @@ export async function purchaseTicket(input: { eventId: number; ticketId: number 
     };
   }
   
-  const { eventId, ticketId } = validatedFields.data;
+  const { eventId, ticketId, buyerSecretKey } = validatedFields.data;
 
   try {
      // Use a transaction to ensure data integrity
@@ -67,6 +69,27 @@ export async function purchaseTicket(input: { eventId: number; ticketId: number 
         if (ticketTier.sold >= ticketTier.quantity) {
             throw new Error("This ticket tier is sold out.");
         }
+
+        // Get event with organizer info
+        const event = await tx.event.findUnique({
+            where: { id: eventId },
+            include: { organizer: true }
+        });
+
+        if (!event?.organizer?.walletAddress) {
+            throw new Error("Organizer wallet address not found");
+        }
+
+        // Send payment to organizer (who has contract allowance set)
+        const escrowResult = await escrowService.sendToEscrow(
+            buyerSecretKey,
+            event.organizer.walletAddress,
+            ticketTier.price.toString()
+        );
+
+        if (!escrowResult.success) {
+            throw new Error(`Escrow payment failed: ${escrowResult.message}`);
+        }
         
         // Create the purchased ticket
         const purchasedTicket = await tx.purchasedTicket.create({
@@ -75,7 +98,17 @@ export async function purchaseTicket(input: { eventId: number; ticketId: number 
                 ticketId: ticketId,
                 ownerId: userId,
                 status: 'ACTIVE',
-                // In a real app, a transaction record would be created here too
+            }
+        });
+
+        // Create transaction record
+        await tx.transaction.create({
+            data: {
+                purchasedTicketId: purchasedTicket.id,
+                amount: parseFloat(ticketTier.price.toString()),
+                currency: 'XLM',
+                blockchainTxId: escrowResult.transactionHash!,
+                status: 'COMPLETED'
             }
         });
 

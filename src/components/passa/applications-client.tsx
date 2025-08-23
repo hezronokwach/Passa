@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Eye } from 'lucide-react';
 import { InvitationResponseDialog } from './invitation-response-dialog';
+import { ArtistSecretKeyDialog } from './artist-secret-key-dialog';
 import { useToast } from '@/components/ui/use-toast';
 
 const getStatusVariant = (status: string) => {
@@ -26,6 +27,8 @@ type InvitationListItem = {
   proposedFee: number;
   status: string;
   createdAt: Date;
+  artistSecret?: string | null;
+  organizerSecret?: string | null;
   event: {
     title: string;
     date: Date;
@@ -115,15 +118,15 @@ export function ApplicationsClient({ invitations, type }: ApplicationsClientProp
               <TableCell>
                 {type === 'invitations' ? (
                   <div className="text-sm">
-                    <div>{new Date(invitation.event.date).toLocaleDateString()}</div>
+                    <div>{new Date(invitation.event.date).toLocaleDateString('en-US')}</div>
                     <div className="text-muted-foreground">{invitation.event.location}</div>
                   </div>
                 ) : (
-                  new Date(invitation.createdAt).toLocaleDateString()
+                  new Date(invitation.createdAt).toLocaleDateString('en-US')
                 )}
               </TableCell>
               {type === 'invitations' && (
-                <TableCell>${invitation.proposedFee.toFixed(2)}</TableCell>
+                <TableCell>{invitation.proposedFee.toFixed(2)} XLM</TableCell>
               )}
               <TableCell>
                 <Badge variant={getStatusVariant(invitation.status)}>
@@ -131,14 +134,25 @@ export function ApplicationsClient({ invitations, type }: ApplicationsClientProp
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleViewDetails(invitation.id)}
-                >
-                  <Eye className="mr-2 size-4" />
-                  View Details
-                </Button>
+                <div className="flex gap-2 justify-end">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleViewDetails(invitation.id)}
+                  >
+                    <Eye className="mr-2 size-4" />
+                    View Details
+                  </Button>
+                  {invitation.status === 'ACCEPTED' && !invitation.artistSecret && (
+                    <ArtistSecretKeyDialog invitation={invitation} />
+                  )}
+                  {invitation.status === 'ACCEPTED' && invitation.artistSecret && !invitation.organizerSecret && (
+                    <span className="text-sm text-muted-foreground">Waiting for organizer</span>
+                  )}
+                  {invitation.status === 'ACCEPTED' && invitation.artistSecret && invitation.organizerSecret && (
+                    <span className="text-sm text-green-600">Contract ready</span>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}

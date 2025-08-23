@@ -17,7 +17,24 @@ async function getEventAnalytics(eventId: number) {
         include: {
             tickets: true,
             purchasedTickets: true,
-            artistInvitations: true
+            artistInvitations: true,
+            attendances: {
+                include: {
+                    user: {
+                        select: { name: true, email: true }
+                    },
+                    ticket: {
+                        include: {
+                            ticket: {
+                                select: { name: true }
+                            }
+                        }
+                    }
+                },
+                orderBy: {
+                    checkedInAt: 'desc'
+                }
+            }
         }
     });
     return event;
@@ -205,6 +222,46 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
                                 </CardContent>
                             </Card>
                         </div>
+
+                        {/* Event Attendance */}
+                        <Card className="border-0 shadow-lg mb-8">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Users className="size-5 text-primary" />
+                                    Event Attendance
+                                </CardTitle>
+                                <CardDescription>
+                                    {event.attendances.length} of {event.purchasedTickets.length} ticket holders have checked in
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {event.attendances.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {event.attendances.map((attendance) => (
+                                            <div key={attendance.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                                <div>
+                                                    <p className="font-medium">{attendance.user.name || attendance.user.email}</p>
+                                                    <p className="text-sm text-muted-foreground">{attendance.ticket.ticket.name}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-sm font-medium">
+                                                        {new Date(attendance.checkedInAt).toLocaleDateString()}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {new Date(attendance.checkedInAt).toLocaleTimeString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        <Users className="size-12 mx-auto mb-2 opacity-50" />
+                                        <p>No attendees have checked in yet</p>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
 
                         {/* Ticket Tiers Performance */}
                         <Card className="border-0 shadow-lg">

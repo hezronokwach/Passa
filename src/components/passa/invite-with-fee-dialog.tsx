@@ -53,7 +53,7 @@ export function InviteWithFeeDialog({ invitation }: { invitation: { id: number; 
           
           <div className="space-y-4 py-4">
             <div>
-              <Label htmlFor="proposedFee">Performance Fee ($) <span className="text-red-500">*</span></Label>
+              <Label htmlFor="proposedFee">Performance Fee (XLM) <span className="text-red-500">*</span></Label>
               <Input 
                 name="proposedFee" 
                 type="number" 

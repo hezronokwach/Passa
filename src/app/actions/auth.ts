@@ -3,11 +3,14 @@
 import { z } from 'zod';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import { createSession, deleteSession } from '@/lib/session';
 
 import { Role } from '@prisma/client';
 import { generateEmailVerificationToken, generatePasswordResetToken } from '@/lib/auth/utils';
 import { blockchainAuthService } from '@/lib/auth/blockchain';
+import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email/service';
+import { walletService } from '@/lib/services/wallet-service';
 
 const signupSchema = z.object({
   email: z.string().email(),
@@ -71,12 +74,16 @@ export async function signup(prevState: unknown, formData: FormData) {
       const hashedPassword = await bcrypt.hash(password, 10);
       const verificationToken = await generateEmailVerificationToken(email);
       
+      // Generate wallet for new user
+      const wallet = walletService.generateWallet();
+      
       const newUser = await tx.user.create({
         data: {
           email,
           password: hashedPassword,
           role,
           verificationToken: verificationToken,
+          walletAddress: wallet.publicKey,
         },
       });
 
@@ -90,15 +97,36 @@ export async function signup(prevState: unknown, formData: FormData) {
         });
       }
 
-      return newUser;
+      return { ...newUser, walletSecretKey: wallet.secretKey };
     });
+
+    // Fund the testnet account
+    try {
+      await walletService.fundTestnetAccount(result.walletAddress!);
+      console.log('✅ Funded testnet wallet:', result.walletAddress);
+    } catch (fundingError) {
+      console.error('Failed to fund testnet account:', fundingError);
+      // Don't fail signup if funding fails
+    }
+
+    // Send verification email
+    try {
+      await sendVerificationEmail(email, result.verificationToken!);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Don't fail the signup if email sending fails
+    }
 
     await createSession(result.id, result.role);
 
     return { 
       success: true, 
-      message: 'Account created successfully!',
-      redirect: rolePaths[role] || '/dashboard' 
+      message: `Account created successfully! Your Stellar wallet (${result.walletAddress}) has been funded with testnet XLM. Please check your email to verify your account.`,
+      redirect: rolePaths[role] || '/dashboard',
+      walletInfo: {
+        publicKey: result.walletAddress,
+        secretKey: result.walletSecretKey // Only returned once for user to save
+      }
     };
   } catch (error) {
     console.error('Signup error:', error);
@@ -193,8 +221,12 @@ export async function forgotPassword(prevState: unknown, formData: FormData) {
         const user = await prisma.user.findUnique({ where: { email } });
         if (user) {
             const resetToken = await generatePasswordResetToken(email);
-            // TODO: Send password reset email
-            console.log(`Password reset token for ${email}: ${resetToken}`);
+            try {
+                await sendPasswordResetEmail(email, resetToken);
+            } catch (emailError) {
+                console.error('Failed to send password reset email:', emailError);
+                // Continue with the flow even if email sending fails
+            }
         }
 
         return { success: true, message: 'If a user with that email exists, a password reset link has been sent.' };
@@ -214,9 +246,10 @@ export async function resetPassword(prevState: unknown, formData: FormData) {
     const { token, password } = validatedFields.data;
 
     try {
+        const providedHash = crypto.createHash('sha256').update(token).digest('hex');
         const user = await prisma.user.findFirst({
             where: {
-                passwordResetToken: token,
+                passwordResetToken: providedHash,
                 passwordResetExpires: { gt: new Date() },
             },
         });
