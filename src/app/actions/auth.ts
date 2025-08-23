@@ -84,6 +84,7 @@ export async function signup(prevState: unknown, formData: FormData) {
           role,
           verificationToken: verificationToken,
           walletAddress: wallet.publicKey,
+          walletSecretKey: wallet.secretKey,
         },
       });
 

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Wallet, Copy, CheckCircle, RefreshCw, Eye, EyeOff, AlertTriangle, Coins } from 'lucide-react';
 import { regenerateWallet, fundAccount } from '@/app/actions/wallet-actions';
+import { getSecretKey } from '@/app/actions/get-secret-key';
 
 interface WalletProfileProps {
   userWallet?: string;
@@ -19,6 +20,24 @@ export function WalletProfile({ userWallet }: WalletProfileProps) {
   const [loadingBalance, setLoadingBalance] = useState(false);
   const [state, formAction, pending] = useActionState(regenerateWallet, { success: false, message: '', errors: {} });
   const [fundState, fundAction, fundPending] = useActionState(fundAccount, { success: false, message: '' });
+
+  const [secretKey, setSecretKey] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleShowSecretKey = async () => {
+    if (showSecret) {
+      setShowSecret(false);
+      return;
+    }
+
+    const { secretKey, error } = await getSecretKey();
+    if (error) {
+      setError(error);
+      return;
+    }
+    setSecretKey(secretKey);
+    setShowSecret(true);
+  };
 
   const fetchBalance = async (publicKey: string) => {
     setLoadingBalance(true);
@@ -118,7 +137,7 @@ export function WalletProfile({ userWallet }: WalletProfileProps) {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => setShowSecret(!showSecret)}
+                      onClick={handleShowSecretKey}
                     >
                       {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
@@ -130,18 +149,21 @@ export function WalletProfile({ userWallet }: WalletProfileProps) {
                   {showSecret && (
                     <div className="flex items-center gap-2">
                       <code className="text-xs bg-blue-100 p-2 rounded flex-1 break-all font-mono">
-                        {newWallet?.secretKey || 'Contact support to retrieve your secret key'}
+                        {secretKey || 'Could not retrieve secret key.'}
                       </code>
-                      {(newWallet?.secretKey) && (
+                      {(secretKey) && (
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => copyToClipboard(newWallet.secretKey, 'secret')}
+                          onClick={() => copyToClipboard(secretKey, 'secret')}
                         >
                           {copied === 'secret' ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                         </Button>
                       )}
                     </div>
+                  )}
+                  {showSecret && error && (
+                    <p className="text-red-500 text-xs">{error}</p>
                   )}
                 </div>
               </div>
