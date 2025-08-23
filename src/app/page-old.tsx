@@ -382,7 +382,7 @@ export default function Home() {
                     <div
                         className="absolute inset-0 z-0"
                         style={{
-                            backgroundImage: 'url(./passa-africantenge.webp)',
+                            backgroundImage: 'url(./passa-africantenge.png)',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat'

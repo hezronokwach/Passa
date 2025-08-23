@@ -131,7 +131,7 @@ export const AuthLayout = ({ children, formPosition = 'left', title, description
                     )}
                 >
                     <Image
-                        src="/passa-africantenge.webp"
+                        src="/passa-africantenge.png"
                         alt="African pattern background"
                         fill
                         className="object-cover opacity-20"

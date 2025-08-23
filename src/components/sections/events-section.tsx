@@ -27,7 +27,7 @@ export function EventsSection({ events, loading }: EventsSectionProps) {
             <div 
                 className="absolute top-0 left-0 right-0 h-2 opacity-60"
                 style={{
-                    backgroundImage: 'url(/passa-africantenge.webp)',
+                    backgroundImage: 'url(/passa-africantenge.png)',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'repeat-x'

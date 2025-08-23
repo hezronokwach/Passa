@@ -21,7 +21,7 @@ const SectionDivider: React.FC<DividerProps> = ({
         ${className}
       `}
       style={{
-        backgroundImage: "url('/passa-africantenge.webp')",
+        backgroundImage: "url('/passa-africantenge.png')",
         backgroundRepeat: "repeat",
         backgroundSize: "48px 48px",
         height: isHorizontal ? thickness : "100%",

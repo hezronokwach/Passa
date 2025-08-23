@@ -26,7 +26,7 @@ async function getTicketData(id: string) {
     title: opportunity.title,
     translatedTitle: opportunity.title,
     description: opportunity.description,
-    imageUrl: '/passa-africantenge.webp',
+    imageUrl: '/passa-africantenge.png',
     date: new Date('2025-10-26T10:00:00Z'),
     location: 'Venue To Be Confirmed',
     price: opportunity.budget,
