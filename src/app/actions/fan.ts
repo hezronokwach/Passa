@@ -43,87 +43,90 @@ export async function purchaseTicket(input: { eventId: number; ticketId: number;
   const { eventId, ticketId, buyerSecretKey } = validatedFields.data;
 
   try {
-     // Use a transaction to ensure data integrity
-     await prisma.$transaction(async (tx) => {
-        // Check if user already has a ticket for this event
-        const existingTicket = await tx.purchasedTicket.findFirst({
-            where: {
-                eventId: eventId,
-                ownerId: userId,
-                status: 'ACTIVE'
-            }
-        });
+    // First, do all validations and get data (fast operations)
+    const existingTicket = await prisma.purchasedTicket.findFirst({
+      where: {
+        eventId: eventId,
+        ownerId: userId,
+        status: 'ACTIVE'
+      }
+    });
 
-        if (existingTicket) {
-            throw new Error("You already have a ticket for this event.");
+    if (existingTicket) {
+      throw new Error("You already have a ticket for this event.");
+    }
+
+    const ticketTier = await prisma.ticket.findUnique({
+      where: { id: ticketId },
+    });
+
+    if (!ticketTier) {
+      throw new Error("Ticket tier not found.");
+    }
+
+    if (ticketTier.sold >= ticketTier.quantity) {
+      throw new Error("This ticket tier is sold out.");
+    }
+
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      include: { organizer: true }
+    });
+
+    if (!event?.organizer?.walletAddress) {
+      throw new Error("Organizer wallet address not found");
+    }
+
+    // Do blockchain operation outside transaction (slow operation)
+    const escrowResult = await escrowService.sendToEscrow(
+      buyerSecretKey,
+      event.organizer.walletAddress,
+      ticketTier.price.toString()
+    );
+
+    if (!escrowResult.success) {
+      throw new Error(`Escrow payment failed: ${escrowResult.message}`);
+    }
+
+    // Now do fast database transaction with the blockchain result
+    await prisma.$transaction(async (tx) => {
+      // Double-check availability again inside transaction
+      const currentTicket = await tx.ticket.findUnique({
+        where: { id: ticketId },
+      });
+
+      if (!currentTicket || currentTicket.sold >= currentTicket.quantity) {
+        throw new Error("Ticket sold out during purchase");
+      }
+
+      const purchasedTicket = await tx.purchasedTicket.create({
+        data: {
+          eventId: eventId,
+          ticketId: ticketId,
+          ownerId: userId,
+          status: 'ACTIVE',
         }
+      });
 
-        const ticketTier = await tx.ticket.findUnique({
-            where: { id: ticketId },
-        });
-
-        if (!ticketTier) {
-            throw new Error("Ticket tier not found.");
+      await tx.transaction.create({
+        data: {
+          purchasedTicketId: purchasedTicket.id,
+          amount: parseFloat(ticketTier.price.toString()),
+          currency: 'XLM',
+          blockchainTxId: escrowResult.transactionHash!,
+          status: 'COMPLETED'
         }
+      });
 
-        if (ticketTier.sold >= ticketTier.quantity) {
-            throw new Error("This ticket tier is sold out.");
+      await tx.ticket.update({
+        where: { id: ticketId },
+        data: {
+          sold: {
+            increment: 1
+          }
         }
-
-        // Get event with organizer info
-        const event = await tx.event.findUnique({
-            where: { id: eventId },
-            include: { organizer: true }
-        });
-
-        if (!event?.organizer?.walletAddress) {
-            throw new Error("Organizer wallet address not found");
-        }
-
-        // Send payment to organizer (who has contract allowance set)
-        const escrowResult = await escrowService.sendToEscrow(
-            buyerSecretKey,
-            event.organizer.walletAddress,
-            ticketTier.price.toString()
-        );
-
-        if (!escrowResult.success) {
-            throw new Error(`Escrow payment failed: ${escrowResult.message}`);
-        }
-        
-        // Create the purchased ticket
-        const purchasedTicket = await tx.purchasedTicket.create({
-            data: {
-                eventId: eventId,
-                ticketId: ticketId,
-                ownerId: userId,
-                status: 'ACTIVE',
-            }
-        });
-
-        // Create transaction record
-        await tx.transaction.create({
-            data: {
-                purchasedTicketId: purchasedTicket.id,
-                amount: parseFloat(ticketTier.price.toString()),
-                currency: 'XLM',
-                blockchainTxId: escrowResult.transactionHash!,
-                status: 'COMPLETED'
-            }
-        });
-
-        // Increment the sold count on the ticket tier
-        await tx.ticket.update({
-            where: { id: ticketId },
-            data: {
-                sold: {
-                    increment: 1
-                }
-            }
-        });
-
-        return purchasedTicket;
-     });
+      });
+    });
 
     revalidatePath('/dashboard/fan/tickets');
     revalidatePath('/dashboard');
