@@ -5,7 +5,7 @@
 import React from 'react';
 import { Header } from '@/components/passa/header';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Ticket, Download, QrCode } from 'lucide-react';
+import { ArrowLeft, Ticket, Download } from 'lucide-react';
 import Link from 'next/link';
 import { TicketStub } from '@/components/passa/ticket-stub';
 import type { Event, PurchasedTicket } from '@prisma/client';

@@ -1,42 +1,21 @@
 'use client';
 
-import { FaGithub, FaTwitter, FaLinkedinIn } from "react-icons/fa";
-import { AnimatedLogo } from "@/components/animated-logo";
 import Link from "next/link";
-import { useFormStatus } from 'react-dom';
-import { Button } from '@/components/ui/button';
-import { Loader2, ArrowRight, Check, Facebook, Linkedin, Instagram, Send } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Check, Facebook, Linkedin, Instagram, Send } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import React from 'react';
 import { subscribeToNewsletter } from '@/app/actions/newsletter';
 import { Logo } from './logo';
 
 
-function SubmitButton() {
-    const { pending } = useFormStatus();
 
-    return (
-        <Button type="submit" variant="default" className="font-semibold" disabled={pending}>
-            {pending ? (
-                <>
-                    <Loader2 className="mr-2 animate-spin" /> Subscribing...
-                </>
-            ) : (
-                <>
-                    Subscribe <ArrowRight className="ml-2 size-4" />
-                </>
-            )}
-        </Button>
-    )
-}
 
 export const Footer = () => {
-    const router = useRouter();
+
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
 
-    const [state, formAction] = React.useActionState(subscribeToNewsletter, {
+    const [state] = React.useActionState(subscribeToNewsletter, {
         success: false,
         message: '',
         errors: {},
@@ -61,21 +40,7 @@ export const Footer = () => {
         }
     }, [state, toast]);
 
-    const navigateToAbout = () => {
-        router.push('/about');
-    }
 
-    const navigateToFeatures = () => {
-        router.push('/features');
-    }
-
-    const navigateToHowItWorks = () => {
-        router.push('/how-it-works');
-    }
-
-    const navigateToContact = () => {
-        router.push('/contact');
-    }
 
     return (
         <footer className="w-full border-t bg-background">

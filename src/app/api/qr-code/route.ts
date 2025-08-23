@@ -8,7 +8,7 @@ export async function GET() {
     return new Response(JSON.stringify({ success: true, qrCode: testQR }), {
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch (error) {
+  } catch {
     return new Response(JSON.stringify({ success: false, error: 'Failed to generate QR code' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

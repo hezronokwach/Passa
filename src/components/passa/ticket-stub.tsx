@@ -1,15 +1,14 @@
 
 import Image from 'next/image';
 import { Button } from '../ui/button';
-import { Barcode } from './barcode';
-import { CheckCircle, Ticket, QrCode } from 'lucide-react';
+import { CheckCircle, Ticket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Event } from '@prisma/client';
 
 interface TicketStubProps {
     event: Event & { translatedTitle: string; price: number; currency: string; imageHint?: string; };
     onPurchase?: () => void;
-    onViewTicket?: () => void;
+    
     isPurchasing?: boolean;
     isSuccess?: boolean;
     isPurchased?: boolean;
@@ -17,7 +16,7 @@ interface TicketStubProps {
     ownerName?: string;
 }
 
-export const TicketStub = ({ event, onPurchase, onViewTicket, isPurchasing, isSuccess, isPurchased = false, qrCode, ownerName }: TicketStubProps) => {
+export const TicketStub = ({ event, onPurchase, isPurchasing, isSuccess, isPurchased = false, qrCode, ownerName }: TicketStubProps) => {
     return (
         <div className={cn(
             "bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-2xl shadow-2xl overflow-hidden font-sans transition-all duration-500 max-w-sm mx-auto",
@@ -109,7 +108,7 @@ export const TicketStub = ({ event, onPurchase, onViewTicket, isPurchasing, isSu
                 {qrCode ? (
                     <div className="flex flex-col items-center">
                         <div className="bg-white p-4 rounded-xl mb-3">
-                            <img src={qrCode} alt="Ticket QR Code" className="w-32 h-32" />
+                            <Image src={qrCode} alt="Ticket QR Code" width={128} height={128} />
                         </div>
                         <p className="text-white/80 text-xs text-center">Scan at entrance</p>
                     </div>

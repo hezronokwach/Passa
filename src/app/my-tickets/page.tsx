@@ -12,7 +12,7 @@ export default function MyTicketsPage() {
         
         <div className="text-center py-12">
           <p className="text-lg text-muted-foreground mb-4">
-            You don't have any tickets yet.
+            You don&apos;t have any tickets yet.
           </p>
           <Button asChild>
             <Link href="/events">Browse Events</Link>

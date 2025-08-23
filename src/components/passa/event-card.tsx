@@ -37,7 +37,7 @@ export interface TranslatedEvent extends Event {
 
 export const EventCard = ({ event, userRole }: { event: TranslatedEvent; userRole?: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [imageError, setImageError] = useState(false);
+
 
   const router = useRouter();
 
@@ -68,7 +68,6 @@ export const EventCard = ({ event, userRole }: { event: TranslatedEvent; userRol
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              onError={() => setImageError(true)}
             />
           </div>
           <CardContent className="flex flex-1 flex-col justify-between p-4">
@@ -89,7 +88,7 @@ export const EventCard = ({ event, userRole }: { event: TranslatedEvent; userRol
             {ticketCount > 0 && (
               <div className="mt-3 flex items-center gap-2">
                 <div className="flex -space-x-2">
-                  {displayBuyers.map((buyer, index) => (
+                  {displayBuyers.map((buyer) => (
                     <Avatar key={buyer.id} className="size-6 border-2 border-background">
                       <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${buyer.name || buyer.email}`} />
                       <AvatarFallback className="text-xs">

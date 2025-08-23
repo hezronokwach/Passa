@@ -25,7 +25,7 @@ export const Header = () => {
   const [state, formAction] = useActionState(logout, undefined);
   const { toast } = useToast();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<{ userId: number; role: string; name?: string; email?: string } | null>(null);
 
   useEffect(() => {
     const fetchSession = async () => {

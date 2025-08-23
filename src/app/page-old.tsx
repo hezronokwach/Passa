@@ -78,7 +78,8 @@ async function getFeaturedEvents() {
 
 const MotionBadge = motion(Badge);
 
-const HeroVisual = () => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const HeroVisual: React.FC = () => {
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {

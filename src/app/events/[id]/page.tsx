@@ -11,15 +11,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
 
-import { translateEventTitle } from '@/ai/flows/translate-event-title';
+
 import type { Event, OrganizerProfile, Attribution, User as UserType, Ticket as TicketTier, ArtistInvitation } from '@prisma/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getSession } from '@/lib/session';
 import { EventDetails } from '@/components/events/event-details';
 import { TicketPurchase } from '@/components/events/ticket-purchase';
-import { useActionState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+
 
 type SponsorWithProfile = Attribution & { user: UserType & { organizerProfile: OrganizerProfile | null }};
 
@@ -30,7 +29,7 @@ type EventWithDetails = Event & {
     artistInvitations: ArtistInvitation[],
 }
 
-async function getEventDetails(eventId: string, userId?: number): Promise<EventWithDetails | null> {
+async function getEventDetails(eventId: string): Promise<EventWithDetails | null> {
     const id = parseInt(eventId, 10);
     if (isNaN(id)) return null;
 
@@ -73,16 +72,16 @@ async function getEventDetails(eventId: string, userId?: number): Promise<EventW
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const session = await getSession();
-    const event = await getEventDetails(id, session?.userId);
+    const event = await getEventDetails(id);
 
-    // Check if user already has a ticket
-    const userHasTicket = session?.userId ? await prisma.purchasedTicket.findFirst({
-        where: {
-            eventId: parseInt(id),
-            ownerId: session.userId,
-            status: 'ACTIVE'
-        }
-    }) : null;
+    // Check if user already has a ticket (not used currently, so removed to satisfy lint)
+    // const userHasTicket = session?.userId ? await prisma.purchasedTicket.findFirst({
+    //     where: {
+    //         eventId: parseInt(id),
+    //         ownerId: session.userId,
+    //         status: 'ACTIVE'
+    //     }
+    // }) : null;
 
     if (!event) {
         notFound();

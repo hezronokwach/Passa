@@ -16,7 +16,6 @@ import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { CurrencySelector } from '@/components/passa/currency-selector';
 
 type TicketTier = {
   id: string;
@@ -44,7 +43,6 @@ function SubmitButton() {
 
 export default function CreateEventPage() {
   const { toast } = useToast();
-    const [currency, setCurrency] = React.useState('KES');
   const [currentStep, setCurrentStep] = React.useState(1);
 
   const [dateInput, setDateInput] = React.useState('');
