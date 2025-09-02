@@ -17,6 +17,7 @@ model User {
   passwordResetExpires DateTime?
   passwordResetToken   String?            @unique
   verificationToken    String?            @unique
+  imageUrl             String?            
   walletAddress        String?            @unique
   walletSecretKey      String?            // Encrypted secret key
   artistInvitations    ArtistInvitation[]
