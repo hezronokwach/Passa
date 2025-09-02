@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { WalletProfile } from '@/components/passa/wallet-profile';
 import { updateUserProfile } from '@/app/actions/fan';
+import { uploadProfilePicture } from '@/app/actions/upload-profile-picture';
 import { ArrowLeft, User } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
@@ -126,11 +128,22 @@ export default async function FanProfilePage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-center rounded-full bg-muted p-8">
-                    <User className="size-16 text-muted-foreground" />
+                    {user.imageUrl ? (
+                      <Image
+                        src={user.imageUrl}
+                        alt="Profile Picture"
+                        width={128}
+                        height={128}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <User className="size-16 text-muted-foreground" />
+                    )}
                   </div>
-                  <p className="text-center text-sm text-muted-foreground">
-                    Profile pictures are coming soon!
-                  </p>
+                  <form action={uploadProfilePicture} className="space-y-4">
+                    <Input type="file" name="profilePicture" />
+                    <Button type="submit">Upload</Button>
+                  </form>
                 </CardContent>
               </Card>
               
