@@ -20,6 +20,7 @@ import { useActionState, useState, useEffect } from 'react';
 import React from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { NotificationBell } from './notifications';
+import { MyTicketsLink } from './my-tickets-link';
 
 export const Header = () => {
   const [state, formAction] = useActionState(logout, undefined);
@@ -61,7 +62,6 @@ export const Header = () => {
 
   const navItems = [
     { name: 'Events', href: '/events' },
-    { name: 'My tickets', href: '/my-tickets'},
     { name: 'How It Works', href: '/how-it-works' },
     { name: 'About', href: '/about' },
   ];
@@ -93,6 +93,7 @@ export const Header = () => {
               {item.name}
             </Link>
           ))}
+          <MyTicketsLink />
         </nav>
         <div className="flex items-center gap-2">
           <NotificationBell />
