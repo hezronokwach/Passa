@@ -47,7 +47,7 @@ export function HeroSection({ onWatchVideo }: HeroSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.9 }}
         >
-          Discover <span className="gradient-text">authentic African cultural events</span>, from traditional music festivals to art exhibitions. 
+          Discover <span className="gradient-text">authentic African cultural events</span>, from traditional music festivals to art exhibitions.
           Powered by <span className="text-primary">Stellar blockchain</span> for secure, instant payments.
         </motion.p>
 
@@ -81,7 +81,7 @@ export function HeroSection({ onWatchVideo }: HeroSectionProps) {
         >
           <Badge variant="secondary" className="glass-card text-white px-4 py-2">
             <UserGroupIcon className="w-4 h-4 mr-2" />
-            10,000+ Happy Attendees
+            10K+ Happy Attendees
           </Badge>
           <Badge variant="secondary" className="glass-card text-white px-4 py-2">
             <CalendarDaysIcon className="w-4 h-4 mr-2" />
