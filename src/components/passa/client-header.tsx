@@ -7,6 +7,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { MobileNav } from "./mobile-nav";
 import { Calendar, Ticket, Info, Mail, Home } from "lucide-react";
 import { useState, useEffect } from "react";
+import { MyTicketsLink } from "./my-tickets-link";
 
 export const ClientHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,7 +22,6 @@ export const ClientHeader = () => {
   const navItems = [
     { name: "Home", href: "/", icon: Home },
     { name: "Events", href: "/events", icon: Calendar },
-    { name: "My Tickets", href: "/my-tickets", icon: Ticket },
     { name: "About", href: "/about", icon: Info },
     { name: "Contact", href: "/contact", icon: Mail },
   ];
@@ -60,6 +60,7 @@ export const ClientHeader = () => {
                   </Link>
                 );
               })}
+              <MyTicketsLink />
             </div>
           </nav>
 
