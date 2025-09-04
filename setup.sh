@@ -4,7 +4,7 @@
 
 echo "Setting up Passa application..."
 
-# Check for .env file
+# Check for .env file first
 if [ ! -f .env ]; then
     echo ".env file not found. Copying from .env.bak..."
     cp .env.bak .env
@@ -12,7 +12,7 @@ fi
 
 # Install dependencies
 echo "Installing dependencies..."
-npm install
+npm install --legacy-peer-deps
 
 # Run database setup
 echo "Running database migration..."
