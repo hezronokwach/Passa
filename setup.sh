@@ -15,7 +15,10 @@ echo "Installing dependencies..."
 npm install
 
 # Run database setup
-echo "Running database setup (reset, migrate, seed)..."
-npm run db:setup
+echo "Running database migration..."
+npx prisma migrate dev --name init
+
+echo "Seeding database..."
+npx prisma db seed
 
 echo "Setup complete! You can now run the application with 'npm run dev'"
