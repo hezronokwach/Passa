@@ -39,13 +39,9 @@ Passa is a cutting-edge event ticketing platform built for the African continent
     SESSION_SECRET="your-super-secret-session-key"
     ```
 3.  **Set up the database**:
-    You can either run our setup script:
+    Run the setup script:
     ```bash
-    ./simple-setup.sh
-    ```
-    Or manually run Prisma migrations:
-    ```bash
-    npx prisma migrate dev --name init
+    ./setup.sh
     ```
 4.  **Run the development server**:
     ```bash
@@ -72,6 +68,6 @@ Passa implements a role-based authentication system with the following features:
 
 ## Database Setup
 
-If you're using a local PostgreSQL instance, make sure it's running and you have a database created. The `simple-setup.sh` script will attempt to create the database automatically using Prisma.
+If you're using a local PostgreSQL instance, make sure it's running. The `setup.sh` script will handle database creation, migration and seeding.
 
 For production deployments, update the `DATABASE_URL` in your environment variables to point to your production database.

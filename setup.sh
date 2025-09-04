@@ -4,20 +4,18 @@
 
 echo "Setting up Passa application..."
 
-# Create database
-echo "Creating database..."
-sudo -u postgres createdb passa_db || echo "Database might already exist or there was an error creating it."
+# Check for .env file
+if [ ! -f .env ]; then
+    echo ".env file not found. Copying from .env.bak..."
+    cp .env.bak .env
+fi
 
-# Run Prisma migrations
-echo "Running Prisma migrations..."
-npx prisma migrate dev --name init
+# Install dependencies
+echo "Installing dependencies..."
+npm install
 
-# Generate Prisma client
-echo "Generating Prisma client..."
-npx prisma generate
-
-# Seed database (if you have a seed script)
-# echo "Seeding database..."
-# npx prisma db seed
+# Run database setup
+echo "Running database setup (reset, migrate, seed)..."
+npm run db:setup
 
 echo "Setup complete! You can now run the application with 'npm run dev'"
